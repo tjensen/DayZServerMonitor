@@ -188,7 +188,6 @@ namespace DayZServerMonitor
 
         private void WatcherHandler(Action handler, object source, FileSystemEventArgs eventArgs)
         {
-            Console.WriteLine("File system changed: {0}", eventArgs);
             try
             {
                 handler();
