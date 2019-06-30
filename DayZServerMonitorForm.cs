@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Timers;
 using System.Windows.Forms;
 
 namespace DayZServerMonitor
@@ -22,12 +16,11 @@ namespace DayZServerMonitor
         {
             InitializeComponent();
         }
-
-        internal void UpdateValues(string server, string name, string players, string maxPlayers, Color playersColor, Color maxPlayersColor)
+        internal void UpdateValues(string server, string name, string players, string maxPlayers, Color playersColor)
         {
             if (InvokeRequired)
             {
-                Invoke(new MethodInvoker(delegate { UpdateValues(server, name, players, maxPlayers, playersColor, maxPlayersColor); }));
+                Invoke(new MethodInvoker(delegate { UpdateValues(server, name, players, maxPlayers, playersColor); }));
             }
             else
             {
@@ -35,8 +28,8 @@ namespace DayZServerMonitor
                 NameValue.Text = name;
                 PlayersValue.Text = players;
                 PlayersValue.ForeColor = playersColor;
+                PlayersValue.BackColor = SystemColors.Control;
                 MaxPlayersValue.Text = maxPlayers;
-                MaxPlayersValue.ForeColor = maxPlayersColor;
             }
         }
 
@@ -55,12 +48,12 @@ namespace DayZServerMonitor
             {
                 playersColor = Color.Red;
             }
-            UpdateValues(server, name, players.ToString(), maxPlayers.ToString(), playersColor, Color.Cyan);
+            UpdateValues(server, name, players.ToString(), maxPlayers.ToString(), playersColor);
         }
 
         internal void UpdateValues(string server)
         {
-            UpdateValues(server, "", "?", "?", Color.Gray, Color.Gray);
+            UpdateValues(server, "", "?", "?", Color.Gray);
         }
 
         internal void Initialize(Monitor monitor)
@@ -75,7 +68,7 @@ namespace DayZServerMonitor
         {
             await this.monitor.Poll(this);
         }
-        
+
         private void Poll()
         {
             _ = Task.Run(async delegate { await PollAsync(); });

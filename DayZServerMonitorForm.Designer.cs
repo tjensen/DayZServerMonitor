@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.FormPanel = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.FormTable = new System.Windows.Forms.TableLayoutPanel();
             this.ServerLabelPanel = new System.Windows.Forms.Panel();
             this.ServerLabel = new System.Windows.Forms.Label();
             this.ServerValuePanel = new System.Windows.Forms.Panel();
@@ -47,7 +47,7 @@
             this.MaxPlayersValuePanel = new System.Windows.Forms.Panel();
             this.MaxPlayersValue = new System.Windows.Forms.TextBox();
             this.FormPanel.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
+            this.FormTable.SuspendLayout();
             this.ServerLabelPanel.SuspendLayout();
             this.ServerValuePanel.SuspendLayout();
             this.NameLabelPanel.SuspendLayout();
@@ -60,48 +60,51 @@
             // 
             // FormPanel
             // 
-            this.FormPanel.Controls.Add(this.tableLayoutPanel1);
+            this.FormPanel.Controls.Add(this.FormTable);
             this.FormPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.FormPanel.Location = new System.Drawing.Point(0, 0);
             this.FormPanel.Name = "FormPanel";
-            this.FormPanel.Size = new System.Drawing.Size(365, 145);
+            this.FormPanel.Size = new System.Drawing.Size(474, 151);
             this.FormPanel.TabIndex = 0;
             // 
-            // tableLayoutPanel1
+            // FormTable
             // 
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 27.67123F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 72.32877F));
-            this.tableLayoutPanel1.Controls.Add(this.ServerLabelPanel, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.ServerValuePanel, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.NameLabelPanel, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.NameValuePanel, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.PlayersLabelPanel, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.PlayersValuePanel, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.MaxPlayersLabelPanel, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.MaxPlayersValuePanel, 1, 3);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 4;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(365, 145);
-            this.tableLayoutPanel1.TabIndex = 0;
+            this.FormTable.ColumnCount = 2;
+            this.FormTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 24.05858F));
+            this.FormTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 75.94142F));
+            this.FormTable.Controls.Add(this.ServerLabelPanel, 0, 0);
+            this.FormTable.Controls.Add(this.ServerValuePanel, 1, 0);
+            this.FormTable.Controls.Add(this.NameLabelPanel, 0, 1);
+            this.FormTable.Controls.Add(this.NameValuePanel, 1, 1);
+            this.FormTable.Controls.Add(this.PlayersLabelPanel, 0, 2);
+            this.FormTable.Controls.Add(this.PlayersValuePanel, 1, 2);
+            this.FormTable.Controls.Add(this.MaxPlayersLabelPanel, 0, 3);
+            this.FormTable.Controls.Add(this.MaxPlayersValuePanel, 1, 3);
+            this.FormTable.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.FormTable.Location = new System.Drawing.Point(0, 0);
+            this.FormTable.Name = "FormTable";
+            this.FormTable.RowCount = 4;
+            this.FormTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.FormTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.FormTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.FormTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.FormTable.Size = new System.Drawing.Size(474, 151);
+            this.FormTable.TabIndex = 0;
             // 
             // ServerLabelPanel
             // 
             this.ServerLabelPanel.Controls.Add(this.ServerLabel);
+            this.ServerLabelPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ServerLabelPanel.Location = new System.Drawing.Point(3, 3);
             this.ServerLabelPanel.Name = "ServerLabelPanel";
-            this.ServerLabelPanel.Size = new System.Drawing.Size(94, 30);
+            this.ServerLabelPanel.Size = new System.Drawing.Size(108, 31);
             this.ServerLabelPanel.TabIndex = 0;
             // 
             // ServerLabel
             // 
             this.ServerLabel.AutoSize = true;
+            this.ServerLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ServerLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ServerLabel.Location = new System.Drawing.Point(0, 0);
             this.ServerLabel.Name = "ServerLabel";
             this.ServerLabel.Size = new System.Drawing.Size(55, 20);
@@ -111,33 +114,36 @@
             // ServerValuePanel
             // 
             this.ServerValuePanel.Controls.Add(this.ServerValue);
-            this.ServerValuePanel.Location = new System.Drawing.Point(103, 3);
+            this.ServerValuePanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ServerValuePanel.Location = new System.Drawing.Point(117, 3);
             this.ServerValuePanel.Name = "ServerValuePanel";
-            this.ServerValuePanel.Size = new System.Drawing.Size(259, 30);
+            this.ServerValuePanel.Size = new System.Drawing.Size(354, 31);
             this.ServerValuePanel.TabIndex = 1;
             // 
             // ServerValue
             // 
-            this.ServerValue.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.ServerValue.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ServerValue.Enabled = true;
+            this.ServerValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ServerValue.Location = new System.Drawing.Point(0, 0);
             this.ServerValue.Name = "ServerValue";
             this.ServerValue.ReadOnly = true;
-            this.ServerValue.Size = new System.Drawing.Size(259, 26);
+            this.ServerValue.Size = new System.Drawing.Size(354, 26);
             this.ServerValue.TabIndex = 0;
             // 
             // NameLabelPanel
             // 
             this.NameLabelPanel.Controls.Add(this.NameLabel);
-            this.NameLabelPanel.Location = new System.Drawing.Point(3, 39);
+            this.NameLabelPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.NameLabelPanel.Location = new System.Drawing.Point(3, 40);
             this.NameLabelPanel.Name = "NameLabelPanel";
-            this.NameLabelPanel.Size = new System.Drawing.Size(94, 30);
+            this.NameLabelPanel.Size = new System.Drawing.Size(108, 31);
             this.NameLabelPanel.TabIndex = 2;
             // 
             // NameLabel
             // 
             this.NameLabel.AutoSize = true;
+            this.NameLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.NameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.NameLabel.Location = new System.Drawing.Point(0, 0);
             this.NameLabel.Name = "NameLabel";
             this.NameLabel.Size = new System.Drawing.Size(51, 20);
@@ -147,33 +153,36 @@
             // NameValuePanel
             // 
             this.NameValuePanel.Controls.Add(this.NameValue);
-            this.NameValuePanel.Location = new System.Drawing.Point(103, 39);
+            this.NameValuePanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.NameValuePanel.Location = new System.Drawing.Point(117, 40);
             this.NameValuePanel.Name = "NameValuePanel";
-            this.NameValuePanel.Size = new System.Drawing.Size(259, 30);
+            this.NameValuePanel.Size = new System.Drawing.Size(354, 31);
             this.NameValuePanel.TabIndex = 3;
             // 
             // NameValue
             // 
-            this.NameValue.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.NameValue.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.NameValue.Enabled = true;
+            this.NameValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.NameValue.Location = new System.Drawing.Point(0, 0);
             this.NameValue.Name = "NameValue";
             this.NameValue.ReadOnly = true;
-            this.NameValue.Size = new System.Drawing.Size(259, 26);
+            this.NameValue.Size = new System.Drawing.Size(354, 26);
             this.NameValue.TabIndex = 0;
             // 
             // PlayersLabelPanel
             // 
             this.PlayersLabelPanel.Controls.Add(this.PlayersLabel);
-            this.PlayersLabelPanel.Location = new System.Drawing.Point(3, 75);
+            this.PlayersLabelPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PlayersLabelPanel.Location = new System.Drawing.Point(3, 77);
             this.PlayersLabelPanel.Name = "PlayersLabelPanel";
-            this.PlayersLabelPanel.Size = new System.Drawing.Size(94, 30);
+            this.PlayersLabelPanel.Size = new System.Drawing.Size(108, 31);
             this.PlayersLabelPanel.TabIndex = 4;
             // 
             // PlayersLabel
             // 
             this.PlayersLabel.AutoSize = true;
+            this.PlayersLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PlayersLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.PlayersLabel.Location = new System.Drawing.Point(0, 0);
             this.PlayersLabel.Name = "PlayersLabel";
             this.PlayersLabel.Size = new System.Drawing.Size(60, 20);
@@ -183,33 +192,38 @@
             // PlayersValuePanel
             // 
             this.PlayersValuePanel.Controls.Add(this.PlayersValue);
-            this.PlayersValuePanel.Location = new System.Drawing.Point(103, 75);
+            this.PlayersValuePanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PlayersValuePanel.Location = new System.Drawing.Point(117, 77);
             this.PlayersValuePanel.Name = "PlayersValuePanel";
-            this.PlayersValuePanel.Size = new System.Drawing.Size(259, 30);
+            this.PlayersValuePanel.Size = new System.Drawing.Size(354, 31);
             this.PlayersValuePanel.TabIndex = 5;
             // 
             // PlayersValue
             // 
-            this.PlayersValue.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.PlayersValue.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PlayersValue.Enabled = true;
+            this.PlayersValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PlayersValue.ForeColor = System.Drawing.SystemColors.WindowText;
             this.PlayersValue.Location = new System.Drawing.Point(0, 0);
             this.PlayersValue.Name = "PlayersValue";
             this.PlayersValue.ReadOnly = true;
-            this.PlayersValue.Size = new System.Drawing.Size(259, 26);
+            this.PlayersValue.Size = new System.Drawing.Size(354, 26);
             this.PlayersValue.TabIndex = 0;
+            this.PlayersValue.Text = "potato";
             // 
             // MaxPlayersLabelPanel
             // 
             this.MaxPlayersLabelPanel.Controls.Add(this.MaxPlayersLabel);
-            this.MaxPlayersLabelPanel.Location = new System.Drawing.Point(3, 111);
+            this.MaxPlayersLabelPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MaxPlayersLabelPanel.Location = new System.Drawing.Point(3, 114);
             this.MaxPlayersLabelPanel.Name = "MaxPlayersLabelPanel";
-            this.MaxPlayersLabelPanel.Size = new System.Drawing.Size(94, 31);
+            this.MaxPlayersLabelPanel.Size = new System.Drawing.Size(108, 34);
             this.MaxPlayersLabelPanel.TabIndex = 6;
             // 
             // MaxPlayersLabel
             // 
             this.MaxPlayersLabel.AutoSize = true;
+            this.MaxPlayersLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MaxPlayersLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MaxPlayersLabel.Location = new System.Drawing.Point(0, 0);
             this.MaxPlayersLabel.Name = "MaxPlayersLabel";
             this.MaxPlayersLabel.Size = new System.Drawing.Size(93, 20);
@@ -219,39 +233,37 @@
             // MaxPlayersValuePanel
             // 
             this.MaxPlayersValuePanel.Controls.Add(this.MaxPlayersValue);
-            this.MaxPlayersValuePanel.Location = new System.Drawing.Point(103, 111);
+            this.MaxPlayersValuePanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MaxPlayersValuePanel.Location = new System.Drawing.Point(117, 114);
             this.MaxPlayersValuePanel.Name = "MaxPlayersValuePanel";
-            this.MaxPlayersValuePanel.Size = new System.Drawing.Size(259, 31);
+            this.MaxPlayersValuePanel.Size = new System.Drawing.Size(354, 34);
             this.MaxPlayersValuePanel.TabIndex = 7;
             // 
             // MaxPlayersValue
             // 
-            this.MaxPlayersValue.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.MaxPlayersValue.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MaxPlayersValue.Enabled = true;
+            this.MaxPlayersValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MaxPlayersValue.Location = new System.Drawing.Point(0, 0);
             this.MaxPlayersValue.Name = "MaxPlayersValue";
             this.MaxPlayersValue.ReadOnly = true;
-            this.MaxPlayersValue.Size = new System.Drawing.Size(259, 26);
+            this.MaxPlayersValue.Size = new System.Drawing.Size(354, 26);
             this.MaxPlayersValue.TabIndex = 0;
             // 
             // DayZServerMonitorForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(365, 145);
+            this.ClientSize = new System.Drawing.Size(478, 155);
             this.Controls.Add(this.FormPanel);
-            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(381, 184);
-            this.MinimumSize = new System.Drawing.Size(381, 184);
+            this.MaximumSize = new System.Drawing.Size(494, 194);
+            this.MinimumSize = new System.Drawing.Size(494, 194);
             this.Name = "DayZServerMonitorForm";
             this.ShowIcon = false;
-            this.Text = "DayZ Server Monitor";
+            this.Text = "DayzServerMonitor";
             this.FormPanel.ResumeLayout(false);
-            this.tableLayoutPanel1.ResumeLayout(false);
+            this.FormTable.ResumeLayout(false);
             this.ServerLabelPanel.ResumeLayout(false);
             this.ServerLabelPanel.PerformLayout();
             this.ServerValuePanel.ResumeLayout(false);
@@ -275,23 +287,22 @@
         #endregion
 
         private System.Windows.Forms.Panel FormPanel;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TableLayoutPanel FormTable;
         private System.Windows.Forms.Panel ServerLabelPanel;
         private System.Windows.Forms.Label ServerLabel;
         private System.Windows.Forms.Panel ServerValuePanel;
+        private System.Windows.Forms.TextBox ServerValue;
         private System.Windows.Forms.Panel NameLabelPanel;
         private System.Windows.Forms.Label NameLabel;
         private System.Windows.Forms.Panel NameValuePanel;
-        private System.Windows.Forms.Panel PlayersLabelPanel;
-        private System.Windows.Forms.Panel PlayersValuePanel;
-        private System.Windows.Forms.Panel MaxPlayersLabelPanel;
-        private System.Windows.Forms.Panel MaxPlayersValuePanel;
-        private System.Windows.Forms.Label PlayersLabel;
-        private System.Windows.Forms.Label MaxPlayersLabel;
-        private System.Windows.Forms.TextBox ServerValue;
         private System.Windows.Forms.TextBox NameValue;
+        private System.Windows.Forms.Panel PlayersLabelPanel;
+        private System.Windows.Forms.Label PlayersLabel;
+        private System.Windows.Forms.Panel PlayersValuePanel;
         private System.Windows.Forms.TextBox PlayersValue;
+        private System.Windows.Forms.Panel MaxPlayersLabelPanel;
+        private System.Windows.Forms.Label MaxPlayersLabel;
+        private System.Windows.Forms.Panel MaxPlayersValuePanel;
         private System.Windows.Forms.TextBox MaxPlayersValue;
     }
 }
-
