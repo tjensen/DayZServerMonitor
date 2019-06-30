@@ -28,7 +28,7 @@ namespace DayZServerMonitor
                 NameValue.Text = name;
                 PlayersValue.Text = players;
                 PlayersValue.ForeColor = playersColor;
-                PlayersValue.BackColor = SystemColors.Control;
+                PlayersValue.BackColor = SystemColors.Control; // Force readonly control to update foreground color
                 MaxPlayersValue.Text = maxPlayers;
             }
         }
