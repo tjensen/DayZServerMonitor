@@ -16,8 +16,12 @@ namespace DayZServerMonitor
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            DayZServerMonitorForm form = new DayZServerMonitorForm();
-            Application.Run(form);
+            using (DayZServerMonitorForm form = new DayZServerMonitorForm())
+            {
+                Monitor monitor = new Monitor();
+                form.Initialize(monitor);
+                Application.Run(form);
+            }
         }
     }
 }
