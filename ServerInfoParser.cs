@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace DayZServerMonitor
 {
+    [Serializable]
     internal class ParseException : Exception
     {
         public ParseException(string message) : base(message)
@@ -15,7 +16,7 @@ namespace DayZServerMonitor
 
     internal class ServerInfoParser
     {
-        List<byte> buffer;
+        private readonly List<byte> buffer;
 
         internal ServerInfoParser(byte[] buffer)
         {

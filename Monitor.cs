@@ -13,7 +13,7 @@ namespace DayZServerMonitor
 {
     using Server = Tuple<string, int>;
 
-    internal class Monitor
+    internal class Monitor : IDisposable
     {
         private readonly static double POLLING_INTERVAL = 60000;
         private readonly static int SEND_TIMEOUT = 1000;
@@ -55,20 +55,6 @@ namespace DayZServerMonitor
             {
                 semaphore.Release();
             }
-        }
-
-        private string dump(byte[] buffer)
-        {
-            string result = "";
-            foreach (byte b in buffer)
-            {
-                if (result != "")
-                {
-                    result += ", ";
-                }
-                result += string.Format("{0:x}", b);
-            }
-            return string.Format("[ {0} ]", result);
         }
 
         private async Task<T> WithTimeout<T>(Task<T> mainTask, int timeoutMilliseconds)
@@ -167,14 +153,16 @@ namespace DayZServerMonitor
         {
             try
             {
-                FileSystemWatcher watcher = new FileSystemWatcher();
-                watcher.Path = GetDayZFolder();
-                watcher.NotifyFilter = NotifyFilters.CreationTime | NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;
-                watcher.Filter = GetProfileFilename();
-                watcher.Changed += (s, e) => WatcherHandler(handler, s, e);
-                watcher.Created += (s, e) => WatcherHandler(handler, s, e);
-                watcher.Renamed += (s, e) => WatcherHandler(handler, s, e);
-                watcher.Deleted += (s, e) => WatcherHandler(handler, s, e);
+                FileSystemWatcher watcher = new FileSystemWatcher
+                {
+                    Path = GetDayZFolder(),
+                    NotifyFilter = NotifyFilters.CreationTime | NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
+                    Filter = GetProfileFilename()
+                };
+                watcher.Changed += (s, e) => WatcherHandler(handler);
+                watcher.Created += (s, e) => WatcherHandler(handler);
+                watcher.Renamed += (s, e) => WatcherHandler(handler);
+                watcher.Deleted += (s, e) => WatcherHandler(handler);
                 watcher.SynchronizingObject = synchronizingObject;
                 watcher.EnableRaisingEvents = true;
                 return watcher;
@@ -186,7 +174,7 @@ namespace DayZServerMonitor
             }
         }
 
-        private void WatcherHandler(Action handler, object source, FileSystemEventArgs eventArgs)
+        private void WatcherHandler(Action handler)
         {
             try
             {
@@ -235,5 +223,27 @@ namespace DayZServerMonitor
             }
             return null;
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    semaphore.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+        #endregion
     }
 }
