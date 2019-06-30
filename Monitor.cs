@@ -1,21 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using Timer = System.Timers.Timer;
 
 namespace DayZServerMonitor
 {
+    using Server = Tuple<string, int>;
+
     internal class Monitor
     {
         private readonly static double POLLING_INTERVAL = 60000;
+        private readonly static int SEND_TIMEOUT = 1000;
+        private readonly static int RECEIVE_TIMEOUT = 5000;
         private readonly static Regex LastMPServerRegex = new Regex("^lastMPServer=\"(?<address>[\\d.]+):(?<port>\\d+)\";");
         private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1);
         private DateTime lastPoll;
-        private string lastServer;
+        private Server lastServer;
 
         public Monitor() => lastPoll = new DateTime(0);
 
@@ -24,24 +31,24 @@ namespace DayZServerMonitor
             await semaphore.WaitAsync();
             try
             {
-                string server = await GetLastServer();
+                Server server = await GetLastServer();
                 if (server != lastServer)
                 {
                     lastServer = server;
                     if (server is null)
                     {
-                        form.updateValues("UNKNOWN");
+                        form.UpdateValues("UNKNOWN");
                     }
                     else
                     {
-                        QueryServer(form, server);
+                        await QueryServer(form, server);
                     }
                 }
                 else
                 {
                     if (DateTime.Now.Subtract(lastPoll).TotalMilliseconds > POLLING_INTERVAL)
                     {
-                        QueryServer(form, server);
+                        await QueryServer(form, server);
                     }
                 }
             }
@@ -51,11 +58,100 @@ namespace DayZServerMonitor
             }
         }
 
-        private void QueryServer(DayZServerMonitorForm form, string server)
+        private string dump(byte[] buffer)
         {
+            string result = "";
+            foreach (byte b in buffer)
+            {
+                if (result != "")
+                {
+                    result += ", ";
+                }
+                result += string.Format("{0:x}", b);
+            }
+            return string.Format("[ {0} ]", result);
+        }
+
+        private async Task<T> WithTimeout<T>(Task<T> mainTask, int timeoutMilliseconds)
+        {
+            Task timeoutTask = Task.Delay(timeoutMilliseconds);
+            Task result = await Task.WhenAny(mainTask, timeoutTask);
+            if (result.Equals(mainTask))
+            {
+                return mainTask.Result;
+            }
+            throw new TimeoutException();
+        }
+
+        private Tuple<string, int, int> ParseQueryResponse(byte[] response)
+        {
+            ServerInfoParser parser = new ServerInfoParser(response);
+
+            if (!parser.GetBytes(4).TrueForAll((b) => b == 0xff))
+            {
+                throw new Exception("Invalid Packet Header");
+            }
+
+            if (parser.GetByte() != 0x49)
+            {
+                throw new Exception("Invalid Info Header");
+            }
+
+            _ = parser.GetByte(); // Ignore protocol version
+
+            string name = parser.GetString();
+
+            _ = parser.GetString(); // Ignore map
+            _ = parser.GetString(); // Ignore folder
+            _ = parser.GetString(); // Ignore game
+            _ = parser.GetShort(); // Ignore ID
+
+            int players = parser.GetByte();
+
+            int maxPlayers = parser.GetByte();
+
+            return new Tuple<string, int, int>(name, players, maxPlayers);
+        }
+
+        private async Task QueryServer(DayZServerMonitorForm form, Server server)
+        {
+            Tuple<string, int, int> serverInfo = null;
+
             lastPoll = DateTime.Now;
-            // TODO: Send Query to DayZ server: https://developer.valvesoftware.com/wiki/Server_queries#A2S_INFO
-            form.updateValues(server);
+
+            try
+            {
+                // Send Query to DayZ server: https://developer.valvesoftware.com/wiki/Server_queries#A2S_INFO
+                using (UdpClient client = new UdpClient(server.Item1, server.Item2 + 24714))
+                {
+                    List<byte> request = new List<byte>(new byte[] { 0xff, 0xff, 0xff, 0xff, 0x54 });
+                    request.AddRange(Encoding.ASCII.GetBytes("Source Engine Query"));
+                    request.Add(0);
+                    int sendResult = await WithTimeout(client.SendAsync(request.ToArray(), request.Count), SEND_TIMEOUT);
+                    if (request.Count == sendResult)
+                    {
+                        UdpReceiveResult response = await WithTimeout(client.ReceiveAsync(), RECEIVE_TIMEOUT);
+                        serverInfo = ParseQueryResponse(response.Buffer);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Send returned unexpected result: {0} != {1}", sendResult, request.Count);
+                    }
+                }
+
+                if (serverInfo == null)
+                {
+                    form.UpdateValues(string.Format("{0}:{1}", server.Item1, server.Item2));
+                }
+                else
+                {
+                    form.UpdateValues(string.Format("{0}:{1}", server.Item1, server.Item2), serverInfo.Item1, serverInfo.Item2, serverInfo.Item3);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Failed to query server: {0}", e);
+            }
         }
 
         internal Timer CreateTimer(ISynchronizeInvoke synchronizingObject, Action handler)
@@ -114,7 +210,7 @@ namespace DayZServerMonitor
             return String.Format("{0}_settings.DayZProfile", Environment.UserName);
         }
 
-        private async Task<string> GetLastServer()
+        private async Task<Server> GetLastServer()
         {
             try
             {
@@ -130,7 +226,7 @@ namespace DayZServerMonitor
                             string address = results.Groups["address"].Value;
                             // For some reason, DayZ writes the server port number shifted 16 bits to the left.
                             int port = int.Parse(results.Groups["port"].Value) >> 16;
-                            return string.Format("{0}:{1}", address, port.ToString());
+                            return new Server(address, port);
                         }
                     }
                 }

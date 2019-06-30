@@ -68,6 +68,7 @@
     <Compile Include="DayZServerMonitorForm.Designer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServerInfoParser.cs" />
     <EmbeddedResource Include="DayZServerMonitorForm.resx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

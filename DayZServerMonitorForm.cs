@@ -23,16 +23,44 @@ namespace DayZServerMonitor
             InitializeComponent();
         }
 
-        internal void updateValues(string server)
+        internal void UpdateValues(string server, string name, string players, string maxPlayers, Color playersColor, Color maxPlayersColor)
         {
             if (InvokeRequired)
             {
-                Invoke(new MethodInvoker(delegate { updateValues(server); }));
+                Invoke(new MethodInvoker(delegate { UpdateValues(server, name, players, maxPlayers, playersColor, maxPlayersColor); }));
             }
             else
             {
-                this.ServerValue.Text = server;
+                ServerValue.Text = server;
+                NameValue.Text = name;
+                PlayersValue.Text = players;
+                PlayersValue.ForeColor = playersColor;
+                MaxPlayersValue.Text = maxPlayers;
+                MaxPlayersValue.ForeColor = maxPlayersColor;
             }
+        }
+
+        internal void UpdateValues(string server, string name, int players, int maxPlayers)
+        {
+            Color playersColor;
+            if (players == 0)
+            {
+                playersColor = Color.Blue;
+            }
+            else if (players < maxPlayers)
+            {
+                playersColor = Color.Green;
+            }
+            else
+            {
+                playersColor = Color.Red;
+            }
+            UpdateValues(server, name, players.ToString(), maxPlayers.ToString(), playersColor, Color.Cyan);
+        }
+
+        internal void UpdateValues(string server)
+        {
+            UpdateValues(server, "", "?", "?", Color.Gray, Color.Gray);
         }
 
         internal void Initialize(Monitor monitor)

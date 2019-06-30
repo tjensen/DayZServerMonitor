@@ -120,7 +120,7 @@
             // 
             this.ServerValue.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.ServerValue.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ServerValue.Enabled = false;
+            this.ServerValue.Enabled = true;
             this.ServerValue.Location = new System.Drawing.Point(0, 0);
             this.ServerValue.Name = "ServerValue";
             this.ServerValue.ReadOnly = true;
@@ -156,7 +156,7 @@
             // 
             this.NameValue.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.NameValue.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.NameValue.Enabled = false;
+            this.NameValue.Enabled = true;
             this.NameValue.Location = new System.Drawing.Point(0, 0);
             this.NameValue.Name = "NameValue";
             this.NameValue.ReadOnly = true;
@@ -192,7 +192,7 @@
             // 
             this.PlayersValue.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.PlayersValue.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PlayersValue.Enabled = false;
+            this.PlayersValue.Enabled = true;
             this.PlayersValue.Location = new System.Drawing.Point(0, 0);
             this.PlayersValue.Name = "PlayersValue";
             this.PlayersValue.ReadOnly = true;
@@ -228,7 +228,7 @@
             // 
             this.MaxPlayersValue.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.MaxPlayersValue.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MaxPlayersValue.Enabled = false;
+            this.MaxPlayersValue.Enabled = true;
             this.MaxPlayersValue.Location = new System.Drawing.Point(0, 0);
             this.MaxPlayersValue.Name = "MaxPlayersValue";
             this.MaxPlayersValue.ReadOnly = true;
