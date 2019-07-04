@@ -70,7 +70,6 @@
     <Compile Include="Monitor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServerInfoParser.cs" />
     <EmbeddedResource Include="DayZServerMonitorForm.resx">
       <DependentUpon>DayZServerMonitorForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -107,6 +106,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="DayZServerMonitorCore\DayZServerMonitorCore.csproj">
+      <Project>{7dc42083-3e87-436c-9d93-8a76eb8a9ba4}</Project>
+      <Name>DayZServerMonitorCore</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
