@@ -1,7 +1,6 @@
 ﻿using DayZServerMonitorCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -104,7 +103,7 @@ namespace TestDayZServerMonitorCore
                 0x01 // VAC
             };
 
-            List<byte> result = await QueryServer.Query("127.0.0.1", serverPort, 100, 100);
+            byte[] result = await QueryServer.Query("127.0.0.1", serverPort, 100, 100);
 
             Assert.IsTrue(serverCompleted);
             CollectionAssert.AreEqual(

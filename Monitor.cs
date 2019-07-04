@@ -41,14 +41,14 @@ namespace DayZServerMonitor
                     }
                     else
                     {
-                        await QueryServer(form, server);
+                        await Query(form, server);
                     }
                 }
                 else
                 {
                     if (DateTime.Now.Subtract(lastPoll).TotalMilliseconds > POLLING_INTERVAL)
                     {
-                        await QueryServer(form, server);
+                        await Query(form, server);
                     }
                 }
             }
@@ -58,86 +58,17 @@ namespace DayZServerMonitor
             }
         }
 
-        private async Task<T> WithTimeout<T>(Task<T> mainTask, int timeoutMilliseconds)
+        private async Task Query(DayZServerMonitorForm form, Server server)
         {
-            Task timeoutTask = Task.Delay(timeoutMilliseconds);
-            Task result = await Task.WhenAny(mainTask, timeoutTask);
-            if (result.Equals(mainTask))
+            byte[] buffer = await QueryServer.Query(server.Item1, server.Item2 + 24714, SEND_TIMEOUT, RECEIVE_TIMEOUT);
+            if (buffer == null)
             {
-                return mainTask.Result;
-            }
-            throw new TimeoutException();
-        }
-
-        private Tuple<string, int, int> ParseQueryResponse(byte[] response)
-        {
-            ServerInfoParser parser = new ServerInfoParser(response);
-
-            if (!parser.GetBytes(4).TrueForAll((b) => b == 0xff))
-            {
-                throw new Exception("Invalid Packet Header");
+                form.UpdateValues(string.Format("{0}:{1}", server.Item1, server.Item2));
+                return;
             }
 
-            if (parser.GetByte() != 0x49)
-            {
-                throw new Exception("Invalid Info Header");
-            }
-
-            _ = parser.GetByte(); // Ignore protocol version
-
-            string name = parser.GetString();
-
-            _ = parser.GetString(); // Ignore map
-            _ = parser.GetString(); // Ignore folder
-            _ = parser.GetString(); // Ignore game
-            _ = parser.GetShort(); // Ignore ID
-
-            int players = parser.GetByte();
-
-            int maxPlayers = parser.GetByte();
-
-            return new Tuple<string, int, int>(name, players, maxPlayers);
-        }
-
-        private async Task QueryServer(DayZServerMonitorForm form, Server server)
-        {
-            Tuple<string, int, int> serverInfo = null;
-
-            lastPoll = DateTime.Now;
-
-            try
-            {
-                // Send Query to DayZ server: https://developer.valvesoftware.com/wiki/Server_queries#A2S_INFO
-                using (UdpClient client = new UdpClient(server.Item1, server.Item2 + 24714))
-                {
-                    List<byte> request = new List<byte>(new byte[] { 0xff, 0xff, 0xff, 0xff, 0x54 });
-                    request.AddRange(Encoding.ASCII.GetBytes("Source Engine Query"));
-                    request.Add(0);
-                    int sendResult = await WithTimeout(client.SendAsync(request.ToArray(), request.Count), SEND_TIMEOUT);
-                    if (request.Count == sendResult)
-                    {
-                        UdpReceiveResult response = await WithTimeout(client.ReceiveAsync(), RECEIVE_TIMEOUT);
-                        serverInfo = ParseQueryResponse(response.Buffer);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Send returned unexpected result: {0} != {1}", sendResult, request.Count);
-                    }
-                }
-
-                if (serverInfo == null)
-                {
-                    form.UpdateValues(string.Format("{0}:{1}", server.Item1, server.Item2));
-                }
-                else
-                {
-                    form.UpdateValues(string.Format("{0}:{1}", server.Item1, server.Item2), serverInfo.Item1, serverInfo.Item2, serverInfo.Item3);
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Failed to query server: {0}", e);
-            }
+            ServerInfo info = ServerInfo.Parse(server.Item1, server.Item2, buffer);
+            form.UpdateValues(info.Address, info.Name, info.NumPlayers, info.MaxPlayers);
         }
 
         internal Timer CreateTimer(ISynchronizeInvoke synchronizingObject, Action handler)

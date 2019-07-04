@@ -33,7 +33,7 @@ namespace DayZServerMonitorCore
             }
         }
 
-        public static async Task<List<byte>> Query(string host, int port, int sendTimeout, int receiveTimeout)
+        public static async Task<byte[]> Query(string host, int port, int sendTimeout, int receiveTimeout)
         {
             try
             {
@@ -42,7 +42,7 @@ namespace DayZServerMonitorCore
                 {
                     await SendQueryPacket(client, sendTimeout);
                     UdpReceiveResult response = await WithTimeout(client.ReceiveAsync(), receiveTimeout);
-                    return new List<byte>(response.Buffer);
+                    return response.Buffer;
                 }
             }
             catch (Exception e)

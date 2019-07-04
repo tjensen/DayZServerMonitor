@@ -208,7 +208,6 @@
             this.PlayersValue.ReadOnly = true;
             this.PlayersValue.Size = new System.Drawing.Size(354, 26);
             this.PlayersValue.TabIndex = 0;
-            this.PlayersValue.Text = "potato";
             // 
             // MaxPlayersLabelPanel
             // 
