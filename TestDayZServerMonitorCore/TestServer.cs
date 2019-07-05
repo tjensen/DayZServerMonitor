@@ -34,6 +34,14 @@ namespace TestDayZServerMonitorCore
         }
 
         [TestMethod]
+        public void PortIsShiftedRightBy16BitsWhenOutOfRange()
+        {
+            Server server = new Server("12.34.56.78:283181056");
+
+            Assert.AreEqual(4321, server.Port);
+        }
+
+        [TestMethod]
         public void StatsPortContainsPortNumberForReadingServerStats()
         {
             Server server = new Server("12.34.56.78:4321");

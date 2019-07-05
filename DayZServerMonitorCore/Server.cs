@@ -10,6 +10,10 @@
             string[] parts = address.Split(":".ToCharArray(), 2);
             Host = parts[0];
             Port = parts.Length == 2 ? int.Parse(parts[1]) : DEFAULT_PORT;
+            if (Port > 65535)
+            {
+                Port >>= 16;
+            }
         }
 
         public string Host { get; }
