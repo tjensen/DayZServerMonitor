@@ -14,7 +14,7 @@ namespace DayZServerMonitor
         private readonly static int SEND_TIMEOUT = 1000;
         private readonly static int RECEIVE_TIMEOUT = 5000;
         private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1);
-        private readonly DateTime lastPoll;
+        private DateTime lastPoll;
         private Server lastServer;
 
         public Monitor() => lastPoll = new DateTime(0);
@@ -32,6 +32,7 @@ namespace DayZServerMonitor
                 {
                     if (DateTime.Now.Subtract(lastPoll).TotalMilliseconds > POLLING_INTERVAL)
                     {
+                        lastPoll = DateTime.Now;
                         await Query(form, server);
                     }
                 }
