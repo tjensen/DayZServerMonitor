@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DayZServerMonitorForm));
             this.FormPanel = new System.Windows.Forms.Panel();
             this.FormTable = new System.Windows.Forms.TableLayoutPanel();
             this.ServerLabelPanel = new System.Windows.Forms.Panel();
@@ -63,7 +64,7 @@
             this.FormPanel.Controls.Add(this.FormTable);
             this.FormPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.FormPanel.Location = new System.Drawing.Point(0, 0);
-            this.FormPanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.FormPanel.Margin = new System.Windows.Forms.Padding(4);
             this.FormPanel.Name = "FormPanel";
             this.FormPanel.Size = new System.Drawing.Size(635, 181);
             this.FormPanel.TabIndex = 0;
@@ -83,7 +84,7 @@
             this.FormTable.Controls.Add(this.MaxPlayersValuePanel, 1, 3);
             this.FormTable.Dock = System.Windows.Forms.DockStyle.Fill;
             this.FormTable.Location = new System.Drawing.Point(0, 0);
-            this.FormTable.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.FormTable.Margin = new System.Windows.Forms.Padding(4);
             this.FormTable.Name = "FormTable";
             this.FormTable.RowCount = 4;
             this.FormTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
@@ -98,7 +99,7 @@
             this.ServerLabelPanel.Controls.Add(this.ServerLabel);
             this.ServerLabelPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ServerLabelPanel.Location = new System.Drawing.Point(4, 4);
-            this.ServerLabelPanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ServerLabelPanel.Margin = new System.Windows.Forms.Padding(4);
             this.ServerLabelPanel.Name = "ServerLabelPanel";
             this.ServerLabelPanel.Size = new System.Drawing.Size(144, 37);
             this.ServerLabelPanel.TabIndex = 0;
@@ -120,7 +121,7 @@
             this.ServerValuePanel.Controls.Add(this.ServerValue);
             this.ServerValuePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ServerValuePanel.Location = new System.Drawing.Point(156, 4);
-            this.ServerValuePanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ServerValuePanel.Margin = new System.Windows.Forms.Padding(4);
             this.ServerValuePanel.Name = "ServerValuePanel";
             this.ServerValuePanel.Size = new System.Drawing.Size(475, 37);
             this.ServerValuePanel.TabIndex = 1;
@@ -130,7 +131,7 @@
             this.ServerValue.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ServerValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ServerValue.Location = new System.Drawing.Point(0, 0);
-            this.ServerValue.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ServerValue.Margin = new System.Windows.Forms.Padding(4);
             this.ServerValue.Name = "ServerValue";
             this.ServerValue.ReadOnly = true;
             this.ServerValue.Size = new System.Drawing.Size(475, 30);
@@ -141,7 +142,7 @@
             this.NameLabelPanel.Controls.Add(this.NameLabel);
             this.NameLabelPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.NameLabelPanel.Location = new System.Drawing.Point(4, 49);
-            this.NameLabelPanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.NameLabelPanel.Margin = new System.Windows.Forms.Padding(4);
             this.NameLabelPanel.Name = "NameLabelPanel";
             this.NameLabelPanel.Size = new System.Drawing.Size(144, 37);
             this.NameLabelPanel.TabIndex = 2;
@@ -163,7 +164,7 @@
             this.NameValuePanel.Controls.Add(this.NameValue);
             this.NameValuePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.NameValuePanel.Location = new System.Drawing.Point(156, 49);
-            this.NameValuePanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.NameValuePanel.Margin = new System.Windows.Forms.Padding(4);
             this.NameValuePanel.Name = "NameValuePanel";
             this.NameValuePanel.Size = new System.Drawing.Size(475, 37);
             this.NameValuePanel.TabIndex = 3;
@@ -173,7 +174,7 @@
             this.NameValue.Dock = System.Windows.Forms.DockStyle.Fill;
             this.NameValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.NameValue.Location = new System.Drawing.Point(0, 0);
-            this.NameValue.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.NameValue.Margin = new System.Windows.Forms.Padding(4);
             this.NameValue.Name = "NameValue";
             this.NameValue.ReadOnly = true;
             this.NameValue.Size = new System.Drawing.Size(475, 30);
@@ -184,7 +185,7 @@
             this.PlayersLabelPanel.Controls.Add(this.PlayersLabel);
             this.PlayersLabelPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PlayersLabelPanel.Location = new System.Drawing.Point(4, 94);
-            this.PlayersLabelPanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.PlayersLabelPanel.Margin = new System.Windows.Forms.Padding(4);
             this.PlayersLabelPanel.Name = "PlayersLabelPanel";
             this.PlayersLabelPanel.Size = new System.Drawing.Size(144, 37);
             this.PlayersLabelPanel.TabIndex = 4;
@@ -206,7 +207,7 @@
             this.PlayersValuePanel.Controls.Add(this.PlayersValue);
             this.PlayersValuePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PlayersValuePanel.Location = new System.Drawing.Point(156, 94);
-            this.PlayersValuePanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.PlayersValuePanel.Margin = new System.Windows.Forms.Padding(4);
             this.PlayersValuePanel.Name = "PlayersValuePanel";
             this.PlayersValuePanel.Size = new System.Drawing.Size(475, 37);
             this.PlayersValuePanel.TabIndex = 5;
@@ -217,7 +218,7 @@
             this.PlayersValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.PlayersValue.ForeColor = System.Drawing.SystemColors.WindowText;
             this.PlayersValue.Location = new System.Drawing.Point(0, 0);
-            this.PlayersValue.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.PlayersValue.Margin = new System.Windows.Forms.Padding(4);
             this.PlayersValue.Name = "PlayersValue";
             this.PlayersValue.ReadOnly = true;
             this.PlayersValue.Size = new System.Drawing.Size(475, 30);
@@ -228,7 +229,7 @@
             this.MaxPlayersLabelPanel.Controls.Add(this.MaxPlayersLabel);
             this.MaxPlayersLabelPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MaxPlayersLabelPanel.Location = new System.Drawing.Point(4, 139);
-            this.MaxPlayersLabelPanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.MaxPlayersLabelPanel.Margin = new System.Windows.Forms.Padding(4);
             this.MaxPlayersLabelPanel.Name = "MaxPlayersLabelPanel";
             this.MaxPlayersLabelPanel.Size = new System.Drawing.Size(144, 38);
             this.MaxPlayersLabelPanel.TabIndex = 6;
@@ -250,7 +251,7 @@
             this.MaxPlayersValuePanel.Controls.Add(this.MaxPlayersValue);
             this.MaxPlayersValuePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MaxPlayersValuePanel.Location = new System.Drawing.Point(156, 139);
-            this.MaxPlayersValuePanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.MaxPlayersValuePanel.Margin = new System.Windows.Forms.Padding(4);
             this.MaxPlayersValuePanel.Name = "MaxPlayersValuePanel";
             this.MaxPlayersValuePanel.Size = new System.Drawing.Size(475, 38);
             this.MaxPlayersValuePanel.TabIndex = 7;
@@ -260,7 +261,7 @@
             this.MaxPlayersValue.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MaxPlayersValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MaxPlayersValue.Location = new System.Drawing.Point(0, 0);
-            this.MaxPlayersValue.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.MaxPlayersValue.Margin = new System.Windows.Forms.Padding(4);
             this.MaxPlayersValue.Name = "MaxPlayersValue";
             this.MaxPlayersValue.ReadOnly = true;
             this.MaxPlayersValue.Size = new System.Drawing.Size(475, 30);
@@ -273,12 +274,12 @@
             this.ClientSize = new System.Drawing.Size(635, 181);
             this.Controls.Add(this.FormPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(653, 228);
             this.MinimumSize = new System.Drawing.Size(653, 228);
             this.Name = "DayZServerMonitorForm";
-            this.ShowIcon = false;
             this.Text = "Dayz Server Monitor";
             this.FormPanel.ResumeLayout(false);
             this.FormTable.ResumeLayout(false);
