@@ -1,27 +1,20 @@
 ﻿using DayZServerMonitorCore;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Net.Sockets;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Timer = System.Timers.Timer;
 
 namespace DayZServerMonitor
 {
-    using Server = Tuple<string, int>;
-
     internal class Monitor : IDisposable
     {
         private readonly static double POLLING_INTERVAL = 60000;
         private readonly static int SEND_TIMEOUT = 1000;
         private readonly static int RECEIVE_TIMEOUT = 5000;
-        private readonly static Regex LastMPServerRegex = new Regex("^lastMPServer=\"(?<address>[\\d.]+):(?<port>\\d+)\";");
         private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1);
-        private DateTime lastPoll;
+        private readonly DateTime lastPoll;
         private Server lastServer;
 
         public Monitor() => lastPoll = new DateTime(0);
@@ -31,8 +24,18 @@ namespace DayZServerMonitor
             await semaphore.WaitAsync();
             try
             {
-                Server server = await GetLastServer();
-                if (server != lastServer)
+                Server server = await ProfileParser.GetLastServer(
+                    Path.Combine(
+                        ProfileParser.GetDayZFolder(),
+                        ProfileParser.GetProfileFilename()));
+                if (server.Equals(lastServer))
+                {
+                    if (DateTime.Now.Subtract(lastPoll).TotalMilliseconds > POLLING_INTERVAL)
+                    {
+                        await Query(form, server);
+                    }
+                }
+                else
                 {
                     lastServer = server;
                     if (server is null)
@@ -40,13 +43,6 @@ namespace DayZServerMonitor
                         form.UpdateValues("UNKNOWN");
                     }
                     else
-                    {
-                        await Query(form, server);
-                    }
-                }
-                else
-                {
-                    if (DateTime.Now.Subtract(lastPoll).TotalMilliseconds > POLLING_INTERVAL)
                     {
                         await Query(form, server);
                     }
@@ -60,14 +56,14 @@ namespace DayZServerMonitor
 
         private async Task Query(DayZServerMonitorForm form, Server server)
         {
-            byte[] buffer = await QueryServer.Query(server.Item1, server.Item2 + 24714, SEND_TIMEOUT, RECEIVE_TIMEOUT);
+            byte[] buffer = await QueryServer.Query(server.Host, server.StatsPort, SEND_TIMEOUT, RECEIVE_TIMEOUT);
             if (buffer == null)
             {
-                form.UpdateValues(string.Format("{0}:{1}", server.Item1, server.Item2));
+                form.UpdateValues(server.Address);
                 return;
             }
 
-            ServerInfo info = ServerInfo.Parse(server.Item1, server.Item2, buffer);
+            ServerInfo info = ServerInfo.Parse(server.Host, server.Port, buffer);
             form.UpdateValues(info.Address, info.Name, info.NumPlayers, info.MaxPlayers);
         }
 
@@ -87,9 +83,9 @@ namespace DayZServerMonitor
             {
                 FileSystemWatcher watcher = new FileSystemWatcher
                 {
-                    Path = GetDayZFolder(),
+                    Path = ProfileParser.GetDayZFolder(),
                     NotifyFilter = NotifyFilters.CreationTime | NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
-                    Filter = GetProfileFilename()
+                    Filter = ProfileParser.GetProfileFilename()
                 };
                 watcher.Changed += (s, e) => WatcherHandler(handler);
                 watcher.Created += (s, e) => WatcherHandler(handler);
@@ -116,44 +112,6 @@ namespace DayZServerMonitor
             {
                 Console.WriteLine("Handler raised exception: {0}", error);
             }
-        }
-
-        private string GetDayZFolder()
-        {
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DayZ");
-        }
-
-        private string GetProfileFilename()
-        {
-            return String.Format("{0}_settings.DayZProfile", Environment.UserName);
-        }
-
-        private async Task<Server> GetLastServer()
-        {
-            try
-            {
-                string filename = Path.Combine(GetDayZFolder(), GetProfileFilename());
-                using (StreamReader reader = File.OpenText(filename))
-                {
-                    string line;
-                    while ((line = await reader.ReadLineAsync()) != null)
-                    {
-                        Match results = LastMPServerRegex.Match(line);
-                        if (results.Success)
-                        {
-                            string address = results.Groups["address"].Value;
-                            // For some reason, DayZ writes the server port number shifted 16 bits to the left.
-                            int port = int.Parse(results.Groups["port"].Value) >> 16;
-                            return new Server(address, port);
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Failed to read last played DayZ server: {0}", e);
-            }
-            return null;
         }
 
         #region IDisposable Support
