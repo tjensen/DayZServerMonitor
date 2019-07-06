@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 
 namespace DayZServerMonitorCore
@@ -32,6 +33,16 @@ namespace DayZServerMonitorCore
         public short GetShort()
         {
             return BitConverter.ToInt16(GetBytes(2).ToArray(), 0);
+        }
+
+        public short GetPort()
+        {
+            return IPAddress.NetworkToHostOrder(GetShort());
+        }
+
+        public IPAddress GetIPAddress()
+        {
+            return new IPAddress(GetBytes(4).ToArray());
         }
 
         public string GetString()

@@ -1,5 +1,6 @@
 using DayZServerMonitorCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Net;
 
 namespace TestDayZServerMonitorCore
 {
@@ -75,6 +76,52 @@ namespace TestDayZServerMonitorCore
             parser = new MessageParser(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 });
             _ = parser.GetShort();
             Assert.AreEqual(1027, parser.GetShort());
+        }
+
+        [TestMethod]
+        public void GetPortThrowsExceptionWhenBufferHasLessThanTwoBytes()
+        {
+            parser = new MessageParser(new byte[] { 1 });
+            ParseException e = Assert.ThrowsException<ParseException>(() => parser.GetPort());
+            Assert.AreEqual("Insufficient bytes remaining: 1 < 2", e.Message);
+        }
+
+        [TestMethod]
+        public void GetPortReturnsFirstTwoBytesOfBufferAsNetworkOrderPortNumber()
+        {
+            parser = new MessageParser(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 });
+            Assert.AreEqual(258, parser.GetPort());
+        }
+
+        [TestMethod]
+        public void GetPortRemovesBytesAsTheyAreReturned()
+        {
+            parser = new MessageParser(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 });
+            _ = parser.GetPort();
+            Assert.AreEqual(772, parser.GetPort());
+        }
+
+        [TestMethod]
+        public void GetIPAddressThrowsExceptionWhenBufferHasLessThanFourBytes()
+        {
+            parser = new MessageParser(new byte[] { 1, 2, 3 });
+            ParseException e = Assert.ThrowsException<ParseException>(() => parser.GetIPAddress());
+            Assert.AreEqual("Insufficient bytes remaining: 3 < 4", e.Message);
+        }
+
+        [TestMethod]
+        public void GetIPAddressReturnsFirstFourBytesOfBufferAsNetworkOrderIPAddress()
+        {
+            parser = new MessageParser(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 });
+            Assert.AreEqual(IPAddress.Parse("1.2.3.4"), parser.GetIPAddress());
+        }
+
+        [TestMethod]
+        public void GetIPAddressRemovesBytesAsTheyAreReturned()
+        {
+            parser = new MessageParser(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 });
+            _ = parser.GetIPAddress();
+            Assert.AreEqual(IPAddress.Parse("5.6.7.8"), parser.GetIPAddress());
         }
 
         [TestMethod]
