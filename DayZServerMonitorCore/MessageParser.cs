@@ -4,12 +4,11 @@ using System.Text;
 
 namespace DayZServerMonitorCore
 {
-
-    public class ServerInfoParser
+    public class MessageParser
     {
         private readonly List<byte> buffer;
 
-        public ServerInfoParser(byte[] buffer)
+        public MessageParser(byte[] buffer)
         {
             this.buffer = new List<byte>(buffer);
         }
