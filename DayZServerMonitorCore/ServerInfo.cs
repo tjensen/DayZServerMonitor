@@ -44,6 +44,16 @@ namespace DayZServerMonitorCore
 
             int maxPlayers = parser.GetByte();
 
+            _ = parser.GetBytes(5); // Ignore bots, server type, environment, visibility, and VAC
+            _ = parser.GetString(); // Ignore version
+
+            byte flags = parser.GetByte();
+
+            if ((flags & 0x80) != 0)
+            {
+                port = parser.GetShort();
+            }
+
             return new ServerInfo(
                 string.Format("{0}:{1}", host, port), name, numPlayers, maxPlayers);
         }

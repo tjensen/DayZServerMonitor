@@ -10,9 +10,8 @@ namespace DayZServerMonitor
 {
     internal class Monitor : IDisposable
     {
-        private readonly static double POLLING_INTERVAL = 60000;
-        private readonly static int SEND_TIMEOUT = 1000;
-        private readonly static int RECEIVE_TIMEOUT = 5000;
+        private static readonly double POLLING_INTERVAL = 60000;
+        private static readonly int SERVER_TIMEOUT = 5000;
         private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1);
         private DateTime lastPoll;
         private Server lastServer;
@@ -57,15 +56,16 @@ namespace DayZServerMonitor
 
         private async Task Query(DayZServerMonitorForm form, Server server)
         {
-            byte[] buffer = await QueryServer.Query(server.Host, server.StatsPort, SEND_TIMEOUT, RECEIVE_TIMEOUT);
-            if (buffer == null)
+            ServerInfoQuerier querier = new ServerInfoQuerier(new ClientFactory());
+            ServerInfo info = await querier.Query(server.Host, server.Port, SERVER_TIMEOUT);
+            if (info == null)
             {
                 form.UpdateValues(server.Address);
-                return;
             }
-
-            ServerInfo info = ServerInfo.Parse(server.Host, server.Port, buffer);
-            form.UpdateValues(info.Address, info.Name, info.NumPlayers, info.MaxPlayers);
+            else
+            {
+                form.UpdateValues(info.Address, info.Name, info.NumPlayers, info.MaxPlayers);
+            }
         }
 
         internal Timer CreateTimer(ISynchronizeInvoke synchronizingObject, Action handler)

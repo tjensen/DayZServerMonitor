@@ -52,7 +52,9 @@ namespace TestDayZServerMonitorCore
                     0x65, // Server type
                     0x77, // Environment
                     0x00, // Visibility
-                    0x01 // VAC
+                    0x01, // VAC
+                    0x31, 0x2E, 0x30, 0x00, // Version
+                    0x00 // Extra Data Flag
             });
 
             Assert.AreEqual("192.168.21.12:4321", info.Address);
@@ -62,11 +64,40 @@ namespace TestDayZServerMonitorCore
         }
 
         [TestMethod]
+        public void ParseReturnsServerReportedPortWhenExtraFlagIsSet()
+        {
+            ServerInfo info = ServerInfo.Parse(
+                "192.168.21.12", 4321,
+                new byte[] {
+                    0xFF, 0xFF, 0xFF, 0xFF,  // Response header
+                    0x49, // A2S_INFO header
+                    0x11, // Protocol
+                    0x53, 0x65, 0x72, 0x76, 0x65, 0x72, 0x20, 0x4E, 0x61, 0x6D, 0x65, 0x00, // Name
+                    0x6D, 0x61, 0x70, 0x00, // Map
+                    0x66, 0x6F, 0x6C, 0x64, 0x65, 0x72, 0x00, // Folder
+                    0x67, 0x61, 0x6D, 0x65, 0x00, // Game
+                    0x12, 0x34, // ID
+                    0x2A, // Players
+                    0x3C, // Max Players
+                    0x00, // Bots
+                    0x65, // Server type
+                    0x77, // Environment
+                    0x00, // Visibility
+                    0x01, // VAC
+                    0x31, 0x2E, 0x30, 0x00, // Version
+                    0x80, // Extra Data Flags
+                    0x21, 0x12 // Server Game Port
+            });
+
+            Assert.AreEqual("192.168.21.12:4641", info.Address);
+        }
+
+        [TestMethod]
         public void ParseThrowsParseExceptionWhenPacketHeaderIsWrong()
         {
             ParseException error = Assert.ThrowsException<ParseException>(() =>
             {
-                ServerInfo.Parse(
+                _ = ServerInfo.Parse(
                     "192.168.21.12", 4321,
                     new byte[] {
                         0x12, 0x34, 0x56, 0x78,  // Response header
@@ -83,7 +114,9 @@ namespace TestDayZServerMonitorCore
                         0x65, // Server type
                         0x77, // Environment
                         0x00, // Visibility
-                        0x01 // VAC
+                        0x01, // VAC
+                        0x31, 0x2E, 0x30, 0x00, // Version
+                        0x00 // Extra Data Flag
                     });
             });
             Assert.AreEqual("Invalid Packet Header", error.Message);
@@ -94,7 +127,7 @@ namespace TestDayZServerMonitorCore
         {
             ParseException error = Assert.ThrowsException<ParseException>(() =>
             {
-                ServerInfo.Parse(
+                _ = ServerInfo.Parse(
                     "192.168.21.12", 4321,
                     new byte[] {
                         0xFF, 0xFF, 0xFF, 0xFF,  // Response header
@@ -111,7 +144,9 @@ namespace TestDayZServerMonitorCore
                         0x65, // Server type
                         0x77, // Environment
                         0x00, // Visibility
-                        0x01 // VAC
+                        0x01, // VAC
+                        0x31, 0x2E, 0x30, 0x00, // Version
+                        0x00 // Extra Data Flag
                     });
             });
             Assert.AreEqual("Invalid Info Header", error.Message);
