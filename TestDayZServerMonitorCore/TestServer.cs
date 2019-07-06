@@ -58,6 +58,15 @@ namespace TestDayZServerMonitorCore
         }
 
         [TestMethod]
+        public void ServerCanBeCreatedFromHostAndPort()
+        {
+            Server server = new Server("87.65.43.21", 9876);
+
+            Assert.AreEqual("87.65.43.21", server.Host);
+            Assert.AreEqual(9876, server.Port);
+        }
+
+        [TestMethod]
         public void EqualsReturnsTrueIfHostsAndPortsAreEqual()
         {
             Server server1 = new Server("12.34.56.78:4321");

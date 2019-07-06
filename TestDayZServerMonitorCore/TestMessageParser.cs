@@ -94,6 +94,13 @@ namespace TestDayZServerMonitorCore
         }
 
         [TestMethod]
+        public void GetPortReturnsPortNumberAsUnsignedInteger()
+        {
+            parser = new MessageParser(new byte[] { 0x99, 0xAA });
+            Assert.AreEqual(39338, (int)parser.GetPort());
+        }
+
+        [TestMethod]
         public void GetPortRemovesBytesAsTheyAreReturned()
         {
             parser = new MessageParser(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 });

@@ -56,8 +56,18 @@ namespace DayZServerMonitor
 
         private async Task Query(DayZServerMonitorForm form, Server server)
         {
+            // Do we need to search *all* regions or only the "rest" region?
+            MasterServerQuerier masterQuerier = new MasterServerQuerier(new ClientFactory());
+            Server gameServer = await masterQuerier.FindDayZServerInRegion(
+                server.Host, server.Port, MasterServerQuerier.REGION_REST, SERVER_TIMEOUT);
+            if (gameServer is null)
+            {
+                gameServer = new Server(server.Host, server.StatsPort);
+            }
+
             ServerInfoQuerier querier = new ServerInfoQuerier(new ClientFactory());
-            ServerInfo info = await querier.Query(server.Host, server.Port, SERVER_TIMEOUT);
+            ServerInfo info = await querier.Query(
+                gameServer.Host, gameServer.Port, SERVER_TIMEOUT);
             if (info == null)
             {
                 form.UpdateValues(server.Address);

@@ -36,7 +36,6 @@ namespace TestDayZServerMonitorCore
         public string Host { get; private set; }
         public int Port { get; private set; }
 
-        internal MockClientFactory() { }
         internal MockClientFactory(MockClient client) => Client = client;
 
         public IClient Create(string host, int port)
