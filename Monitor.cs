@@ -78,43 +78,6 @@ namespace DayZServerMonitor
             return timer;
         }
 
-        internal FileSystemWatcher CreateDayZProfileWatcher(ISynchronizeInvoke synchronizingObject, Action handler)
-        {
-            try
-            {
-                FileSystemWatcher watcher = new FileSystemWatcher
-                {
-                    Path = ProfileParser.GetDayZFolder(),
-                    NotifyFilter = NotifyFilters.CreationTime | NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
-                    Filter = ProfileParser.GetProfileFilename()
-                };
-                watcher.Changed += (s, e) => WatcherHandler(handler);
-                watcher.Created += (s, e) => WatcherHandler(handler);
-                watcher.Renamed += (s, e) => WatcherHandler(handler);
-                watcher.Deleted += (s, e) => WatcherHandler(handler);
-                watcher.SynchronizingObject = synchronizingObject;
-                watcher.EnableRaisingEvents = true;
-                return watcher;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Failed to set up file system watcher: {0}", e);
-                return null;
-            }
-        }
-
-        private void WatcherHandler(Action handler)
-        {
-            try
-            {
-                handler();
-            }
-            catch (Exception error)
-            {
-                Console.WriteLine("Handler raised exception: {0}", error);
-            }
-        }
-
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
 

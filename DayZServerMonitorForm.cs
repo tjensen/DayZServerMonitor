@@ -1,6 +1,6 @@
 ﻿
+using DayZServerMonitorCore;
 using System.Drawing;
-using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -8,14 +8,13 @@ namespace DayZServerMonitor
 {
     public partial class DayZServerMonitorForm : Form
     {
-        private System.Timers.Timer timer;
-        private FileSystemWatcher watcher;
         private Monitor monitor;
 
         public DayZServerMonitorForm()
         {
             InitializeComponent();
         }
+
         internal void UpdateValues(string server, string name, string players, string maxPlayers, Color playersColor)
         {
             if (InvokeRequired)
@@ -59,8 +58,9 @@ namespace DayZServerMonitor
         internal void Initialize(Monitor monitor)
         {
             this.monitor = monitor;
-            watcher = monitor.CreateDayZProfileWatcher(this, Poll);
-            timer = monitor.CreateTimer(this, Poll);
+            ProfileWatcher watcher = new ProfileWatcher(
+                ProfileParser.GetDayZFolder(), ProfileParser.GetProfileFilename(), this, Poll);
+            System.Timers.Timer timer = monitor.CreateTimer(this, Poll);
             Poll();
         }
 
