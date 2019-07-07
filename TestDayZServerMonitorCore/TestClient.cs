@@ -11,14 +11,15 @@ namespace TestDayZServerMonitorCore
     public class TestClient
     {
         private MockServer server;
+        private MockClock clock;
         private Client client;
 
         [TestInitialize]
         public void Initialize()
         {
             server = new MockServer();
-
-            client = new Client("127.0.0.1", server.Port);
+            clock = new MockClock();
+            client = new Client("127.0.0.1", server.Port, clock);
         }
 
         [TestCleanup]
@@ -27,6 +28,7 @@ namespace TestDayZServerMonitorCore
             if (server != null)
             {
                 server.Dispose();
+                clock.Dispose();
             }
         }
 
@@ -41,42 +43,29 @@ namespace TestDayZServerMonitorCore
             CollectionAssert.AreEqual(server.Response, response);
             CollectionAssert.AreEqual(new byte[] { 1, 2, 3, 4, 5 }, server.Request);
         }
+
+        [TestMethod]
+        public async Task RequestThrowsTimeoutExceptionIfRequestTakesLongerThanTimeout()
+        {
+            clock.SetDelayCompleted();
+
+            _ = await Assert.ThrowsExceptionAsync<TimeoutException>(
+                async () => await client.Request(new byte[] { 1, 2, 3, 4, 5 }, 100));
+        }
     }
 
     [TestClass]
     public class TestClientFactory
     {
-        private MockServer server;
-        private ClientFactory factory;
-
-        [TestInitialize]
-        public void Initialize()
-        {
-            server = new MockServer();
-
-            factory = new ClientFactory();
-        }
-
-        [TestCleanup]
-        public void Cleanup()
-        {
-            if (server != null)
-            {
-                server.Dispose();
-            }
-        }
-
         [TestMethod]
-        public async Task CreateReturnsAClient()
+        public void CreateReturnsAnIClient()
         {
-            server.Response = new byte[] { 21, 12 };
+            ClientFactory factory = new ClientFactory();
 
-            IClient client = factory.Create("127.0.0.1", server.Port);
-            byte[] response = await client.Request(new byte[] { 1, 2, 3, 4, 5 }, 100);
-
-            Assert.IsTrue(server.RequestCompleted);
-            CollectionAssert.AreEqual(server.Response, response);
-            CollectionAssert.AreEqual(new byte[] { 1, 2, 3, 4, 5 }, server.Request);
+            using (IClient client = factory.Create("127.0.0.1", 2112))
+            {
+                Assert.IsTrue(client is Client);
+            }
         }
     }
 }

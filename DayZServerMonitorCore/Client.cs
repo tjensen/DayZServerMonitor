@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DayZServerMonitorCore
@@ -7,31 +8,44 @@ namespace DayZServerMonitorCore
     public class Client : IClient
     {
         private readonly UdpClient client;
+        private readonly IClock clock;
 
-        public Client(string host, int port) => client = new UdpClient(host, port);
+        public Client(string host, int port, IClock clock)
+        {
+            client = new UdpClient(host, port);
+            this.clock = clock;
+        }
 
         public async Task<byte[]> Request(byte[] request, int timeout)
         {
-            int sendResult = await WithTimeout(
-                client.SendAsync(request, request.Length), timeout);
+            return await WithTimeout<byte[]>(MakeRequest(request), timeout);
+        }
+
+        private async Task<byte[]> MakeRequest(byte[] request)
+        {
+            int sendResult = await client.SendAsync(request, request.Length);
             if (request.Length != sendResult)
             {
                 Console.WriteLine(
                     "Send returned unexpected result: {0} != {1}", sendResult, request.Length);
             }
-            UdpReceiveResult response = await WithTimeout(client.ReceiveAsync(), timeout);
+            UdpReceiveResult response = await client.ReceiveAsync();
             return response.Buffer;
         }
 
-        private static async Task<T> WithTimeout<T>(Task<T> mainTask, int timeoutMilliseconds)
+        private async Task<T> WithTimeout<T>(Task<T> mainTask, int timeout)
         {
-            Task timeoutTask = Task.Delay(timeoutMilliseconds);
-            Task result = await Task.WhenAny(mainTask, timeoutTask);
-            if (result.Equals(mainTask))
+            using (CancellationTokenSource source = new CancellationTokenSource())
             {
-                return mainTask.Result;
+                Task timeoutTask = clock.Delay(timeout, source.Token);
+                Task result = await Task.WhenAny(mainTask, timeoutTask);
+                if (result.Equals(mainTask))
+                {
+                    source.Cancel();
+                    return mainTask.Result;
+                }
+                throw new TimeoutException();
             }
-            throw new TimeoutException();
         }
 
         #region IDisposable Support
@@ -62,7 +76,7 @@ namespace DayZServerMonitorCore
     {
         public IClient Create(string host, int port)
         {
-            return new Client(host, port);
+            return new Client(host, port, new Clock());
         }
     }
 }

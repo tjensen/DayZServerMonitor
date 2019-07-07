@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DayZServerMonitorCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,8 +19,7 @@ namespace DayZServerMonitor
             Application.SetCompatibleTextRenderingDefault(false);
             using (DayZServerMonitorForm form = new DayZServerMonitorForm())
             {
-                Monitor monitor = new Monitor();
-                form.Initialize(monitor);
+                form.Initialize();
                 Application.Run(form);
             }
         }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using DayZServerMonitorCore;
 
@@ -6,48 +8,85 @@ namespace TestDayZServerMonitorCore
 {
     internal class MockClient : IClient
     {
-        public byte[] ServerResponse { get; set; }
-        public Exception ServerError { get; set; }
-        public byte[] ServerRequest { get; private set; }
+        internal byte[] ServerResponse { get; set; }
+        internal Exception ServerError { get; set; }
+        internal byte[] ServerRequest { get; private set; }
+        internal int ServerTimeout { get; private set; }
+        internal Action RequestAction { get; set; }
 
-        public int ServerTimeout { get; private set; }
-
-        public void Dispose() { }
-
-        public async Task<byte[]> Request(byte[] request, int timeout)
+        public Task<byte[]> Request(byte[] request, int timeout)
         {
-            return await Task.Run(() =>
+            RequestAction?.Invoke();
+            ServerRequest = request;
+            ServerTimeout = timeout;
+            if (ServerError != null)
             {
-                ServerRequest = request;
-                ServerTimeout = timeout;
-                if (ServerError != null)
-                {
-                    throw ServerError;
-                }
-                return ServerResponse;
-            });
+                throw ServerError;
+            }
+            return Task.FromResult(ServerResponse);
         }
 
-        public void Reset()
+        internal void Reset()
         {
             ServerRequest = null;
             ServerTimeout = 0;
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                }
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+        #endregion
     }
 
     internal class MockClientFactory : IClientFactory
     {
-        public MockClient Client { get; set; }
-        public string Host { get; private set; }
-        public int Port { get; private set; }
+        private readonly List<MockClient> clients;
 
-        internal MockClientFactory(MockClient client) => Client = client;
+        internal List<Tuple<string, int>> MockCalls { get; private set; }
+
+        internal MockClientFactory()
+        {
+            clients = new List<MockClient>();
+            MockCalls = new List<Tuple<string, int>>();
+        }
+
+        internal MockClientFactory(MockClient client)
+        {
+            clients = new List<MockClient> { client };
+            MockCalls = new List<Tuple<string, int>>();
+        }
 
         public IClient Create(string host, int port)
         {
-            Host = host;
-            Port = port;
-            return Client;
+            MockCalls.Add(new Tuple<string, int>(host, port));
+            MockClient client = clients[0];
+            clients.RemoveAt(0);
+            return client;
+        }
+
+        internal void AddClient(MockClient client)
+        {
+            clients.Add(client);
+        }
+
+        internal void Reset()
+        {
+            MockCalls.Clear();
         }
     }
 }

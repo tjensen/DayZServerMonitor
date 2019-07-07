@@ -31,8 +31,9 @@ namespace TestDayZServerMonitorCore
             Server server = await querier.FindDayZServerInRegion(
                 "12.34.56.78", 12345, MasterServerQuerier.REGION_REST, 100);
 
-            Assert.AreEqual("hl2master.steampowered.com", clientFactory.Host);
-            Assert.AreEqual(27011, clientFactory.Port);
+            Assert.AreEqual(1, clientFactory.MockCalls.Count);
+            Assert.AreEqual("hl2master.steampowered.com", clientFactory.MockCalls[0].Item1);
+            Assert.AreEqual(27011, clientFactory.MockCalls[0].Item2);
             Assert.AreEqual(100, client.ServerTimeout);
             CollectionAssert.AreEqual(
                 new byte[]

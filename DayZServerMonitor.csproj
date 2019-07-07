@@ -70,7 +70,6 @@
     <Compile Include="DayZServerMonitorForm.Designer.cs">
       <DependentUpon>DayZServerMonitorForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Monitor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="DayZServerMonitorForm.resx">

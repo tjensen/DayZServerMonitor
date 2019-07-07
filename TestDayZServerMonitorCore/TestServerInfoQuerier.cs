@@ -42,8 +42,9 @@ namespace TestDayZServerMonitorCore
 
             ServerInfo info = await querier.Query("12.34.56.78", 12345, 100);
 
-            Assert.AreEqual("12.34.56.78", clientFactory.Host);
-            Assert.AreEqual(12345, clientFactory.Port);
+            Assert.AreEqual(1, clientFactory.MockCalls.Count);
+            Assert.AreEqual("12.34.56.78", clientFactory.MockCalls[0].Item1);
+            Assert.AreEqual(12345, clientFactory.MockCalls[0].Item2);
             Assert.AreEqual(100, client.ServerTimeout);
             CollectionAssert.AreEqual(
                 new byte[] {
