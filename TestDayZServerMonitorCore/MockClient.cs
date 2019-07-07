@@ -7,6 +7,7 @@ namespace TestDayZServerMonitorCore
     internal class MockClient : IClient
     {
         public byte[] ServerResponse { get; set; }
+        public Exception ServerError { get; set; }
         public byte[] ServerRequest { get; private set; }
 
         public int ServerTimeout { get; private set; }
@@ -19,6 +20,10 @@ namespace TestDayZServerMonitorCore
             {
                 ServerRequest = request;
                 ServerTimeout = timeout;
+                if (ServerError != null)
+                {
+                    throw ServerError;
+                }
                 return ServerResponse;
             });
         }

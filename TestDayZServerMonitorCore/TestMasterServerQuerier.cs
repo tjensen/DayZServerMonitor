@@ -1,5 +1,6 @@
 ﻿using DayZServerMonitorCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Threading.Tasks;
 
 namespace TestDayZServerMonitorCore
@@ -64,6 +65,7 @@ namespace TestDayZServerMonitorCore
         [TestMethod]
         public async Task FindDayZServerReturnsNullWhenServerTimesOut()
         {
+            client.ServerError = new TimeoutException();
             MasterServerQuerier querier = new MasterServerQuerier(clientFactory);
 
             Assert.IsNull(await querier.FindDayZServerInRegion(

@@ -57,14 +57,5 @@ namespace TestDayZServerMonitorCore
             Assert.AreEqual(42, info.NumPlayers);
             Assert.AreEqual(60, info.MaxPlayers);
         }
-
-        [TestMethod]
-        public async Task QueryReturnsNullWhenServerReturnsInvalidResponse()
-        {
-            client.ServerResponse = new byte[] { 1, 2, 3, 4, 5 };
-            ServerInfoQuerier querier = new ServerInfoQuerier(clientFactory);
-
-            Assert.IsNull(await querier.Query("12.34.56.78", 12345, 100));
-        }
     }
 }

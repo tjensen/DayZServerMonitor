@@ -31,12 +31,6 @@ namespace TestDayZServerMonitorCore
         }
 
         [TestMethod]
-        public async Task RequestReturnsNullOnServerTimeout()
-        {
-            Assert.IsNull(await client.Request(new byte[] { 1, 2, 3, 4, 5 }, 100));
-        }
-
-        [TestMethod]
         public async Task RequestReturnsServerResponseAfterSendingRequestToServer()
         {
             server.Response = new byte[] { 21, 12 };

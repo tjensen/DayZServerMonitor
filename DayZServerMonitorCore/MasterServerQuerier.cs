@@ -22,23 +22,19 @@ namespace DayZServerMonitorCore
         public async Task<Server> FindDayZServerInRegion(
             string host, int port, byte region, int timeout)
         {
-            using (IClient client = factory.Create(MASTER_SERVER_HOST, MASTER_SERVER_PORT))
+            try
             {
-                List<byte> request = new List<byte>(new byte[] { 0x31, region });
-                request.AddRange(Encoding.UTF8.GetBytes("0.0.0.0:0"));
-                request.Add(0);
-                request.AddRange(Encoding.UTF8.GetBytes(@"\game\DayZ\gameaddr\"));
-                request.AddRange(Encoding.UTF8.GetBytes(string.Format("{0}:{1}", host, port)));
-                request.Add(0);
+                using (IClient client = factory.Create(MASTER_SERVER_HOST, MASTER_SERVER_PORT))
+                {
+                    List<byte> request = new List<byte>(new byte[] { 0x31, region });
+                    request.AddRange(Encoding.UTF8.GetBytes("0.0.0.0:0"));
+                    request.Add(0);
+                    request.AddRange(Encoding.UTF8.GetBytes(@"\game\DayZ\gameaddr\"));
+                    request.AddRange(Encoding.UTF8.GetBytes(string.Format("{0}:{1}", host, port)));
+                    request.Add(0);
 
-                byte[] response = await client.Request(request.ToArray(), timeout);
-                if (response is null)
-                {
-                    return null;
-                }
-                MessageParser parser = new MessageParser(response);
-                try
-                {
+                    byte[] response = await client.Request(request.ToArray(), timeout);
+                    MessageParser parser = new MessageParser(response);
                     _ = parser.GetBytes(6);
                     IPAddress ip = parser.GetIPAddress();
                     int queryPort = parser.GetPort();
@@ -48,11 +44,11 @@ namespace DayZServerMonitorCore
                     }
                     return new Server(ip.ToString(), queryPort);
                 }
-                catch (ParseException e)
-                {
-                    Console.WriteLine("Error parsing master server response: {0}", e);
-                    return null;
-                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error querying master server: {0}", e);
+                return null;
             }
         }
     }

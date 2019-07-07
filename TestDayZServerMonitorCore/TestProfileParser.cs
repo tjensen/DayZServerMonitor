@@ -41,17 +41,11 @@ namespace TestDayZServerMonitorCore
         }
 
         [TestMethod]
-        public async Task GetLastServerReturnsNullWhenFileDoesNotContainLastMPServer()
+        public async Task GetLastServerThrowsExceptionWhenFileDoesNotContainLastMPServerAsync()
         {
-            Assert.IsNull(await ProfileParser.GetLastServer(filename));
-        }
-
-        [TestMethod]
-        public async Task GetLastServerReturnsNullWhenUnableToOpenFileForReading()
-        {
-            File.Delete(filename);
-
-            Assert.IsNull(await ProfileParser.GetLastServer(filename));
+            MissingLastMPServer error = await Assert.ThrowsExceptionAsync<MissingLastMPServer>(
+                () => ProfileParser.GetLastServer(filename));
+            Assert.AreEqual("Unable to find last MP server in DayZ profile", error.Message);
         }
 
         [TestMethod]

@@ -1,5 +1,6 @@
 ﻿using DayZServerMonitorCore;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Threading;
@@ -15,15 +16,18 @@ namespace DayZServerMonitor
         private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1);
         private DateTime lastPoll;
         private Server lastServer;
+        private readonly Dictionary<Server, Server> gameServerMapping =
+            new Dictionary<Server, Server>();
 
         public Monitor() => lastPoll = new DateTime(0);
 
         internal async Task Poll(DayZServerMonitorForm form)
         {
+            Server server = null;
             await semaphore.WaitAsync();
             try
             {
-                Server server = await ProfileParser.GetLastServer(
+                server = await ProfileParser.GetLastServer(
                     Path.Combine(
                         ProfileParser.GetDayZFolder(),
                         ProfileParser.GetProfileFilename()));
@@ -38,15 +42,13 @@ namespace DayZServerMonitor
                 else
                 {
                     lastServer = server;
-                    if (server is null)
-                    {
-                        form.UpdateValues("UNKNOWN");
-                    }
-                    else
-                    {
-                        await Query(form, server);
-                    }
+                    await Query(form, server);
                 }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error while polling: {0}", e);
+                form.UpdateValues(server == null ? "UNKNOWN" : server.Address);
             }
             finally
             {
@@ -56,18 +58,23 @@ namespace DayZServerMonitor
 
         private async Task Query(DayZServerMonitorForm form, Server server)
         {
-            // Do we need to search *all* regions or only the "rest" region?
-            MasterServerQuerier masterQuerier = new MasterServerQuerier(new ClientFactory());
-            Server gameServer = await masterQuerier.FindDayZServerInRegion(
-                server.Host, server.Port, MasterServerQuerier.REGION_REST, SERVER_TIMEOUT);
-            if (gameServer is null)
+            if (!gameServerMapping.ContainsKey(server))
             {
-                gameServer = new Server(server.Host, server.StatsPort);
+                // Do we need to search *all* regions or only the "rest" region?
+                MasterServerQuerier masterQuerier = new MasterServerQuerier(new ClientFactory());
+                Server gameServer = await masterQuerier.FindDayZServerInRegion(
+                    server.Host, server.Port, MasterServerQuerier.REGION_REST, SERVER_TIMEOUT);
+                if (gameServer is null)
+                {
+                    gameServer = new Server(server.Host, server.StatsPort);
+                }
+                gameServerMapping.Add(server, gameServer);
             }
 
+            Server queryServer = gameServerMapping[server];
             ServerInfoQuerier querier = new ServerInfoQuerier(new ClientFactory());
             ServerInfo info = await querier.Query(
-                gameServer.Host, gameServer.Port, SERVER_TIMEOUT);
+                queryServer.Host, queryServer.Port, SERVER_TIMEOUT);
             if (info == null)
             {
                 form.UpdateValues(server.Address);

@@ -23,26 +23,19 @@ namespace DayZServerMonitorCore
 
         public static async Task<Server> GetLastServer(string path)
         {
-            try
+            using (StreamReader reader = File.OpenText(path))
             {
-                using (StreamReader reader = File.OpenText(path))
+                string line;
+                while ((line = await reader.ReadLineAsync()) != null)
                 {
-                    string line;
-                    while ((line = await reader.ReadLineAsync()) != null)
+                    Match results = LastMPServerRegex.Match(line);
+                    if (results.Success)
                     {
-                        Match results = LastMPServerRegex.Match(line);
-                        if (results.Success)
-                        {
-                            return new Server(results.Groups["address"].Value);
-                        }
+                        return new Server(results.Groups["address"].Value);
                     }
                 }
+                throw new MissingLastMPServer();
             }
-            catch (Exception error)
-            {
-                Console.WriteLine("Failed to read last played DayZ server: {0}", error);
-            }
-            return null;
         }
     }
 }

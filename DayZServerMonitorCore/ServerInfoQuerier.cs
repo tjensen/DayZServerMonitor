@@ -16,23 +16,15 @@ namespace DayZServerMonitorCore
 
         public async Task<ServerInfo> Query(string host, int port, int timeout)
         {
-            try
+            using (IClient client = clientFactory.Create(host, port))
             {
-                using (IClient client = clientFactory.Create(host, port))
-                {
-                    List<byte> request = new List<byte>(new byte[] { 0xff, 0xff, 0xff, 0xff, 0x54 });
-                    request.AddRange(Encoding.UTF8.GetBytes("Source Engine Query"));
-                    request.Add(0);
+                List<byte> request = new List<byte>(new byte[] { 0xff, 0xff, 0xff, 0xff, 0x54 });
+                request.AddRange(Encoding.UTF8.GetBytes("Source Engine Query"));
+                request.Add(0);
 
-                    byte[] response = await client.Request(request.ToArray(), timeout);
+                byte[] response = await client.Request(request.ToArray(), timeout);
 
-                    return ServerInfo.Parse(host, port, response);
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Error querying server info: {0}", e);
-                return null;
+                return ServerInfo.Parse(host, port, response);
             }
         }
     }

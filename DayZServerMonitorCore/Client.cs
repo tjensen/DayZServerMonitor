@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DayZServerMonitorCore
@@ -14,23 +12,15 @@ namespace DayZServerMonitorCore
 
         public async Task<byte[]> Request(byte[] request, int timeout)
         {
-            try
+            int sendResult = await WithTimeout(
+                client.SendAsync(request, request.Length), timeout);
+            if (request.Length != sendResult)
             {
-                int sendResult = await WithTimeout(
-                    client.SendAsync(request, request.Length), timeout);
-                if (request.Length != sendResult)
-                {
-                    Console.WriteLine(
-                        "Send returned unexpected result: {0} != {1}", sendResult, request.Length);
-                }
-                UdpReceiveResult response = await WithTimeout(client.ReceiveAsync(), timeout);
-                return response.Buffer;
+                Console.WriteLine(
+                    "Send returned unexpected result: {0} != {1}", sendResult, request.Length);
             }
-            catch (Exception e)
-            {
-                Console.WriteLine("Error in client request: {0}", e);
-                return null;
-            }
+            UdpReceiveResult response = await WithTimeout(client.ReceiveAsync(), timeout);
+            return response.Buffer;
         }
 
         private static async Task<T> WithTimeout<T>(Task<T> mainTask, int timeoutMilliseconds)
