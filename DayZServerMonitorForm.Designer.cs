@@ -280,7 +280,7 @@
             this.MaximumSize = new System.Drawing.Size(653, 228);
             this.MinimumSize = new System.Drawing.Size(653, 228);
             this.Name = "DayZServerMonitorForm";
-            this.Text = "Dayz Server Monitor";
+            this.Text = "DayZ Server Monitor";
             this.FormPanel.ResumeLayout(false);
             this.FormTable.ResumeLayout(false);
             this.ServerLabelPanel.ResumeLayout(false);
