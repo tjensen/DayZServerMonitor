@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -19,6 +20,8 @@ namespace DayZServerMonitor
             Application.SetCompatibleTextRenderingDefault(false);
             using (DayZServerMonitorForm form = new DayZServerMonitorForm())
             {
+                form.Text += " v";
+                form.Text += Assembly.GetExecutingAssembly().GetName().Version.ToString();
                 form.Initialize();
                 Application.Run(form);
             }
