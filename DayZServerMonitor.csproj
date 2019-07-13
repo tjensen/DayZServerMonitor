@@ -52,7 +52,7 @@
     <ApplicationIcon>DayZServerMonitor.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>42968ACBB88FA555F404363A218B18071CBECAE4</ManifestCertificateThumbprint>
