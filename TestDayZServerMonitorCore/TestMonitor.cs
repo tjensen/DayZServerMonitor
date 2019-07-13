@@ -232,7 +232,6 @@ namespace TestDayZServerMonitorCore
                 Task<ServerInfo> secondPollTask = monitor.Poll();
 
                 _ = await firstPollTask;
-                Assert.AreEqual(2, clientFactory.MockCalls.Count);
                 _ = await secondPollTask;
                 Assert.AreEqual(3, clientFactory.MockCalls.Count);
             }
