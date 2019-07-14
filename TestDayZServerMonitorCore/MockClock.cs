@@ -17,7 +17,7 @@ namespace TestDayZServerMonitorCore
             CurrentTime = new DateTime(0);
         }
 
-        public DateTime Now()
+        public DateTime UtcNow()
         {
             return CurrentTime;
         }

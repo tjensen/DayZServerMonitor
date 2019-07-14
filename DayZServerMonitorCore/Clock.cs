@@ -7,9 +7,9 @@ namespace DayZServerMonitorCore
 {
     public class Clock : IClock
     {
-        public DateTime Now()
+        public DateTime UtcNow()
         {
-            return DateTime.Now;
+            return DateTime.UtcNow;
         }
 
         public async Task Delay(int milliseconds, CancellationToken cancellationToken)

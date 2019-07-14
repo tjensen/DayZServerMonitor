@@ -34,11 +34,11 @@ namespace DayZServerMonitorCore
             {
                 Server lastServer = await ProfileParser.GetLastServer(profileFilename);
                 if (lastServer.Address == previousPolledServer &&
-                    (clock.Now() - lastPoll).TotalMilliseconds < POLLING_INTERVAL)
+                    (clock.UtcNow() - lastPoll).TotalMilliseconds < POLLING_INTERVAL)
                 {
                     return null;
                 }
-                lastPoll = clock.Now();
+                lastPoll = clock.UtcNow();
                 previousPolledServer = lastServer.Address;
                 Server server = await GetGameServer(lastServer);
                 ServerInfoQuerier querier = new ServerInfoQuerier(clientFactory);

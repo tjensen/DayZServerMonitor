@@ -12,10 +12,10 @@ namespace TestDayZServerMonitorCore
         private readonly Clock clock = new Clock();
 
         [TestMethod]
-        public void NowReturnsTheCurrentDateTime()
+        public void UtcNowReturnsTheCurrentDateTimeAsUTC()
         {
-            DateTime now = clock.Now();
-            DateTime actualNow = DateTime.Now;
+            DateTime now = clock.UtcNow();
+            DateTime actualNow = DateTime.UtcNow;
 
             Assert.IsTrue(actualNow - now < new TimeSpan(0, 0, 0, 0, 100));
         }
@@ -53,13 +53,17 @@ namespace TestDayZServerMonitorCore
         [TestMethod]
         public void CreateIntervalTimerCallsActionOnceForEveryPollingInterval()
         {
+            AutoResetEvent autoResetEvent = new AutoResetEvent(false);
             int count = 0;
-            Action counter = new Action(() => count++);
-            using (IDisposable timer = clock.CreateIntervalTimer(counter, 21, null))
+            Action counter = new Action(() => { if (++count == 4) { _ = autoResetEvent.Set(); } });
+            DateTime start = DateTime.UtcNow;
+            using (IDisposable timer = clock.CreateIntervalTimer(counter, 25, null))
             {
-                Thread.Sleep(100);
+                _ = autoResetEvent.WaitOne(60000);
             }
+            DateTime finish = DateTime.UtcNow;
             Assert.AreEqual(4, count);
+            Assert.AreEqual(100, (finish - start).TotalMilliseconds, 20);
         }
     }
 }
