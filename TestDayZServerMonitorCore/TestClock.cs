@@ -63,7 +63,8 @@ namespace TestDayZServerMonitorCore
             }
             DateTime finish = DateTime.UtcNow;
             Assert.AreEqual(4, count);
-            Assert.IsTrue((finish - start).TotalMilliseconds >= 100);
+            double delta = (finish - start).TotalMilliseconds;
+            Assert.IsTrue(delta >= 100, string.Format("Time delta ({0}) is not greater than or equal to 100", delta));
         }
     }
 }
