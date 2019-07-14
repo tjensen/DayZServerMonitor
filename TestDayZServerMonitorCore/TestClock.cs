@@ -63,7 +63,7 @@ namespace TestDayZServerMonitorCore
             }
             DateTime finish = DateTime.UtcNow;
             Assert.AreEqual(4, count);
-            Assert.AreEqual(100, (finish - start).TotalMilliseconds, 20);
+            Assert.AreEqual(100, (finish - start).TotalMilliseconds, 30);
         }
     }
 }
