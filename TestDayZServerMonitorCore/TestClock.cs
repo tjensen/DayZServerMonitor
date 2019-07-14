@@ -23,15 +23,15 @@ namespace TestDayZServerMonitorCore
         [TestMethod]
         public async Task DelayWaitsForGivenNumberOfMilliseconds()
         {
-            DateTime before = DateTime.Now;
+            DateTime before = DateTime.UtcNow;
             using (CancellationTokenSource source = new CancellationTokenSource())
             {
                 await clock.Delay(100, source.Token);
             }
-            TimeSpan waited = DateTime.Now - before;
+            TimeSpan waited = DateTime.UtcNow - before;
 
             Assert.IsTrue(waited > new TimeSpan(0, 0, 0, 0, 100));
-            Assert.IsTrue(waited < new TimeSpan(0, 0, 0, 0, 125));
+            Assert.IsTrue(waited < new TimeSpan(0, 0, 0, 0, 200));
         }
 
         [TestMethod]
