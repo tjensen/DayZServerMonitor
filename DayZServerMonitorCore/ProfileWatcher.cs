@@ -14,13 +14,20 @@ namespace DayZServerMonitorCore
             string directory, string filename, ISynchronizeInvoke synchronizingObject,
             Action action)
         {
-            watcher = new FileSystemWatcher(directory, filename)
+            try
             {
-                NotifyFilter = NotifyFilters.LastWrite
-            };
-            watcher.Changed += (s, e) => Handler(action);
-            watcher.SynchronizingObject = synchronizingObject;
-            watcher.EnableRaisingEvents = true;
+                watcher = new FileSystemWatcher(directory, filename)
+                {
+                    NotifyFilter = NotifyFilters.LastWrite
+                };
+                watcher.Changed += (s, e) => Handler(action);
+                watcher.SynchronizingObject = synchronizingObject;
+                watcher.EnableRaisingEvents = true;
+            }
+            catch (ArgumentException error)
+            {
+                Console.WriteLine("Failed to set up FileSystemWatcher: {0}", error);
+            }
         }
 
         private void Handler(Action action)
@@ -42,7 +49,7 @@ namespace DayZServerMonitorCore
         {
             if (!disposedValue)
             {
-                if (disposing)
+                if (disposing && watcher != null)
                 {
                     watcher.Dispose();
                 }
