@@ -117,7 +117,6 @@ namespace TestDayZServerMonitorCore
                 serverInfoClient.ServerRequest);
         }
 
-
         [TestMethod]
         public async Task PollDoesNotQueryServerIfAtLeast60SecondsHasNotElapsedSinceTheLastCall()
         {
@@ -235,6 +234,26 @@ namespace TestDayZServerMonitorCore
                 _ = await secondPollTask;
                 Assert.AreEqual(3, clientFactory.MockCalls.Count);
             }
+        }
+
+        [TestMethod]
+        public async Task PollGuessesGameServerPortIfNotListedByMasterServer()
+        {
+            masterServerClient.ServerResponse = new byte[] {
+                0xFF, 0xFF, 0xFF, 0xFF, 0x66, 0x0A, // Header
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00  // End
+            };
+            serverInfoClient.ServerResponse = ServerInfoResponse();
+
+            ServerInfo info = await monitor.Poll();
+
+            Assert.AreEqual("1.2.3.4:30392", info.Address);
+            Assert.AreEqual("SERVER-NAME", info.Name);
+            Assert.AreEqual(23, info.NumPlayers);
+            Assert.AreEqual(42, info.MaxPlayers);
+
+            Assert.AreEqual("1.2.3.4", clientFactory.MockCalls[1].Item1);
+            Assert.AreEqual(30392, clientFactory.MockCalls[1].Item2);
         }
     }
 }
