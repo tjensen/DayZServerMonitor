@@ -132,5 +132,17 @@
   <ItemGroup>
     <Content Include="DayZServerMonitor.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <PublishFile Include="DayZServerMonitor.ico">
+      <Visible>False</Visible>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
+      <FileType>File</FileType>
+    </PublishFile>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
