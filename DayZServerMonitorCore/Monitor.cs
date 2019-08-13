@@ -58,6 +58,10 @@ namespace DayZServerMonitorCore
                 gameServerMapping[server.Address] = await masterQuerier.FindDayZServerInRegion(
                     server.Host, server.Port, MasterServerQuerier.REGION_REST, SERVER_TIMEOUT);
             }
+            if (gameServerMapping[server.Address] == null)
+            {
+                gameServerMapping[server.Address] = new Server(server.Host, server.StatsPort);
+            }
             return gameServerMapping[server.Address];
         }
 
