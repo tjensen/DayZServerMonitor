@@ -47,6 +47,8 @@
             this.MaxPlayersLabel = new System.Windows.Forms.Label();
             this.MaxPlayersValuePanel = new System.Windows.Forms.Panel();
             this.MaxPlayersValue = new System.Windows.Forms.TextBox();
+            this.MonitorStatusStrip = new System.Windows.Forms.StatusStrip();
+            this.MonitorStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.FormPanel.SuspendLayout();
             this.FormTable.SuspendLayout();
             this.ServerLabelPanel.SuspendLayout();
@@ -62,6 +64,7 @@
             // FormPanel
             // 
             this.FormPanel.Controls.Add(this.FormTable);
+            this.FormPanel.Controls.Add(this.MonitorStatusStrip);
             this.FormPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.FormPanel.Location = new System.Drawing.Point(0, 0);
             this.FormPanel.Margin = new System.Windows.Forms.Padding(4);
@@ -267,6 +270,20 @@
             this.MaxPlayersValue.Size = new System.Drawing.Size(475, 30);
             this.MaxPlayersValue.TabIndex = 0;
             // 
+            // MonitorStatusStrip
+            //
+            this.MonitorStatusStrip.Items.Add(this.MonitorStatus);
+            this.MonitorStatusStrip.Location = new System.Drawing.Point(0, 137);
+            this.MonitorStatusStrip.Name = "MonitorStatusStrip";
+            this.MonitorStatusStrip.Size = new System.Drawing.Size(478, 22);
+            this.MonitorStatusStrip.TabIndex = 1;
+            this.MonitorStatusStrip.SizingGrip = false;
+            //
+            // MonitorStatus
+            //
+            this.MonitorStatus.Name = "MonitorStatus";
+            this.MonitorStatus.Text = "";
+            // 
             // DayZServerMonitorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -282,6 +299,7 @@
             this.Name = "DayZServerMonitorForm";
             this.Text = "DayZ Server Monitor";
             this.FormPanel.ResumeLayout(false);
+            this.FormPanel.PerformLayout();
             this.FormTable.ResumeLayout(false);
             this.ServerLabelPanel.ResumeLayout(false);
             this.ServerLabelPanel.PerformLayout();
@@ -323,5 +341,7 @@
         private System.Windows.Forms.Label MaxPlayersLabel;
         private System.Windows.Forms.Panel MaxPlayersValuePanel;
         private System.Windows.Forms.TextBox MaxPlayersValue;
+        private System.Windows.Forms.StatusStrip MonitorStatusStrip;
+        private System.Windows.Forms.ToolStripStatusLabel MonitorStatus;
     }
 }
