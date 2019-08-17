@@ -119,15 +119,15 @@
             // 
             // ServerLabel
             // 
-            this.ServerLabel.AutoSize = true;
             this.ServerLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ServerLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ServerLabel.Location = new System.Drawing.Point(0, 0);
             this.ServerLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.ServerLabel.Name = "ServerLabel";
-            this.ServerLabel.Size = new System.Drawing.Size(71, 20);
+            this.ServerLabel.Size = new System.Drawing.Size(119, 28);
             this.ServerLabel.TabIndex = 0;
             this.ServerLabel.Text = "Address";
+            this.ServerLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // ServerValuePanel
             // 
@@ -162,15 +162,15 @@
             // 
             // NameLabel
             // 
-            this.NameLabel.AutoSize = true;
             this.NameLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.NameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.NameLabel.Location = new System.Drawing.Point(0, 0);
             this.NameLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.NameLabel.Name = "NameLabel";
-            this.NameLabel.Size = new System.Drawing.Size(53, 20);
+            this.NameLabel.Size = new System.Drawing.Size(119, 28);
             this.NameLabel.TabIndex = 0;
             this.NameLabel.Text = "Name";
+            this.NameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // NameValuePanel
             // 
@@ -205,15 +205,15 @@
             // 
             // PlayersLabel
             // 
-            this.PlayersLabel.AutoSize = true;
             this.PlayersLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PlayersLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.PlayersLabel.Location = new System.Drawing.Point(0, 0);
             this.PlayersLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.PlayersLabel.Name = "PlayersLabel";
-            this.PlayersLabel.Size = new System.Drawing.Size(65, 20);
+            this.PlayersLabel.Size = new System.Drawing.Size(119, 28);
             this.PlayersLabel.TabIndex = 0;
             this.PlayersLabel.Text = "Players";
+            this.PlayersLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // PlayersValuePanel
             // 
@@ -249,15 +249,15 @@
             // 
             // MaxPlayersLabel
             // 
-            this.MaxPlayersLabel.AutoSize = true;
             this.MaxPlayersLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MaxPlayersLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MaxPlayersLabel.Location = new System.Drawing.Point(0, 0);
             this.MaxPlayersLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.MaxPlayersLabel.Name = "MaxPlayersLabel";
-            this.MaxPlayersLabel.Size = new System.Drawing.Size(101, 20);
+            this.MaxPlayersLabel.Size = new System.Drawing.Size(119, 29);
             this.MaxPlayersLabel.TabIndex = 0;
             this.MaxPlayersLabel.Text = "Max Players";
+            this.MaxPlayersLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // MaxPlayersValuePanel
             // 
@@ -328,14 +328,14 @@
             // 
             // SelectionLabel
             // 
-            this.SelectionLabel.AutoSize = true;
             this.SelectionLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.SelectionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.SelectionLabel.Location = new System.Drawing.Point(0, 0);
             this.SelectionLabel.Name = "SelectionLabel";
-            this.SelectionLabel.Size = new System.Drawing.Size(58, 20);
+            this.SelectionLabel.Size = new System.Drawing.Size(121, 30);
             this.SelectionLabel.TabIndex = 0;
             this.SelectionLabel.Text = "Server";
+            this.SelectionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // DayZServerMonitorForm
             // 
@@ -355,25 +355,20 @@
             this.FormPanel.PerformLayout();
             this.FormTable.ResumeLayout(false);
             this.ServerLabelPanel.ResumeLayout(false);
-            this.ServerLabelPanel.PerformLayout();
             this.ServerValuePanel.ResumeLayout(false);
             this.ServerValuePanel.PerformLayout();
             this.NameLabelPanel.ResumeLayout(false);
-            this.NameLabelPanel.PerformLayout();
             this.NameValuePanel.ResumeLayout(false);
             this.NameValuePanel.PerformLayout();
             this.PlayersLabelPanel.ResumeLayout(false);
-            this.PlayersLabelPanel.PerformLayout();
             this.PlayersValuePanel.ResumeLayout(false);
             this.PlayersValuePanel.PerformLayout();
             this.MaxPlayersLabelPanel.ResumeLayout(false);
-            this.MaxPlayersLabelPanel.PerformLayout();
             this.MaxPlayersValuePanel.ResumeLayout(false);
             this.MaxPlayersValuePanel.PerformLayout();
             this.MonitorStatusStrip.ResumeLayout(false);
             this.MonitorStatusStrip.PerformLayout();
             this.SelectionLabelPanel.ResumeLayout(false);
-            this.SelectionLabelPanel.PerformLayout();
             this.SelectionComboPanel.ResumeLayout(false);
             this.ResumeLayout(false);
 
