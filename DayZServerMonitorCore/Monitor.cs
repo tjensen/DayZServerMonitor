@@ -13,26 +13,23 @@ namespace DayZServerMonitorCore
         private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1);
         private readonly Dictionary<string, Server> gameServerMapping =
             new Dictionary<string, Server>();
-        private readonly string profileFilename;
         private readonly IClock clock;
         private readonly IClientFactory clientFactory;
         private DateTime lastPoll;
         private string previousPolledServer = null;
 
-        public Monitor(string profileFilename, IClock clock, IClientFactory clientFactory)
+        public Monitor(IClock clock, IClientFactory clientFactory)
         {
-            this.profileFilename = profileFilename;
             this.clock = clock;
             this.clientFactory = clientFactory;
             lastPoll = new DateTime(0);
         }
 
-        public async Task<ServerInfo> Poll()
+        public async Task<ServerInfo> Poll(Server lastServer)
         {
             await semaphore.WaitAsync();
             try
             {
-                Server lastServer = await ProfileParser.GetLastServer(profileFilename);
                 if (lastServer.Address == previousPolledServer &&
                     (clock.UtcNow() - lastPoll).TotalMilliseconds < POLLING_INTERVAL)
                 {

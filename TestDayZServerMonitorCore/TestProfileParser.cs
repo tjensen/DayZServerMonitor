@@ -33,6 +33,14 @@ namespace TestDayZServerMonitorCore
         }
 
         [TestMethod]
+        public void GetExperimentalDayZFolderReturnsExperimentalDayZFolderPath()
+        {
+            Assert.AreEqual(
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\DayZ Exp",
+                ProfileParser.GetExperimentalDayZFolder());
+        }
+
+        [TestMethod]
         public void GetProfileFilenameReturnsDayZProfileFilename()
         {
             Assert.AreEqual(

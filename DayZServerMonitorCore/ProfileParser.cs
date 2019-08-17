@@ -16,6 +16,12 @@ namespace DayZServerMonitorCore
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DayZ");
         }
 
+        public static string GetExperimentalDayZFolder()
+        {
+            return Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DayZ Exp");
+        }
+
         public static string GetProfileFilename()
         {
             return String.Format("{0}_settings.DayZProfile", Environment.UserName);

@@ -13,9 +13,20 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            if (disposing)
             {
-                components.Dispose();
+                if (components != null)
+                {
+                    components.Dispose();
+                }
+                if (watcher != null)
+                {
+                    watcher.Dispose();
+                }
+                if (monitor != null)
+                {
+                    monitor.Dispose();
+                }
             }
             base.Dispose(disposing);
         }
@@ -47,12 +58,12 @@
             this.MaxPlayersLabel = new System.Windows.Forms.Label();
             this.MaxPlayersValuePanel = new System.Windows.Forms.Panel();
             this.MaxPlayersValue = new System.Windows.Forms.TextBox();
-            this.MonitorStatusStrip = new System.Windows.Forms.StatusStrip();
-            this.MonitorStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.SelectionLabelPanel = new System.Windows.Forms.Panel();
+            this.SelectionLabel = new System.Windows.Forms.Label();
             this.SelectionComboPanel = new System.Windows.Forms.Panel();
             this.SelectionCombo = new System.Windows.Forms.ComboBox();
-            this.SelectionLabel = new System.Windows.Forms.Label();
+            this.MonitorStatusStrip = new System.Windows.Forms.StatusStrip();
+            this.MonitorStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.FormPanel.SuspendLayout();
             this.FormTable.SuspendLayout();
             this.ServerLabelPanel.SuspendLayout();
@@ -63,9 +74,9 @@
             this.PlayersValuePanel.SuspendLayout();
             this.MaxPlayersLabelPanel.SuspendLayout();
             this.MaxPlayersValuePanel.SuspendLayout();
-            this.MonitorStatusStrip.SuspendLayout();
             this.SelectionLabelPanel.SuspendLayout();
             this.SelectionComboPanel.SuspendLayout();
+            this.MonitorStatusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // FormPanel
@@ -280,22 +291,6 @@
             this.MaxPlayersValue.Size = new System.Drawing.Size(500, 27);
             this.MaxPlayersValue.TabIndex = 0;
             // 
-            // MonitorStatusStrip
-            // 
-            this.MonitorStatusStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.MonitorStatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MonitorStatus});
-            this.MonitorStatusStrip.Location = new System.Drawing.Point(0, 181);
-            this.MonitorStatusStrip.Name = "MonitorStatusStrip";
-            this.MonitorStatusStrip.Size = new System.Drawing.Size(635, 22);
-            this.MonitorStatusStrip.SizingGrip = false;
-            this.MonitorStatusStrip.TabIndex = 1;
-            // 
-            // MonitorStatus
-            // 
-            this.MonitorStatus.Name = "MonitorStatus";
-            this.MonitorStatus.Size = new System.Drawing.Size(0, 16);
-            // 
             // SelectionLabelPanel
             // 
             this.SelectionLabelPanel.Controls.Add(this.SelectionLabel);
@@ -304,6 +299,17 @@
             this.SelectionLabelPanel.Name = "SelectionLabelPanel";
             this.SelectionLabelPanel.Size = new System.Drawing.Size(121, 30);
             this.SelectionLabelPanel.TabIndex = 8;
+            // 
+            // SelectionLabel
+            // 
+            this.SelectionLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SelectionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SelectionLabel.Location = new System.Drawing.Point(0, 0);
+            this.SelectionLabel.Name = "SelectionLabel";
+            this.SelectionLabel.Size = new System.Drawing.Size(121, 30);
+            this.SelectionLabel.TabIndex = 0;
+            this.SelectionLabel.Text = "Server";
+            this.SelectionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // SelectionComboPanel
             // 
@@ -326,16 +332,21 @@
             this.SelectionCombo.Size = new System.Drawing.Size(500, 28);
             this.SelectionCombo.TabIndex = 0;
             // 
-            // SelectionLabel
+            // MonitorStatusStrip
             // 
-            this.SelectionLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SelectionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SelectionLabel.Location = new System.Drawing.Point(0, 0);
-            this.SelectionLabel.Name = "SelectionLabel";
-            this.SelectionLabel.Size = new System.Drawing.Size(121, 30);
-            this.SelectionLabel.TabIndex = 0;
-            this.SelectionLabel.Text = "Server";
-            this.SelectionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.MonitorStatusStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.MonitorStatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MonitorStatus});
+            this.MonitorStatusStrip.Location = new System.Drawing.Point(0, 181);
+            this.MonitorStatusStrip.Name = "MonitorStatusStrip";
+            this.MonitorStatusStrip.Size = new System.Drawing.Size(635, 22);
+            this.MonitorStatusStrip.SizingGrip = false;
+            this.MonitorStatusStrip.TabIndex = 1;
+            // 
+            // MonitorStatus
+            // 
+            this.MonitorStatus.Name = "MonitorStatus";
+            this.MonitorStatus.Size = new System.Drawing.Size(0, 16);
             // 
             // DayZServerMonitorForm
             // 
@@ -366,10 +377,10 @@
             this.MaxPlayersLabelPanel.ResumeLayout(false);
             this.MaxPlayersValuePanel.ResumeLayout(false);
             this.MaxPlayersValuePanel.PerformLayout();
-            this.MonitorStatusStrip.ResumeLayout(false);
-            this.MonitorStatusStrip.PerformLayout();
             this.SelectionLabelPanel.ResumeLayout(false);
             this.SelectionComboPanel.ResumeLayout(false);
+            this.MonitorStatusStrip.ResumeLayout(false);
+            this.MonitorStatusStrip.PerformLayout();
             this.ResumeLayout(false);
 
         }
