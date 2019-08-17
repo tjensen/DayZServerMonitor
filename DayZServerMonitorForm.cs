@@ -52,7 +52,8 @@ namespace DayZServerMonitor
             {
                 Invoke(new MethodInvoker(delegate { item = (ServerSelectionItem)SelectionCombo.SelectedValue; }));
             }
-            else {
+            else
+            {
                 item = (ServerSelectionItem)SelectionCombo.SelectedValue;
             }
             return await item.GetSource().GetServer();
