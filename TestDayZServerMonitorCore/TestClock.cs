@@ -30,8 +30,8 @@ namespace TestDayZServerMonitorCore
             }
             TimeSpan waited = DateTime.UtcNow - before;
 
-            Assert.IsTrue(waited > new TimeSpan(0, 0, 0, 0, 100));
-            Assert.IsTrue(waited < new TimeSpan(0, 0, 0, 0, 200));
+            Assert.IsTrue(waited >= new TimeSpan(0, 0, 0, 0, 100), $"{waited} should be greater than or equal to 100ms");
+            Assert.IsTrue(waited < new TimeSpan(0, 0, 0, 0, 200), $"{waited} should be less than 200ms");
         }
 
         [TestMethod]
