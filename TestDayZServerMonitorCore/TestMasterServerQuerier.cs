@@ -49,12 +49,8 @@ namespace TestDayZServerMonitorCore
             Assert.AreEqual("135.101.67.33", server.Host);
             Assert.AreEqual(39168, server.Port);
 
-            CollectionAssert.AreEqual(
-                new string[]
-                {
-                    "Finding server 12.34.56.78:12345 in master server list"
-                },
-                logger.StatusTexts);
+            Assert.AreEqual(1, logger.StatusTexts.Count);
+            Assert.AreEqual("Finding server 12.34.56.78:12345 in master server list", logger.StatusTexts[0]);
         }
 
         [TestMethod]
