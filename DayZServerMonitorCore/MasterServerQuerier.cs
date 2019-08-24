@@ -13,10 +13,12 @@ namespace DayZServerMonitorCore
         private readonly static int MASTER_SERVER_PORT = 27011;
 
         private readonly IClientFactory factory;
+        private readonly ILogger logger;
 
-        public MasterServerQuerier(IClientFactory factory)
+        public MasterServerQuerier(IClientFactory factory, ILogger logger)
         {
             this.factory = factory;
+            this.logger = logger;
         }
 
         public async Task<Server> FindDayZServerInRegion(
@@ -24,6 +26,7 @@ namespace DayZServerMonitorCore
         {
             try
             {
+                logger.Status($"Finding server {host}:{port} in master server list");
                 using (IClient client = factory.Create(MASTER_SERVER_HOST, MASTER_SERVER_PORT))
                 {
                     List<byte> request = new List<byte>(new byte[] { 0x31, region });
@@ -47,7 +50,7 @@ namespace DayZServerMonitorCore
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error querying master server: {0}", e);
+                logger.Error("Error querying master server", e);
                 return null;
             }
         }

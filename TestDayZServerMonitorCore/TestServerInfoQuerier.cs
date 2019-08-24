@@ -8,6 +8,7 @@ namespace TestDayZServerMonitorCore
     public class TestServerInfoQuerier
     {
         private readonly MockClient client = new MockClient();
+        private readonly MockLogger logger = new MockLogger();
         private MockClientFactory clientFactory;
 
         [TestInitialize]
@@ -38,7 +39,7 @@ namespace TestDayZServerMonitorCore
                 0x00, // Version
                 0x00 // Extra Data Flag
             };
-            ServerInfoQuerier querier = new ServerInfoQuerier(clientFactory);
+            ServerInfoQuerier querier = new ServerInfoQuerier(clientFactory, logger);
 
             ServerInfo info = await querier.Query("12.34.56.78", 12345, 100);
 
@@ -57,6 +58,26 @@ namespace TestDayZServerMonitorCore
             Assert.AreEqual("Server Name", info.Name);
             Assert.AreEqual(42, info.NumPlayers);
             Assert.AreEqual(60, info.MaxPlayers);
+
+            Assert.AreEqual(2, logger.StatusTexts.Count);
+            Assert.AreEqual("Reading DayZ server status at 12.34.56.78:12345", logger.StatusTexts[0]);
+            Assert.AreEqual("Finished reading DayZ server status at 12.45.56.78:12345", logger.StatusTexts[1]);
+            Assert.AreEqual(0, logger.ErrorTexts.Count);
+        }
+
+        [TestMethod]
+        public async Task QueryReturnsNullOnError()
+        {
+            client.ServerResponse = new byte[] { 0 }; // Bad response
+            ServerInfoQuerier querier = new ServerInfoQuerier(clientFactory, logger);
+
+            Assert.IsNull(await querier.Query("12.34.56.78", 12345, 100));
+
+            Assert.AreEqual(1, logger.StatusTexts.Count);
+            Assert.AreEqual(1, logger.ErrorTexts.Count);
+            Assert.AreEqual("Error reading DayZ server status", logger.ErrorTexts[0]);
+            Assert.AreEqual(1, logger.ErrorExceptions.Count);
+            Assert.IsInstanceOfType(logger.ErrorExceptions[0], typeof(ParseException));
         }
     }
 }

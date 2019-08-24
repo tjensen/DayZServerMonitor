@@ -9,6 +9,7 @@ namespace TestDayZServerMonitorCore
     public class TestMasterServerQuerier
     {
         private readonly MockClient client = new MockClient();
+        private readonly MockLogger logger = new MockLogger();
         private MockClientFactory clientFactory;
 
         [TestInitialize]
@@ -26,7 +27,7 @@ namespace TestDayZServerMonitorCore
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00  // End
             };
 
-            MasterServerQuerier querier = new MasterServerQuerier(clientFactory);
+            MasterServerQuerier querier = new MasterServerQuerier(clientFactory, logger);
 
             Server server = await querier.FindDayZServerInRegion(
                 "12.34.56.78", 12345, MasterServerQuerier.REGION_REST, 100);
@@ -47,6 +48,13 @@ namespace TestDayZServerMonitorCore
 
             Assert.AreEqual("135.101.67.33", server.Host);
             Assert.AreEqual(39168, server.Port);
+
+            CollectionAssert.AreEqual(
+                new string[]
+                {
+                    "Finding server 12.34.56.78:12345 in master server list"
+                },
+                logger.StatusTexts);
         }
 
         [TestMethod]
@@ -57,20 +65,27 @@ namespace TestDayZServerMonitorCore
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00  // End
             };
 
-            MasterServerQuerier querier = new MasterServerQuerier(clientFactory);
+            MasterServerQuerier querier = new MasterServerQuerier(clientFactory, logger);
 
             Assert.IsNull(await querier.FindDayZServerInRegion(
                 "12.34.56.78", 12345, MasterServerQuerier.REGION_REST, 100));
+
+            Assert.AreEqual(1, logger.StatusTexts.Count);
         }
 
         [TestMethod]
         public async Task FindDayZServerReturnsNullWhenServerTimesOut()
         {
             client.ServerError = new TimeoutException();
-            MasterServerQuerier querier = new MasterServerQuerier(clientFactory);
+            MasterServerQuerier querier = new MasterServerQuerier(clientFactory, logger);
 
             Assert.IsNull(await querier.FindDayZServerInRegion(
                 "12.34.56.78", 12345, MasterServerQuerier.REGION_REST, 100));
+
+            Assert.AreEqual(1, logger.ErrorTexts.Count);
+            Assert.AreEqual("Error querying master server", logger.ErrorTexts[0]);
+            Assert.AreEqual(1, logger.ErrorExceptions.Count);
+            Assert.AreSame(client.ServerError, logger.ErrorExceptions[0]);
         }
 
         [TestMethod]
@@ -78,10 +93,15 @@ namespace TestDayZServerMonitorCore
         {
             client.ServerResponse = new byte[] { 1, 2, 3, 4 };
 
-            MasterServerQuerier querier = new MasterServerQuerier(clientFactory);
+            MasterServerQuerier querier = new MasterServerQuerier(clientFactory, logger);
 
             Assert.IsNull(await querier.FindDayZServerInRegion(
                 "12.34.56.78", 12345, MasterServerQuerier.REGION_REST, 100));
+
+            Assert.AreEqual(1, logger.ErrorTexts.Count);
+            Assert.AreEqual("Error querying master server", logger.ErrorTexts[0]);
+            Assert.AreEqual(1, logger.ErrorExceptions.Count);
+            Assert.IsInstanceOfType(logger.ErrorExceptions[0], typeof(ParseException));
         }
     }
 }

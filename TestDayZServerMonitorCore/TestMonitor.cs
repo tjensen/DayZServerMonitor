@@ -26,7 +26,7 @@ namespace TestDayZServerMonitorCore
             serverInfoClient = new MockClient();
             clientFactory = new MockClientFactory(masterServerClient);
             clientFactory.AddClient(serverInfoClient);
-            monitor = new Monitor(clock, clientFactory);
+            monitor = new Monitor(clock, clientFactory, new MockLogger());
         }
 
         [TestCleanup]

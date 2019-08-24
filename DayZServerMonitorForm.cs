@@ -13,6 +13,7 @@ namespace DayZServerMonitor
         private readonly Clock clock = new Clock();
         private readonly ClientFactory clientFactory = new ClientFactory();
         private readonly ArrayList serverItems = new ArrayList();
+        private readonly Logger logger;
         private readonly Monitor monitor;
         private ProfileWatcher watcher = null;
 
@@ -26,11 +27,18 @@ namespace DayZServerMonitor
             SelectionCombo.ValueMember = "Value";
             SelectionCombo.SelectedValueChanged += new EventHandler(ServerSelectionChanged);
 
-            monitor = new Monitor(clock, clientFactory);
+            logger = new Logger(clock, StatusWriter);
+            monitor = new Monitor(clock, clientFactory, logger);
+        }
+
+        private void StatusWriter(string text)
+        {
+            MonitorStatus.Text = text;
         }
 
         private void ServerSelectionChanged(object sender, EventArgs e)
         {
+            UpdateValues("?");
             ServerSelectionItem item = (ServerSelectionItem)SelectionCombo.SelectedValue;
             UpdateServerSource(item.GetSource());
         }
@@ -107,7 +115,12 @@ namespace DayZServerMonitor
 
         private async Task PollAsync()
         {
-            ServerInfo info = await this.monitor.Poll(await GetSelectedServer());
+            Server server = await GetSelectedServer();
+            if (ServerValue.Text != server.Address)
+            {
+                UpdateValues(server.Address);
+            }
+            ServerInfo info = await this.monitor.Poll(server);
             if (info != null)
             {
                 UpdateValues(info.Address, info.Name, info.NumPlayers, info.MaxPlayers);

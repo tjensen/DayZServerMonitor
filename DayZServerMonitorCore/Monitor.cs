@@ -15,13 +15,16 @@ namespace DayZServerMonitorCore
             new Dictionary<string, Server>();
         private readonly IClock clock;
         private readonly IClientFactory clientFactory;
+        private readonly ILogger logger;
         private DateTime lastPoll;
         private string previousPolledServer = null;
 
-        public Monitor(IClock clock, IClientFactory clientFactory)
+        public Monitor(IClock clock, IClientFactory clientFactory, ILogger logger)
         {
             this.clock = clock;
             this.clientFactory = clientFactory;
+            this.logger = logger;
+
             lastPoll = new DateTime(0);
         }
 
@@ -38,7 +41,7 @@ namespace DayZServerMonitorCore
                 lastPoll = clock.UtcNow();
                 previousPolledServer = lastServer.Address;
                 Server server = await GetGameServer(lastServer);
-                ServerInfoQuerier querier = new ServerInfoQuerier(clientFactory);
+                ServerInfoQuerier querier = new ServerInfoQuerier(clientFactory, logger);
                 return await querier.Query(server.Host, server.Port, SERVER_TIMEOUT);
             }
             finally
@@ -51,7 +54,7 @@ namespace DayZServerMonitorCore
         {
             if (!gameServerMapping.ContainsKey(server.Address))
             {
-                MasterServerQuerier masterQuerier = new MasterServerQuerier(clientFactory);
+                MasterServerQuerier masterQuerier = new MasterServerQuerier(clientFactory, logger);
                 gameServerMapping[server.Address] = await masterQuerier.FindDayZServerInRegion(
                     server.Host, server.Port, MasterServerQuerier.REGION_REST, SERVER_TIMEOUT);
             }
