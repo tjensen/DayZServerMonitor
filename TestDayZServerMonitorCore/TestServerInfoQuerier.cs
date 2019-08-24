@@ -61,7 +61,7 @@ namespace TestDayZServerMonitorCore
 
             Assert.AreEqual(2, logger.StatusTexts.Count);
             Assert.AreEqual("Reading DayZ server status at 12.34.56.78:12345", logger.StatusTexts[0]);
-            Assert.AreEqual("Finished reading DayZ server status at 12.45.56.78:12345", logger.StatusTexts[1]);
+            Assert.AreEqual("Finished reading DayZ server status at 12.34.56.78:12345", logger.StatusTexts[1]);
             Assert.AreEqual(0, logger.ErrorTexts.Count);
         }
 
