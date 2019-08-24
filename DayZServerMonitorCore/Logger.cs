@@ -22,7 +22,9 @@ namespace DayZServerMonitorCore
 
         public void Error(string text, Exception exception)
         {
-            Status($"{text}: {exception.Message}");
+            string message = $"{text}: {exception.Message}";
+            Status(message);
+            Console.WriteLine(message);
         }
     }
 }
