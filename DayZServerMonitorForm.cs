@@ -1,8 +1,6 @@
 ﻿using DayZServerMonitorCore;
 using System;
-using System.Collections;
 using System.Drawing;
-using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -10,9 +8,10 @@ namespace DayZServerMonitor
 {
     public partial class DayZServerMonitorForm : Form
     {
+        private static readonly int SAVED_SERVER_INDEX = 2;
+
         private readonly Clock clock = new Clock();
         private readonly ClientFactory clientFactory = new ClientFactory();
-        private readonly ArrayList serverItems = new ArrayList();
         private readonly Logger logger;
         private readonly Monitor monitor;
         private ProfileWatcher watcher = null;
@@ -20,15 +19,15 @@ namespace DayZServerMonitor
         public DayZServerMonitorForm()
         {
             InitializeComponent();
-            serverItems.Add(new ServerSelectionItem(new LatestServerSource("Stable", ProfileParser.GetDayZFolder(), ProfileParser.GetProfileFilename())));
-            serverItems.Add(new ServerSelectionItem(new LatestServerSource("Experimental", ProfileParser.GetExperimentalDayZFolder(), ProfileParser.GetProfileFilename())));
-            SelectionCombo.DataSource = serverItems;
-            SelectionCombo.DisplayMember = "DisplayName";
-            SelectionCombo.ValueMember = "Value";
-            SelectionCombo.SelectedValueChanged += new EventHandler(ServerSelectionChanged);
-
             logger = new Logger(clock, StatusWriter);
             monitor = new Monitor(clock, clientFactory, logger);
+
+            SelectionCombo.Items.Add(new ServerSelectionItem(new LatestServerSource("Stable", ProfileParser.GetDayZFolder(), ProfileParser.GetProfileFilename())));
+            SelectionCombo.Items.Add(new ServerSelectionItem(new LatestServerSource("Experimental", ProfileParser.GetExperimentalDayZFolder(), ProfileParser.GetProfileFilename())));
+            SelectionCombo.DisplayMember = "DisplayName";
+            SelectionCombo.ValueMember = "Value";
+            SelectionCombo.SelectedIndex = 0;
+            SelectionCombo.SelectedValueChanged += new EventHandler(ServerSelectionChanged);
         }
 
         private void StatusWriter(string text)
@@ -38,8 +37,7 @@ namespace DayZServerMonitor
 
         private void ServerSelectionChanged(object sender, EventArgs e)
         {
-            UpdateValues("?");
-            ServerSelectionItem item = (ServerSelectionItem)SelectionCombo.SelectedValue;
+            ServerSelectionItem item = (ServerSelectionItem)SelectionCombo.SelectedItem;
             UpdateServerSource(item.GetSource());
         }
 
@@ -58,11 +56,11 @@ namespace DayZServerMonitor
             ServerSelectionItem item = null;
             if (InvokeRequired)
             {
-                Invoke(new MethodInvoker(delegate { item = (ServerSelectionItem)SelectionCombo.SelectedValue; }));
+                Invoke(new MethodInvoker(delegate { item = (ServerSelectionItem)SelectionCombo.SelectedItem; }));
             }
             else
             {
-                item = (ServerSelectionItem)SelectionCombo.SelectedValue;
+                item = (ServerSelectionItem)SelectionCombo.SelectedItem;
             }
             return await item.GetSource().GetServer();
         }
@@ -113,6 +111,35 @@ namespace DayZServerMonitor
             Poll();
         }
 
+        private void AddServer(Server server, string name)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new MethodInvoker(delegate { AddServer(server, name); }));
+            }
+            else
+            {
+                SelectionCombo.Items.Insert(
+                        SAVED_SERVER_INDEX,
+                        new ServerSelectionItem(new SavedServerSource(server, name)));
+            }
+        }
+
+        private async Task SaveServer(Server server, string name)
+        {
+            for (int index = SAVED_SERVER_INDEX; index < SelectionCombo.Items.Count; index++)
+            {
+                ServerSelectionItem item = (ServerSelectionItem)SelectionCombo.Items[index];
+                SavedServerSource source = (SavedServerSource)item.GetSource();
+                if (server.Equals(await source.GetServer()))
+                {
+                    source.SetServerName(name);
+                    return;
+                }
+            }
+            AddServer(server, name);
+        }
+
         private async Task PollAsync()
         {
             Server server = await GetSelectedServer();
@@ -123,6 +150,7 @@ namespace DayZServerMonitor
             ServerInfo info = await this.monitor.Poll(server);
             if (info != null)
             {
+                await SaveServer(new Server(info.Address), info.Name);
                 UpdateValues(info.Address, info.Name, info.NumPlayers, info.MaxPlayers);
             }
         }
