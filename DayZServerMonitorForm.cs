@@ -1,8 +1,11 @@
 ﻿using DayZServerMonitorCore;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 
 namespace DayZServerMonitor
 {
@@ -133,7 +136,7 @@ namespace DayZServerMonitor
                 SavedServerSource source = (SavedServerSource)item.GetSource();
                 if (server.Equals(await source.GetServer()))
                 {
-                    source.SetServerName(name);
+                    source.ServerName = name;
                     return;
                 }
             }

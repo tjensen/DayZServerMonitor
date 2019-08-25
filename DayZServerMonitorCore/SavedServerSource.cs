@@ -6,20 +6,31 @@ namespace DayZServerMonitorCore
 {
     public class SavedServerSource : IServerSource
     {
-        private readonly Server server;
-        private string name;
+        private Server server;
+
+        public SavedServerSource()
+        {
+        }
 
         public SavedServerSource(Server server)
         {
             this.server = server;
-            name = null;
+            ServerName = null;
         }
 
         public SavedServerSource(Server server, string name)
         {
             this.server = server;
-            this.name = name;
+            ServerName = name;
         }
+
+        public string Address
+        {
+            get => server.Address;
+            set { server = new Server(value); }
+        }
+
+        public string ServerName { get; set; }
 
         public ProfileWatcher CreateWatcher(Action action, ISynchronizeInvoke synchronizingObject)
         {
@@ -28,16 +39,11 @@ namespace DayZServerMonitorCore
 
         public string GetDisplayName()
         {
-            if (name != null)
+            if (ServerName != null)
             {
-                return $"{name} ({server.Address})";
+                return $"{ServerName} ({server.Address})";
             }
             return server.Address;
-        }
-
-        public void SetServerName(string newName)
-        {
-            name = newName;
         }
 
         public Task<Server> GetServer()
