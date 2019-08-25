@@ -11,6 +11,7 @@ namespace TestDayZServerMonitorCore
     [TestClass]
     public class TestLatestServerSource
     {
+        private MockLogger logger = new MockLogger();
         private string filename;
         private LatestServerSource serverSource;
 
@@ -18,7 +19,7 @@ namespace TestDayZServerMonitorCore
         public void Initialize()
         {
             filename = Path.GetTempFileName();
-            serverSource = new LatestServerSource("Stable", Path.GetDirectoryName(filename), Path.GetFileName(filename));
+            serverSource = new LatestServerSource("Stable", Path.GetDirectoryName(filename), Path.GetFileName(filename), logger);
         }
 
         [TestCleanup]
@@ -45,6 +46,17 @@ namespace TestDayZServerMonitorCore
 
             Assert.AreEqual("12.34.56.78", server.Host);
             Assert.AreEqual(12345, server.Port);
+        }
+
+        [TestMethod]
+        public async Task GetServerReturnsNullWhenGettingTheLastPlayedServerFails()
+        {
+            Assert.IsNull(await serverSource.GetServer());
+
+            Assert.AreEqual(1, logger.ErrorTexts.Count);
+            Assert.AreEqual("Failed to determine last played server", logger.ErrorTexts[0]);
+            Assert.AreEqual(1, logger.ErrorExceptions.Count);
+            Assert.IsInstanceOfType(logger.ErrorExceptions[0], typeof(MissingLastMPServer));
         }
 
         [TestMethod]

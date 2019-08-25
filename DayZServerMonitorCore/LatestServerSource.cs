@@ -10,12 +10,14 @@ namespace DayZServerMonitorCore
         private readonly string Modifier;
         private readonly string ProfileDirectory;
         private readonly string ProfileFilename;
+        private readonly ILogger Logger;
 
-        public LatestServerSource(string modifier, string profileDirectory, string profileFilename)
+        public LatestServerSource(string modifier, string profileDirectory, string profileFilename, ILogger logger)
         {
             Modifier = modifier;
             ProfileDirectory = profileDirectory;
             ProfileFilename = profileFilename;
+            Logger = logger;
         }
 
         public ProfileWatcher CreateWatcher(Action action, ISynchronizeInvoke synchronizingObject)
@@ -30,7 +32,15 @@ namespace DayZServerMonitorCore
 
         public async Task<Server> GetServer()
         {
-            return await ProfileParser.GetLastServer(Path.Combine(ProfileDirectory, ProfileFilename));
+            try
+            {
+                return await ProfileParser.GetLastServer(Path.Combine(ProfileDirectory, ProfileFilename));
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Failed to determine last played server", e);
+                return null;
+            }
         }
     }
 }

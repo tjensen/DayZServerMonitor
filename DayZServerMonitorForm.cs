@@ -22,8 +22,8 @@ namespace DayZServerMonitor
             logger = new Logger(clock, StatusWriter);
             monitor = new Monitor(clock, clientFactory, logger);
 
-            SelectionCombo.Items.Add(new ServerSelectionItem(new LatestServerSource("Stable", ProfileParser.GetDayZFolder(), ProfileParser.GetProfileFilename())));
-            SelectionCombo.Items.Add(new ServerSelectionItem(new LatestServerSource("Experimental", ProfileParser.GetExperimentalDayZFolder(), ProfileParser.GetProfileFilename())));
+            SelectionCombo.Items.Add(new ServerSelectionItem(new LatestServerSource("Stable", ProfileParser.GetDayZFolder(), ProfileParser.GetProfileFilename(), logger)));
+            SelectionCombo.Items.Add(new ServerSelectionItem(new LatestServerSource("Experimental", ProfileParser.GetExperimentalDayZFolder(), ProfileParser.GetProfileFilename(), logger)));
             SelectionCombo.DisplayMember = "DisplayName";
             SelectionCombo.ValueMember = "Value";
             SelectionCombo.SelectedIndex = 0;
@@ -143,6 +143,12 @@ namespace DayZServerMonitor
         private async Task PollAsync()
         {
             Server server = await GetSelectedServer();
+            if (server == null)
+            {
+                UpdateValues("?");
+                return;
+            }
+
             if (ServerValue.Text != server.Address)
             {
                 UpdateValues(server.Address);
