@@ -44,3 +44,9 @@ a > div {
 .label {
   margin: 6pt 0;
 }
+
+.github-ribbon {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
