@@ -1,0 +1,46 @@
+body {
+  font-family: 'Open Sans', sans-serif;
+  background: #c0c0ff;
+}
+
+a {
+  text-decoration: none;
+  font-weight: bold;
+}
+
+a > div {
+  color: white;
+  background-color: green;
+  text-transform: uppercase;
+  padding: 10pt 0;
+  border-radius: 20pt;
+  border: solid 1px black;
+}
+
+.title {
+  width: 100%;
+  text-align: center;
+}
+
+.title div {
+  font-size: 10pt;
+  margin: 1em;
+}
+
+.downloads {
+  text-align: center;
+  margin: 1em 0;
+}
+
+.download-container {
+  background-color: #d0d0ff;
+  width: 10em;
+  text-align: center;
+  display: inline-block;
+  margin: 0 1em;
+  padding: 1em;
+}
+
+.label {
+  margin: 6pt 0;
+}
