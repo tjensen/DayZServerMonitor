@@ -10,6 +10,7 @@ namespace DayZServerMonitor
     {
         private static readonly int SAVED_SERVER_INDEX = 2;
 
+        private readonly DynamicIcons dynamicIcons = new DynamicIcons();
         private readonly Clock clock = new Clock();
         private readonly ClientFactory clientFactory = new ClientFactory();
         private readonly Logger logger;
@@ -98,11 +99,13 @@ namespace DayZServerMonitor
                 playersColor = Color.Red;
             }
             UpdateValues(server, name, players.ToString(), maxPlayers.ToString(), playersColor);
+            systemTrayIcon.Icon = dynamicIcons.GetIconForNumber((uint)players);
         }
 
         internal void UpdateValues(string server)
         {
             UpdateValues(server, "", "?", "?", Color.Gray);
+            systemTrayIcon.Icon = dynamicIcons.GetIconForUnknown();
         }
 
         internal void Initialize()
@@ -164,6 +167,11 @@ namespace DayZServerMonitor
         private void Poll()
         {
             _ = Task.Run(async delegate { await PollAsync(); });
+        }
+
+        private void SystemTrayIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            WindowState = FormWindowState.Normal;
         }
     }
 }

@@ -27,6 +27,10 @@
                 {
                     monitor.Dispose();
                 }
+                if (dynamicIcons != null)
+                {
+                    dynamicIcons.Dispose();
+                }
             }
             base.Dispose(disposing);
         }
@@ -39,6 +43,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DayZServerMonitorForm));
             this.FormPanel = new System.Windows.Forms.Panel();
             this.FormTable = new System.Windows.Forms.TableLayoutPanel();
@@ -64,6 +69,7 @@
             this.SelectionCombo = new System.Windows.Forms.ComboBox();
             this.MonitorStatusStrip = new System.Windows.Forms.StatusStrip();
             this.MonitorStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.systemTrayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.FormPanel.SuspendLayout();
             this.FormTable.SuspendLayout();
             this.ServerLabelPanel.SuspendLayout();
@@ -348,6 +354,12 @@
             this.MonitorStatus.Name = "MonitorStatus";
             this.MonitorStatus.Size = new System.Drawing.Size(0, 16);
             // 
+            // systemTrayIcon
+            // 
+            this.systemTrayIcon.Text = "DayZ Server Monitor";
+            this.systemTrayIcon.Visible = true;
+            this.systemTrayIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.SystemTrayIcon_MouseDoubleClick);
+            // 
             // DayZServerMonitorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -411,5 +423,6 @@
         private System.Windows.Forms.Panel SelectionComboPanel;
         private System.Windows.Forms.ComboBox SelectionCombo;
         private System.Windows.Forms.Label SelectionLabel;
+        private System.Windows.Forms.NotifyIcon systemTrayIcon;
     }
 }
