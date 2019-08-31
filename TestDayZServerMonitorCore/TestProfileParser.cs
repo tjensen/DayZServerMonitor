@@ -59,13 +59,11 @@ namespace TestDayZServerMonitorCore
         [TestMethod]
         public async Task GetLastServerReturnsLastMPServerValue()
         {
-            using (FileStream fs = File.OpenWrite(filename))
-            {
-                fs.Write(Encoding.UTF8.GetBytes(
-                    "something=\"some-value\";\n" +
-                    "lastMPServer=\"87.65.43.21:1234\";\n" +
-                    "otherThing=\"other-value\";\n"));
-            }
+            File.WriteAllText(
+                filename,
+                "something=\"some-value\";\n" +
+                "lastMPServer=\"87.65.43.21:1234\";\n" +
+                "otherThing=\"other-value\";\n");
 
             Server server = await ProfileParser.GetLastServer(filename);
 

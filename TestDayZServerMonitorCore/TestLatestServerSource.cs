@@ -37,10 +37,8 @@ namespace TestDayZServerMonitorCore
         [TestMethod]
         public async Task GetServerReturnsMostRecentlyPlayedServer()
         {
-            using (FileStream fs = File.OpenWrite(filename))
-            {
-                fs.Write(Encoding.UTF8.GetBytes("lastMPServer=\"12.34.56.78:12345\";\n"));
-            }
+            File.WriteAllText(
+                filename, "lastMPServer=\"12.34.56.78:12345\";\n");
 
             Server server = await serverSource.GetServer();
 
