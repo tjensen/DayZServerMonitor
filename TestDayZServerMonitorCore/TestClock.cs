@@ -1,6 +1,7 @@
 ﻿using DayZServerMonitorCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,15 +24,20 @@ namespace TestDayZServerMonitorCore
         [TestMethod]
         public async Task DelayWaitsForGivenNumberOfMilliseconds()
         {
-            DateTime before = DateTime.UtcNow;
             using (CancellationTokenSource source = new CancellationTokenSource())
             {
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
                 await clock.Delay(100, source.Token);
-            }
-            TimeSpan waited = DateTime.UtcNow - before;
+                stopwatch.Stop();
 
-            Assert.IsTrue(waited >= new TimeSpan(0, 0, 0, 0, 100), $"{waited} should be greater than or equal to 100ms");
-            Assert.IsTrue(waited < new TimeSpan(0, 0, 0, 0, 200), $"{waited} should be less than 200ms");
+                Assert.IsTrue(
+                    stopwatch.Elapsed >= new TimeSpan(0, 0, 0, 0, 100),
+                    $"{stopwatch.Elapsed} should be greater than or equal to 100ms");
+                Assert.IsTrue(
+                    stopwatch.Elapsed < new TimeSpan(0, 0, 0, 0, 200),
+                    $"{stopwatch.Elapsed} should be less than 200ms");
+            }
         }
 
         [TestMethod]
@@ -39,14 +45,15 @@ namespace TestDayZServerMonitorCore
         {
             using (CancellationTokenSource source = new CancellationTokenSource())
             {
-                DateTime before = DateTime.Now;
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
                 Task task = clock.Delay(100, source.Token);
                 Assert.IsFalse(task.IsCanceled);
                 source.Cancel();
                 Assert.IsTrue(task.IsCanceled);
-                TimeSpan waited = DateTime.Now - before;
+                stopwatch.Stop();
 
-                Assert.IsTrue(waited < new TimeSpan(0, 0, 0, 0, 100));
+                Assert.IsTrue(stopwatch.Elapsed < new TimeSpan(0, 0, 0, 0, 100));
             }
         }
 
@@ -56,15 +63,17 @@ namespace TestDayZServerMonitorCore
             AutoResetEvent autoResetEvent = new AutoResetEvent(false);
             int count = 0;
             Action counter = new Action(() => { if (++count == 4) { _ = autoResetEvent.Set(); } });
-            DateTime start = DateTime.UtcNow;
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
             using (IDisposable timer = clock.CreateIntervalTimer(counter, 25, null))
             {
                 _ = autoResetEvent.WaitOne(60000);
             }
-            DateTime finish = DateTime.UtcNow;
+            stopwatch.Stop();
             Assert.AreEqual(4, count);
-            double delta = (finish - start).TotalMilliseconds;
-            Assert.IsTrue(delta >= 100, string.Format("Time delta ({0}) is not greater than or equal to 100", delta));
+            Assert.IsTrue(
+                stopwatch.Elapsed >= new TimeSpan(0, 0, 0, 0, 100),
+                $"Time delta ({stopwatch.Elapsed}) is not greater than or equal to 100");
         }
     }
 }
