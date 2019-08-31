@@ -9,6 +9,7 @@ namespace DayZServerMonitor
 {
     public partial class DayZServerMonitorForm : Form
     {
+        private readonly ContextMenu contextMenu = new ContextMenu();
         private readonly DynamicIcons dynamicIcons = new DynamicIcons();
         private readonly Clock clock = new Clock();
         private readonly ClientFactory clientFactory = new ClientFactory();
@@ -20,6 +21,10 @@ namespace DayZServerMonitor
         public DayZServerMonitorForm()
         {
             InitializeComponent();
+            components.Add(contextMenu);
+            contextMenu.MenuItems.Add("Add Server...", AddServer_Click);
+            contextMenu.MenuItems.Add("Add Profile...", AddProfile_Click);
+
             logger = new Logger(clock, StatusWriter);
             monitor = new Monitor(clock, clientFactory, logger);
 
@@ -199,7 +204,38 @@ namespace DayZServerMonitor
 
         private void SelectionManage_Click(object sender, EventArgs e)
         {
+            contextMenu.Show(SelectionManage, new Point(0, 0));
+        }
 
+        private void AddServer_Click(object sender, EventArgs e)
+        {
+            using (AddServerDialog dialog = new AddServerDialog())
+            {
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        int index = serverList.SaveServer(new Server(dialog.IPAddress, dialog.Port));
+                        SelectionCombo.SelectedIndex = index;
+                    }
+                    catch (Exception error)
+                    {
+                        logger.Error("Failed to add server", error);
+                    }
+                }
+            }
+        }
+
+        private void AddProfile_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog dialog = new OpenFileDialog())
+            {
+                dialog.Filter = "DayZ Profiles (*.DayZProfile)|*.DayZProfile|All files (*.*)|*.*";
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    Console.WriteLine($"Add profile: {dialog.FileName}");
+                }
+            }
         }
     }
 }
