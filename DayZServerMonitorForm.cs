@@ -66,6 +66,12 @@ namespace DayZServerMonitor
             return await item.GetSource().GetServer();
         }
 
+        private void UpdateSystemTrayIcon(Icon icon, string players)
+        {
+            systemTrayIcon.Icon = icon;
+            systemTrayIcon.Text = $"{Text}\nPlayers: {players}";
+        }
+
         internal void UpdateValues(string server, string name, string players, string maxPlayers, Color playersColor)
         {
             if (InvokeRequired)
@@ -99,13 +105,13 @@ namespace DayZServerMonitor
                 playersColor = Color.Red;
             }
             UpdateValues(server, name, players.ToString(), maxPlayers.ToString(), playersColor);
-            systemTrayIcon.Icon = dynamicIcons.GetIconForNumber((uint)players);
+            UpdateSystemTrayIcon(dynamicIcons.GetIconForNumber((uint)players), $"{players}/{maxPlayers}");
         }
 
         internal void UpdateValues(string server)
         {
             UpdateValues(server, "", "?", "?", Color.Gray);
-            systemTrayIcon.Icon = dynamicIcons.GetIconForUnknown();
+            UpdateSystemTrayIcon(dynamicIcons.GetIconForUnknown(), "?");
         }
 
         internal void Initialize()
