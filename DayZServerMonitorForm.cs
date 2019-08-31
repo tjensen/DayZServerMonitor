@@ -196,5 +196,10 @@ namespace DayZServerMonitor
         {
             WindowState = FormWindowState.Normal;
         }
+
+        private void SelectionManage_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

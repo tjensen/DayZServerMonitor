@@ -65,8 +65,12 @@
             this.MaxPlayersValue = new System.Windows.Forms.TextBox();
             this.SelectionLabelPanel = new System.Windows.Forms.Panel();
             this.SelectionLabel = new System.Windows.Forms.Label();
+            this.SelectionPanel = new System.Windows.Forms.Panel();
+            this.SelectionTable = new System.Windows.Forms.TableLayoutPanel();
             this.SelectionComboPanel = new System.Windows.Forms.Panel();
             this.SelectionCombo = new System.Windows.Forms.ComboBox();
+            this.SelectionManagePanel = new System.Windows.Forms.Panel();
+            this.SelectionManage = new System.Windows.Forms.Button();
             this.MonitorStatusStrip = new System.Windows.Forms.StatusStrip();
             this.MonitorStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.systemTrayIcon = new System.Windows.Forms.NotifyIcon(this.components);
@@ -81,7 +85,10 @@
             this.MaxPlayersLabelPanel.SuspendLayout();
             this.MaxPlayersValuePanel.SuspendLayout();
             this.SelectionLabelPanel.SuspendLayout();
+            this.SelectionPanel.SuspendLayout();
+            this.SelectionTable.SuspendLayout();
             this.SelectionComboPanel.SuspendLayout();
+            this.SelectionManagePanel.SuspendLayout();
             this.MonitorStatusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -110,7 +117,7 @@
             this.FormTable.Controls.Add(this.MaxPlayersLabelPanel, 0, 4);
             this.FormTable.Controls.Add(this.MaxPlayersValuePanel, 1, 4);
             this.FormTable.Controls.Add(this.SelectionLabelPanel, 0, 0);
-            this.FormTable.Controls.Add(this.SelectionComboPanel, 1, 0);
+            this.FormTable.Controls.Add(this.SelectionPanel, 1, 0);
             this.FormTable.Dock = System.Windows.Forms.DockStyle.Fill;
             this.FormTable.Location = new System.Drawing.Point(0, 0);
             this.FormTable.Margin = new System.Windows.Forms.Padding(4);
@@ -317,15 +324,40 @@
             this.SelectionLabel.Text = "Server";
             this.SelectionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // SelectionPanel
+            // 
+            this.SelectionPanel.Controls.Add(this.SelectionTable);
+            this.SelectionPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SelectionPanel.Location = new System.Drawing.Point(130, 3);
+            this.SelectionPanel.Name = "SelectionPanel";
+            this.SelectionPanel.Padding = new System.Windows.Forms.Padding(1, 0, 0, 0);
+            this.SelectionPanel.Size = new System.Drawing.Size(502, 30);
+            this.SelectionPanel.TabIndex = 9;
+            // 
+            // SelectionTable
+            // 
+            this.SelectionTable.ColumnCount = 2;
+            this.SelectionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 90F));
+            this.SelectionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10F));
+            this.SelectionTable.Controls.Add(this.SelectionComboPanel, 0, 0);
+            this.SelectionTable.Controls.Add(this.SelectionManagePanel, 1, 0);
+            this.SelectionTable.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SelectionTable.Location = new System.Drawing.Point(1, 0);
+            this.SelectionTable.Name = "SelectionTable";
+            this.SelectionTable.RowCount = 1;
+            this.SelectionTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.SelectionTable.Size = new System.Drawing.Size(501, 30);
+            this.SelectionTable.TabIndex = 1;
+            // 
             // SelectionComboPanel
             // 
             this.SelectionComboPanel.Controls.Add(this.SelectionCombo);
             this.SelectionComboPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SelectionComboPanel.Location = new System.Drawing.Point(130, 3);
+            this.SelectionComboPanel.Location = new System.Drawing.Point(0, 0);
+            this.SelectionComboPanel.Margin = new System.Windows.Forms.Padding(0);
             this.SelectionComboPanel.Name = "SelectionComboPanel";
-            this.SelectionComboPanel.Padding = new System.Windows.Forms.Padding(1, 0, 1, 0);
-            this.SelectionComboPanel.Size = new System.Drawing.Size(502, 30);
-            this.SelectionComboPanel.TabIndex = 9;
+            this.SelectionComboPanel.Size = new System.Drawing.Size(450, 30);
+            this.SelectionComboPanel.TabIndex = 0;
             // 
             // SelectionCombo
             // 
@@ -333,10 +365,34 @@
             this.SelectionCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.SelectionCombo.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.SelectionCombo.FormattingEnabled = true;
-            this.SelectionCombo.Location = new System.Drawing.Point(1, 0);
+            this.SelectionCombo.Location = new System.Drawing.Point(0, 0);
+            this.SelectionCombo.Margin = new System.Windows.Forms.Padding(0);
             this.SelectionCombo.Name = "SelectionCombo";
-            this.SelectionCombo.Size = new System.Drawing.Size(500, 28);
-            this.SelectionCombo.TabIndex = 0;
+            this.SelectionCombo.Size = new System.Drawing.Size(450, 28);
+            this.SelectionCombo.TabIndex = 1;
+            // 
+            // SelectionManagePanel
+            // 
+            this.SelectionManagePanel.Controls.Add(this.SelectionManage);
+            this.SelectionManagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SelectionManagePanel.Location = new System.Drawing.Point(453, 0);
+            this.SelectionManagePanel.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.SelectionManagePanel.Name = "SelectionManagePanel";
+            this.SelectionManagePanel.Size = new System.Drawing.Size(45, 30);
+            this.SelectionManagePanel.TabIndex = 1;
+            // 
+            // SelectionManage
+            // 
+            this.SelectionManage.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SelectionManage.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SelectionManage.Location = new System.Drawing.Point(0, 0);
+            this.SelectionManage.Margin = new System.Windows.Forms.Padding(0);
+            this.SelectionManage.Name = "SelectionManage";
+            this.SelectionManage.Size = new System.Drawing.Size(45, 30);
+            this.SelectionManage.TabIndex = 0;
+            this.SelectionManage.Text = "≡";
+            this.SelectionManage.UseVisualStyleBackColor = true;
+            this.SelectionManage.Click += new System.EventHandler(this.SelectionManage_Click);
             // 
             // MonitorStatusStrip
             // 
@@ -390,7 +446,10 @@
             this.MaxPlayersValuePanel.ResumeLayout(false);
             this.MaxPlayersValuePanel.PerformLayout();
             this.SelectionLabelPanel.ResumeLayout(false);
+            this.SelectionPanel.ResumeLayout(false);
+            this.SelectionTable.ResumeLayout(false);
             this.SelectionComboPanel.ResumeLayout(false);
+            this.SelectionManagePanel.ResumeLayout(false);
             this.MonitorStatusStrip.ResumeLayout(false);
             this.MonitorStatusStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -420,9 +479,13 @@
         private System.Windows.Forms.StatusStrip MonitorStatusStrip;
         private System.Windows.Forms.ToolStripStatusLabel MonitorStatus;
         private System.Windows.Forms.Panel SelectionLabelPanel;
-        private System.Windows.Forms.Panel SelectionComboPanel;
-        private System.Windows.Forms.ComboBox SelectionCombo;
+        private System.Windows.Forms.Panel SelectionPanel;
         private System.Windows.Forms.Label SelectionLabel;
         private System.Windows.Forms.NotifyIcon systemTrayIcon;
+        private System.Windows.Forms.TableLayoutPanel SelectionTable;
+        private System.Windows.Forms.Panel SelectionComboPanel;
+        private System.Windows.Forms.ComboBox SelectionCombo;
+        private System.Windows.Forms.Panel SelectionManagePanel;
+        private System.Windows.Forms.Button SelectionManage;
     }
 }
