@@ -109,13 +109,13 @@ namespace TestDayZServerMonitorCore
         }
 
         [TestMethod]
-        public void SaveProfileAddsLatestServerSourceForGivenFilenameAndSetSelectedIndex()
+        public void SaveProfileAddsLatestServerSourceForGivenFilenameAndDoesNotChangeSelectedIndex()
         {
             comboBox.SelectedIndex = 1;
 
             int index = list.SaveProfile(@"X:\path\to\some.DayZProfile");
 
-            Assert.AreEqual(2, comboBox.SelectedIndex);
+            Assert.AreEqual(1, comboBox.SelectedIndex);
 
             Assert.AreEqual(3, list.Count);
             Assert.AreEqual(@"Most Recent (X:\path\to\some.DayZProfile)", list[2].DisplayName);
@@ -130,7 +130,11 @@ namespace TestDayZServerMonitorCore
             list.SaveServer(new Server("1.2.3.4", 5678), "SAVED FIRST");
             list.SaveServer(new Server("5.6.7.8", 4321), "SAVED SECOND");
             list.SaveProfile(@"X:\path\to\some.DayZProfile");
+            comboBox.SelectedIndex = 3;
+
             list.SaveServer(new Server("1.2.3.4", 5678), "UPDATED NAME");
+
+            Assert.AreEqual(4, comboBox.SelectedIndex);
 
             Assert.AreEqual(5, list.Count);
             Assert.AreEqual("UPDATED NAME (1.2.3.4:5678)", list[2].DisplayName);
@@ -139,7 +143,7 @@ namespace TestDayZServerMonitorCore
         }
 
         [TestMethod]
-        public void SaveServerUpdatesSelectedIndexWhenReplacingSelectedServer()
+        public void SaveServerUpdatesSelectedIndexWhenReplacingSelectedItem()
         {
             list.SaveServer(new Server("1.2.3.4", 5678), "SAVED FIRST");
             list.SaveServer(new Server("5.6.7.8", 4321), "SAVED SECOND");
@@ -179,10 +183,11 @@ namespace TestDayZServerMonitorCore
         {
             list.SaveProfile(@"X:\path\to\some.DayZProfile");
             list.SaveProfile(@"Z:\path\to\some\other.DayZProfile");
+            comboBox.SelectedIndex = 2;
 
             int index = list.SaveProfile(@"X:\path\to\some.DayZProfile");
 
-            Assert.AreEqual(2, comboBox.SelectedIndex);
+            Assert.AreEqual(3, comboBox.SelectedIndex);
 
             Assert.AreEqual(4, list.Count);
             Assert.AreEqual(@"Most Recent (X:\path\to\some.DayZProfile)", list[2].DisplayName);
@@ -194,16 +199,28 @@ namespace TestDayZServerMonitorCore
         }
 
         [TestMethod]
-        public void PromoteMovesItemToTheTopOfTheListAndDoesNotChangeTheSelectedIndex()
+        public void SaveProfileUpdatesSelectedIndexWhenReplacingSelectedItem()
+        {
+            list.SaveProfile(@"X:\path\to\some.DayZProfile");
+            list.SaveProfile(@"Z:\path\to\some\other.DayZProfile");
+            comboBox.SelectedIndex = 3;
+
+            int index = list.SaveProfile(@"X:\path\to\some.DayZProfile");
+
+            Assert.AreEqual(2, comboBox.SelectedIndex);
+        }
+
+        [TestMethod]
+        public void PromoteMovesItemToTheTopOfTheListAndDoesNotChangeTheSelectedItem()
         {
             list.SaveServer(new Server("1.2.3.4", 5678), "SAVED FIRST");
             list.SaveProfile(@"X:\path\to\some.DayZProfile");
             list.SaveServer(new Server("5.6.7.8", 4321), "SAVED SECOND");
-            comboBox.SelectedIndex = 1;
+            comboBox.SelectedIndex = 2;
 
             int index = list.Promote(3);
 
-            Assert.AreEqual(1, comboBox.SelectedIndex);
+            Assert.AreEqual(3, comboBox.SelectedIndex);
 
             Assert.AreEqual(5, list.Count);
             Assert.AreEqual("Most Recent (Stable)", list[0].DisplayName);

@@ -55,6 +55,7 @@ namespace DayZServerMonitorCore
         public int SaveServer(Server server, string name)
         {
             int savedIndex = comboBox.SelectedIndex;
+            object savedItem = comboBox.SelectedItem;
             comboBox.SelectedIndex = -1;
             int removedIndex = RemoveServer(server);
             Insert(SAVED_SERVER_INDEX, new SavedServerSource(server, name));
@@ -64,17 +65,26 @@ namespace DayZServerMonitorCore
             }
             else
             {
-                comboBox.SelectedIndex = savedIndex;
+                comboBox.SelectedItem = savedItem;
             }
             return SAVED_SERVER_INDEX;
         }
 
         public int SaveProfile(string filename)
         {
+            int savedIndex = comboBox.SelectedIndex;
+            object savedItem = comboBox.SelectedItem;
             comboBox.SelectedIndex = -1;
-            RemoveProfile(filename);
+            int removedIndex = RemoveProfile(filename);
             Insert(SAVED_SERVER_INDEX, new LatestServerSource(filename, Path.GetDirectoryName(filename), Path.GetFileName(filename)));
-            comboBox.SelectedIndex = SAVED_SERVER_INDEX;
+            if (removedIndex == savedIndex)
+            {
+                comboBox.SelectedIndex = SAVED_SERVER_INDEX;
+            }
+            else
+            {
+                comboBox.SelectedItem = savedItem;
+            }
             return SAVED_SERVER_INDEX;
         }
 
@@ -83,6 +93,7 @@ namespace DayZServerMonitorCore
             if (index > SAVED_SERVER_INDEX)
             {
                 int savedIndex = comboBox.SelectedIndex;
+                object savedItem = comboBox.SelectedItem;
                 comboBox.SelectedIndex = -1;
                 ServerSelectionItem item = this[index];
                 comboBox.Items.RemoveAt(index);
@@ -93,7 +104,7 @@ namespace DayZServerMonitorCore
                 }
                 else
                 {
-                    comboBox.SelectedIndex = savedIndex;
+                    comboBox.SelectedItem = savedItem;
                 }
             }
             return SAVED_SERVER_INDEX;
