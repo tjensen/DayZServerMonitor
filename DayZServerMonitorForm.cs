@@ -70,7 +70,7 @@ namespace DayZServerMonitor
             {
                 item = serverList[SelectionCombo.SelectedIndex];
             }
-            return await item.GetSource().GetServer();
+            return await item.GetSource().GetServer(logger);
         }
 
         private void UpdateSystemTrayIcon(Icon icon, string players)
@@ -230,10 +230,11 @@ namespace DayZServerMonitor
         {
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
-                dialog.Filter = "DayZ Profiles (*.DayZProfile)|*.DayZProfile|All files (*.*)|*.*";
+                dialog.Filter = "DayZ Profiles (*_settings.DayZProfile)|*_settings.DayZProfile|All files (*.*)|*.*";
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    Console.WriteLine($"Add profile: {dialog.FileName}");
+                    int index = serverList.SaveProfile(dialog.FileName);
+                    SelectionCombo.SelectedIndex = index;
                 }
             }
         }

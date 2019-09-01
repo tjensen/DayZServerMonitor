@@ -2,7 +2,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,7 +18,7 @@ namespace TestDayZServerMonitorCore
         public void Initialize()
         {
             filename = Path.GetTempFileName();
-            serverSource = new LatestServerSource("Stable", Path.GetDirectoryName(filename), Path.GetFileName(filename), logger);
+            serverSource = new LatestServerSource("Stable", Path.GetDirectoryName(filename), Path.GetFileName(filename));
         }
 
         [TestCleanup]
@@ -29,9 +28,27 @@ namespace TestDayZServerMonitorCore
         }
 
         [TestMethod]
+        public void ModifierContainsTheModifier()
+        {
+            Assert.AreEqual("Stable", serverSource.Modifier);
+        }
+
+        [TestMethod]
         public void GetDisplayNameReturnsDisplayName()
         {
             Assert.AreEqual("Most Recent (Stable)", serverSource.GetDisplayName());
+        }
+
+        [TestMethod]
+        public void ProfileDirectoryContainsTheProfileDirectory()
+        {
+            Assert.AreEqual(Path.GetDirectoryName(filename), serverSource.ProfileDirectory);
+        }
+
+        [TestMethod]
+        public void ProfileFilenameContainsTheProfileFilename()
+        {
+            Assert.AreEqual(Path.GetFileName(filename), serverSource.ProfileFilename);
         }
 
         [TestMethod]
@@ -40,7 +57,7 @@ namespace TestDayZServerMonitorCore
             File.WriteAllText(
                 filename, "lastMPServer=\"12.34.56.78:12345\";\n");
 
-            Server server = await serverSource.GetServer();
+            Server server = await serverSource.GetServer(logger);
 
             Assert.AreEqual("12.34.56.78", server.Host);
             Assert.AreEqual(12345, server.Port);
@@ -49,7 +66,7 @@ namespace TestDayZServerMonitorCore
         [TestMethod]
         public async Task GetServerReturnsNullWhenGettingTheLastPlayedServerFails()
         {
-            Assert.IsNull(await serverSource.GetServer());
+            Assert.IsNull(await serverSource.GetServer(logger));
 
             Assert.AreEqual(1, logger.ErrorTexts.Count);
             Assert.AreEqual("Failed to determine last played server", logger.ErrorTexts[0]);
@@ -72,6 +89,28 @@ namespace TestDayZServerMonitorCore
                     Assert.IsTrue(actionCalled.WaitOne(50, false));
                 }
             }
+        }
+
+        [TestMethod]
+        public void SaveReturnsASavedSource()
+        {
+            LatestServerSource source = new LatestServerSource("whatever", @"X:\path\to", "filename.DayZProfile");
+            SavedSource savedSource = source.Save();
+
+            Assert.AreEqual(@"X:\path\to\filename.DayZProfile", savedSource.Filename);
+            Assert.IsNull(savedSource.Address);
+            Assert.IsNull(savedSource.Name);
+        }
+
+        [TestMethod]
+        public void CanBeConstructedFromASavedSource()
+        {
+            SavedSource savedSource = new SavedSource();
+            savedSource.Filename = @"X:\path\to\some.DayZProfile";
+            LatestServerSource source = new LatestServerSource(savedSource);
+
+            Assert.AreEqual(@"X:\path\to", source.ProfileDirectory);
+            Assert.AreEqual("some.DayZProfile", source.ProfileFilename);
         }
     }
 }

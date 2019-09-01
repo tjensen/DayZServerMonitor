@@ -8,8 +8,10 @@ namespace DayZServerMonitorCore
     {
         private Server server;
 
-        public SavedServerSource()
+        public SavedServerSource(SavedSource source)
         {
+            server = new Server(source.Address);
+            ServerName = source.Name;
         }
 
         public SavedServerSource(Server server)
@@ -46,9 +48,17 @@ namespace DayZServerMonitorCore
             return server.Address;
         }
 
-        public Task<Server> GetServer()
+        public Task<Server> GetServer(ILogger logger)
         {
             return Task.FromResult(server);
+        }
+
+        public SavedSource Save()
+        {
+            SavedSource result = new SavedSource();
+            result.Address = Address;
+            result.Name = ServerName;
+            return result;
         }
     }
 }

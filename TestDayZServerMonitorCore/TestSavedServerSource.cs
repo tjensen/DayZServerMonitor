@@ -1,8 +1,5 @@
 ﻿using DayZServerMonitorCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace TestDayZServerMonitorCore
@@ -10,6 +7,8 @@ namespace TestDayZServerMonitorCore
     [TestClass]
     public class TestSavedServerSource
     {
+        private readonly MockLogger logger = new MockLogger();
+
         [TestMethod]
         public void GetDisplayNameReturnsServerAddressWhenServerNameIsUnknown()
         {
@@ -32,15 +31,7 @@ namespace TestDayZServerMonitorCore
             Server server = new Server("1.2.3.4", 5678);
             SavedServerSource serverSource = new SavedServerSource(server);
 
-            Assert.AreSame(server, await serverSource.GetServer());
-        }
-
-        [TestMethod]
-        public async Task GetServerReturnsNullIfConstructedWithoutParameters()
-        {
-            SavedServerSource serverSource = new SavedServerSource();
-
-            Assert.IsNull(await serverSource.GetServer());
+            Assert.AreSame(server, await serverSource.GetServer(logger));
         }
 
         [TestMethod]
@@ -85,6 +76,28 @@ namespace TestDayZServerMonitorCore
             serverSource.ServerName = "NEW NAME";
 
             Assert.AreEqual("NEW NAME", serverSource.ServerName);
+        }
+
+        [TestMethod]
+        public void SaveReturnsASavedSource()
+        {
+            SavedServerSource serverSource = new SavedServerSource(new Server("1.2.3.4", 5678), "SERVER NAME");
+
+            SavedSource savedSource = serverSource.Save();
+            Assert.AreEqual("1.2.3.4:5678", savedSource.Address);
+            Assert.AreEqual("SERVER NAME", savedSource.Name);
+            Assert.IsNull(savedSource.Filename);
+        }
+
+        public void CanBeConstructedFromASavedSource()
+        {
+            SavedSource savedSource = new SavedSource();
+            savedSource.Address = "1.2.3.4:5678";
+            savedSource.Name = "SERVER NAME";
+            SavedServerSource source = new SavedServerSource(savedSource);
+
+            Assert.AreEqual("1.2.3.4:5678", source.Address);
+            Assert.AreEqual("SERVER NAME", source.ServerName);
         }
     }
 }

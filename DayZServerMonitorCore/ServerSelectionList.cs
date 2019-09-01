@@ -9,18 +9,20 @@ namespace DayZServerMonitorCore
     {
         public class SavedServers
         {
-            public List<SavedServerSource> Servers = new List<SavedServerSource>();
+            public List<SavedSource> Servers = new List<SavedSource>();
         }
 
         private static readonly int SAVED_SERVER_INDEX = 2;
 
         private ComboBox comboBox;
+        private ILogger logger;
 
         public ServerSelectionList(ComboBox comboBox, ILogger logger)
         {
             this.comboBox = comboBox;
-            Insert(0, new LatestServerSource("Stable", ProfileParser.GetDayZFolder(), ProfileParser.GetProfileFilename(), logger));
-            Insert(1, new LatestServerSource("Experimental", ProfileParser.GetExperimentalDayZFolder(), ProfileParser.GetProfileFilename(), logger));
+            this.logger = logger;
+            Insert(0, new LatestServerSource("Stable", ProfileParser.GetDayZFolder(), ProfileParser.GetProfileFilename()));
+            Insert(1, new LatestServerSource("Experimental", ProfileParser.GetExperimentalDayZFolder(), ProfileParser.GetProfileFilename()));
             comboBox.SelectedIndex = 0;
         }
 
@@ -54,7 +56,7 @@ namespace DayZServerMonitorCore
         {
             int savedIndex = comboBox.SelectedIndex;
             comboBox.SelectedIndex = -1;
-            int removedIndex = Remove(server);
+            int removedIndex = RemoveServer(server);
             Insert(SAVED_SERVER_INDEX, new SavedServerSource(server, name));
             if (removedIndex == savedIndex)
             {
@@ -67,6 +69,15 @@ namespace DayZServerMonitorCore
             return SAVED_SERVER_INDEX;
         }
 
+        public int SaveProfile(string filename)
+        {
+            comboBox.SelectedIndex = -1;
+            RemoveProfile(filename);
+            Insert(SAVED_SERVER_INDEX, new LatestServerSource(filename, Path.GetDirectoryName(filename), Path.GetFileName(filename)));
+            comboBox.SelectedIndex = SAVED_SERVER_INDEX;
+            return SAVED_SERVER_INDEX;
+        }
+
         public void SaveToFilename(string filename)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(SavedServers));
@@ -75,9 +86,8 @@ namespace DayZServerMonitorCore
                 SavedServers servers = new SavedServers();
                 for (int index = SAVED_SERVER_INDEX; index < Count; index++)
                 {
-                    ServerSelectionItem item = this[index];
-                    SavedServerSource source = (SavedServerSource)item.GetSource();
-                    servers.Servers.Add(source);
+                    IServerSource item = this[index].GetSource();
+                    servers.Servers.Add(item.Save());
                 }
                 serializer.Serialize(writer, servers);
             }
@@ -90,9 +100,16 @@ namespace DayZServerMonitorCore
             {
                 SavedServers servers = (SavedServers)serializer.Deserialize(fs);
                 Reset();
-                foreach (SavedServerSource source in servers.Servers)
+                foreach (SavedSource source in servers.Servers)
                 {
-                    Insert(Count, source);
+                    if (source.Filename == null)
+                    {
+                        Insert(Count, new SavedServerSource(source));
+                    }
+                    else
+                    {
+                        Insert(Count, new LatestServerSource(source));
+                    }
                 }
             }
         }
@@ -102,14 +119,33 @@ namespace DayZServerMonitorCore
             comboBox.Items.Insert(index, new ServerSelectionItem(item));
         }
 
-        private int Remove(Server server)
+        private int RemoveServer(Server server)
         {
-            for (int index = 2; index < Count; index++)
+            for (int index = SAVED_SERVER_INDEX; index < Count; index++)
             {
-                if (((SavedServerSource)this[index].GetSource()).Address == server.Address)
+                if (this[index].GetSource() is SavedServerSource source)
                 {
-                    comboBox.Items.RemoveAt(index);
-                    return index;
+                    if (source.Address == server.Address)
+                    {
+                        comboBox.Items.RemoveAt(index);
+                        return index;
+                    }
+                }
+            }
+            return -1;
+        }
+
+        private int RemoveProfile(string filename)
+        {
+            for (int index = SAVED_SERVER_INDEX; index < Count; index++)
+            {
+                if (this[index].GetSource() is LatestServerSource source)
+                {
+                    if (source.Modifier == filename)
+                    {
+                        comboBox.Items.RemoveAt(index);
+                        return index;
+                    }
                 }
             }
             return -1;

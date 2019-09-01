@@ -8,8 +8,10 @@ namespace DayZServerMonitorCore
     {
         string GetDisplayName();
 
-        Task<Server> GetServer();
+        Task<Server> GetServer(ILogger logger);
 
         ProfileWatcher CreateWatcher(Action action, ISynchronizeInvoke synchronizingObject);
+
+        SavedSource Save();
     }
 }

@@ -109,15 +109,33 @@ namespace TestDayZServerMonitorCore
         }
 
         [TestMethod]
+        public void SaveProfileAddsLatestServerSourceForGivenFilenameAndSetSelectedIndex()
+        {
+            comboBox.SelectedIndex = 1;
+
+            int index = list.SaveProfile(@"X:\path\to\some.DayZProfile");
+
+            Assert.AreEqual(2, comboBox.SelectedIndex);
+
+            Assert.AreEqual(3, list.Count);
+            Assert.AreEqual(@"Most Recent (X:\path\to\some.DayZProfile)", list[2].DisplayName);
+            Assert.IsInstanceOfType(list[2].GetSource(), typeof(LatestServerSource));
+
+            Assert.AreEqual(2, index);
+        }
+
+        [TestMethod]
         public void SaveServerReplacesExistingSavedServerWithSameAddressButNewName()
         {
             list.SaveServer(new Server("1.2.3.4", 5678), "SAVED FIRST");
             list.SaveServer(new Server("5.6.7.8", 4321), "SAVED SECOND");
+            list.SaveProfile(@"X:\path\to\some.DayZProfile");
             list.SaveServer(new Server("1.2.3.4", 5678), "UPDATED NAME");
 
-            Assert.AreEqual(4, list.Count);
+            Assert.AreEqual(5, list.Count);
             Assert.AreEqual("UPDATED NAME (1.2.3.4:5678)", list[2].DisplayName);
-            Assert.AreEqual("SAVED SECOND (5.6.7.8:4321)", list[3].DisplayName);
+            Assert.AreEqual(@"Most Recent (X:\path\to\some.DayZProfile)", list[3].DisplayName);
+            Assert.AreEqual("SAVED SECOND (5.6.7.8:4321)", list[4].DisplayName);
         }
 
         [TestMethod]
@@ -157,6 +175,25 @@ namespace TestDayZServerMonitorCore
         }
 
         [TestMethod]
+        public void SaveProfileMovesMatchingServerSourceIfOneAlreadyExistsWithTheSameFilename()
+        {
+            list.SaveProfile(@"X:\path\to\some.DayZProfile");
+            list.SaveProfile(@"Z:\path\to\some\other.DayZProfile");
+
+            int index = list.SaveProfile(@"X:\path\to\some.DayZProfile");
+
+            Assert.AreEqual(2, comboBox.SelectedIndex);
+
+            Assert.AreEqual(4, list.Count);
+            Assert.AreEqual(@"Most Recent (X:\path\to\some.DayZProfile)", list[2].DisplayName);
+            Assert.IsInstanceOfType(list[2].GetSource(), typeof(LatestServerSource));
+            Assert.AreEqual(@"Most Recent (Z:\path\to\some\other.DayZProfile)", list[3].DisplayName);
+            Assert.IsInstanceOfType(list[3].GetSource(), typeof(LatestServerSource));
+
+            Assert.AreEqual(2, index);
+        }
+
+        [TestMethod]
         public void ResetRemovesAllEntriesExceptForTheOnesForStableAndExperimental()
         {
             list.SaveServer(new Server("1.2.3.4", 5678), "SAVED FIRST");
@@ -173,6 +210,7 @@ namespace TestDayZServerMonitorCore
         public void ContentsCanBeSavedAndRestoredFromAFilename()
         {
             list.SaveServer(new Server("1.2.3.4", 5678), "SERVER ONE");
+            list.SaveProfile(@"X:\path\to\some.DayZProfile");
             list.SaveServer(new Server("5.6.7.8", 4321), "SERVER TWO");
 
             list.SaveToFilename(filename);
@@ -181,31 +219,35 @@ namespace TestDayZServerMonitorCore
 
             list.LoadFromFilename(filename);
 
-            Assert.AreEqual(4, list.Count);
+            Assert.AreEqual(5, list.Count);
             Assert.AreEqual("Most Recent (Stable)", list[0].DisplayName);
             Assert.AreEqual("Most Recent (Experimental)", list[1].DisplayName);
             Assert.AreEqual("SERVER TWO (5.6.7.8:4321)", list[2].DisplayName);
-            Assert.AreEqual("SERVER ONE (1.2.3.4:5678)", list[3].DisplayName);
+            Assert.AreEqual(@"Most Recent (X:\path\to\some.DayZProfile)", list[3].DisplayName);
+            Assert.AreEqual("SERVER ONE (1.2.3.4:5678)", list[4].DisplayName);
         }
 
         [TestMethod]
         public void RestoringFromFilenameReplacesContents()
         {
             list.SaveServer(new Server("1.2.3.4", 5678), "SAVED ONE");
+            list.SaveProfile(@"X:\path\to\some.DayZProfile");
             list.SaveServer(new Server("5.6.7.8", 4321), "SAVED TWO");
 
             list.SaveToFilename(filename);
 
             list.Reset();
             list.SaveServer(new Server("5.5.5.5", 6666), "REPLACED");
+            list.SaveProfile(@"Z:\replaced\saved\profile");
 
             list.LoadFromFilename(filename);
 
-            Assert.AreEqual(4, list.Count);
+            Assert.AreEqual(5, list.Count);
             Assert.AreEqual("Most Recent (Stable)", list[0].DisplayName);
             Assert.AreEqual("Most Recent (Experimental)", list[1].DisplayName);
             Assert.AreEqual("SAVED TWO (5.6.7.8:4321)", list[2].DisplayName);
-            Assert.AreEqual("SAVED ONE (1.2.3.4:5678)", list[3].DisplayName);
+            Assert.AreEqual(@"Most Recent (X:\path\to\some.DayZProfile)", list[3].DisplayName);
+            Assert.AreEqual("SAVED ONE (1.2.3.4:5678)", list[4].DisplayName);
         }
     }
 }
