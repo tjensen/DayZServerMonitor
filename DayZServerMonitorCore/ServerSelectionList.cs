@@ -78,6 +78,27 @@ namespace DayZServerMonitorCore
             return SAVED_SERVER_INDEX;
         }
 
+        public int Promote(int index)
+        {
+            if (index > SAVED_SERVER_INDEX)
+            {
+                int savedIndex = comboBox.SelectedIndex;
+                comboBox.SelectedIndex = -1;
+                ServerSelectionItem item = this[index];
+                comboBox.Items.RemoveAt(index);
+                comboBox.Items.Insert(SAVED_SERVER_INDEX, item);
+                if (savedIndex == index)
+                {
+                    comboBox.SelectedIndex = SAVED_SERVER_INDEX;
+                }
+                else
+                {
+                    comboBox.SelectedIndex = savedIndex;
+                }
+            }
+            return SAVED_SERVER_INDEX;
+        }
+
         public void SaveToFilename(string filename)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(SavedServers));

@@ -194,6 +194,60 @@ namespace TestDayZServerMonitorCore
         }
 
         [TestMethod]
+        public void PromoteMovesItemToTheTopOfTheListAndDoesNotChangeTheSelectedIndex()
+        {
+            list.SaveServer(new Server("1.2.3.4", 5678), "SAVED FIRST");
+            list.SaveProfile(@"X:\path\to\some.DayZProfile");
+            list.SaveServer(new Server("5.6.7.8", 4321), "SAVED SECOND");
+            comboBox.SelectedIndex = 1;
+
+            int index = list.Promote(3);
+
+            Assert.AreEqual(1, comboBox.SelectedIndex);
+
+            Assert.AreEqual(5, list.Count);
+            Assert.AreEqual("Most Recent (Stable)", list[0].DisplayName);
+            Assert.AreEqual("Most Recent (Experimental)", list[1].DisplayName);
+            Assert.AreEqual(@"Most Recent (X:\path\to\some.DayZProfile)", list[2].DisplayName);
+            Assert.AreEqual("SAVED SECOND (5.6.7.8:4321)", list[3].DisplayName);
+            Assert.AreEqual("SAVED FIRST (1.2.3.4:5678)", list[4].DisplayName);
+
+            Assert.AreEqual(2, index);
+        }
+
+        [TestMethod]
+        public void PromoteDoesNothingIfIndexIsTooLow()
+        {
+            list.SaveServer(new Server("1.2.3.4", 5678), "SAVED FIRST");
+            list.SaveProfile(@"X:\path\to\some.DayZProfile");
+            list.SaveServer(new Server("5.6.7.8", 4321), "SAVED SECOND");
+
+            int index = list.Promote(1);
+
+            Assert.AreEqual(5, list.Count);
+            Assert.AreEqual("Most Recent (Stable)", list[0].DisplayName);
+            Assert.AreEqual("Most Recent (Experimental)", list[1].DisplayName);
+            Assert.AreEqual("SAVED SECOND (5.6.7.8:4321)", list[2].DisplayName);
+            Assert.AreEqual(@"Most Recent (X:\path\to\some.DayZProfile)", list[3].DisplayName);
+            Assert.AreEqual("SAVED FIRST (1.2.3.4:5678)", list[4].DisplayName);
+
+            Assert.AreEqual(2, index);
+        }
+
+        [TestMethod]
+        public void PromoteUpdatesSelectedIndexIfPromotedItemWasSelected()
+        {
+            list.SaveServer(new Server("1.2.3.4", 5678), "SAVED FIRST");
+            list.SaveProfile(@"X:\path\to\some.DayZProfile");
+            list.SaveServer(new Server("5.6.7.8", 4321), "SAVED SECOND");
+            comboBox.SelectedIndex = 3;
+
+            list.Promote(3);
+
+            Assert.AreEqual(2, comboBox.SelectedIndex);
+        }
+
+        [TestMethod]
         public void ResetRemovesAllEntriesExceptForTheOnesForStableAndExperimental()
         {
             list.SaveServer(new Server("1.2.3.4", 5678), "SAVED FIRST");

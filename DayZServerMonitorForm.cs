@@ -45,6 +45,7 @@ namespace DayZServerMonitor
             ServerSelectionItem item = serverList[SelectionCombo.SelectedIndex];
             if (item != null)
             {
+                serverList.Promote(SelectionCombo.SelectedIndex);
                 UpdateServerSource(item.GetSource());
             }
         }
