@@ -237,7 +237,7 @@ namespace DayZServerMonitor
         {
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
-                dialog.Filter = "DayZ Profiles (*_settings.DayZProfile)|*_settings.DayZProfile|All files (*.*)|*.*";
+                dialog.Filter = "DayZ Profiles|*_settings.DayZProfile|All files|*.*";
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     ServerSelectionItem item = serverList.SaveProfile(dialog.FileName);
