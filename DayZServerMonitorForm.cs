@@ -23,7 +23,7 @@ namespace DayZServerMonitor
             InitializeComponent();
             components.Add(contextMenu);
             contextMenu.MenuItems.Add("Add Server...", AddServer_Click);
-            contextMenu.MenuItems.Add("Add Profile...", AddProfile_Click);
+            contextMenu.MenuItems.Add("Add Profile Location...", AddProfile_Click);
 
             logger = new Logger(clock, StatusWriter);
             monitor = new Monitor(clock, clientFactory, logger);
