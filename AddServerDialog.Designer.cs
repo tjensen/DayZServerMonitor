@@ -32,9 +32,9 @@
             this.label1 = new System.Windows.Forms.Label();
             this.ipAddress = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.port = new System.Windows.Forms.NumericUpDown();
             this.okButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
-            this.port = new System.Windows.Forms.NumericUpDown();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.port)).BeginInit();
             this.SuspendLayout();
@@ -82,12 +82,38 @@
             // label2
             // 
             this.label2.AutoSize = true;
+            this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(3, 39);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(45, 20);
+            this.label2.Size = new System.Drawing.Size(107, 41);
             this.label2.TabIndex = 2;
             this.label2.Text = "Port:";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // port
+            // 
+            this.port.Dock = System.Windows.Forms.DockStyle.Left;
+            this.port.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.port.Location = new System.Drawing.Point(116, 42);
+            this.port.Maximum = new decimal(new int[] {
+            65535,
+            0,
+            0,
+            0});
+            this.port.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.port.Name = "port";
+            this.port.Size = new System.Drawing.Size(120, 27);
+            this.port.TabIndex = 3;
+            this.port.Value = new decimal(new int[] {
+            2302,
+            0,
+            0,
+            0});
             // 
             // okButton
             // 
@@ -110,29 +136,6 @@
             this.cancelButton.TabIndex = 2;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
-            // 
-            // port
-            // 
-            this.port.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.port.Location = new System.Drawing.Point(116, 42);
-            this.port.Maximum = new decimal(new int[] {
-            65535,
-            0,
-            0,
-            0});
-            this.port.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.port.Name = "port";
-            this.port.Size = new System.Drawing.Size(120, 27);
-            this.port.TabIndex = 3;
-            this.port.Value = new decimal(new int[] {
-            2302,
-            0,
-            0,
-            0});
             // 
             // AddServerDialog
             // 
