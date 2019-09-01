@@ -222,8 +222,8 @@ namespace DayZServerMonitor
                 {
                     try
                     {
-                        int index = serverList.SaveServer(new Server(dialog.IPAddress, dialog.Port));
-                        SelectionCombo.SelectedIndex = index;
+                        ServerSelectionItem item = serverList.SaveServer(new Server(dialog.IPAddress, dialog.Port));
+                        SelectionCombo.SelectedItem = item;
                     }
                     catch (Exception error)
                     {
@@ -240,8 +240,8 @@ namespace DayZServerMonitor
                 dialog.Filter = "DayZ Profiles (*_settings.DayZProfile)|*_settings.DayZProfile|All files (*.*)|*.*";
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    int index = serverList.SaveProfile(dialog.FileName);
-                    SelectionCombo.SelectedIndex = index;
+                    ServerSelectionItem item = serverList.SaveProfile(dialog.FileName);
+                    SelectionCombo.SelectedItem = item;
                 }
             }
         }

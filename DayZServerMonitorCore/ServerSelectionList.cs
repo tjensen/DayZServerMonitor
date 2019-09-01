@@ -47,18 +47,18 @@ namespace DayZServerMonitorCore
             }
         }
 
-        public int SaveServer(Server server)
+        public ServerSelectionItem SaveServer(Server server)
         {
             return SaveServer(server, null);
         }
 
-        public int SaveServer(Server server, string name)
+        public ServerSelectionItem SaveServer(Server server, string name)
         {
             int savedIndex = comboBox.SelectedIndex;
             object savedItem = comboBox.SelectedItem;
             comboBox.SelectedIndex = -1;
             int removedIndex = RemoveServer(server);
-            Insert(SAVED_SERVER_INDEX, new SavedServerSource(server, name));
+            ServerSelectionItem item = Insert(SAVED_SERVER_INDEX, new SavedServerSource(server, name));
             if (removedIndex == savedIndex)
             {
                 comboBox.SelectedIndex = SAVED_SERVER_INDEX;
@@ -67,16 +67,16 @@ namespace DayZServerMonitorCore
             {
                 comboBox.SelectedItem = savedItem;
             }
-            return SAVED_SERVER_INDEX;
+            return item;
         }
 
-        public int SaveProfile(string filename)
+        public ServerSelectionItem SaveProfile(string filename)
         {
             int savedIndex = comboBox.SelectedIndex;
             object savedItem = comboBox.SelectedItem;
             comboBox.SelectedIndex = -1;
             int removedIndex = RemoveProfile(filename);
-            Insert(SAVED_SERVER_INDEX, new LatestServerSource(filename, Path.GetDirectoryName(filename), Path.GetFileName(filename)));
+            ServerSelectionItem item = Insert(SAVED_SERVER_INDEX, new LatestServerSource(filename, Path.GetDirectoryName(filename), Path.GetFileName(filename)));
             if (removedIndex == savedIndex)
             {
                 comboBox.SelectedIndex = SAVED_SERVER_INDEX;
@@ -85,29 +85,31 @@ namespace DayZServerMonitorCore
             {
                 comboBox.SelectedItem = savedItem;
             }
-            return SAVED_SERVER_INDEX;
+            return item;
         }
 
-        public int Promote(int index)
+        public ServerSelectionItem Promote(int index)
         {
-            if (index > SAVED_SERVER_INDEX)
+            if (index <= SAVED_SERVER_INDEX)
             {
-                int savedIndex = comboBox.SelectedIndex;
-                object savedItem = comboBox.SelectedItem;
-                comboBox.SelectedIndex = -1;
-                ServerSelectionItem item = this[index];
-                comboBox.Items.RemoveAt(index);
-                comboBox.Items.Insert(SAVED_SERVER_INDEX, item);
-                if (savedIndex == index)
-                {
-                    comboBox.SelectedIndex = SAVED_SERVER_INDEX;
-                }
-                else
-                {
-                    comboBox.SelectedItem = savedItem;
-                }
+                return null;
             }
-            return SAVED_SERVER_INDEX;
+
+            int savedIndex = comboBox.SelectedIndex;
+            object savedItem = comboBox.SelectedItem;
+            comboBox.SelectedIndex = -1;
+            ServerSelectionItem item = this[index];
+            comboBox.Items.RemoveAt(index);
+            comboBox.Items.Insert(SAVED_SERVER_INDEX, item);
+            if (savedIndex == index)
+            {
+                comboBox.SelectedIndex = SAVED_SERVER_INDEX;
+            }
+            else
+            {
+                comboBox.SelectedItem = savedItem;
+            }
+            return item;
         }
 
         public void SaveToFilename(string filename)
@@ -146,9 +148,11 @@ namespace DayZServerMonitorCore
             }
         }
 
-        private void Insert(int index, IServerSource item)
+        private ServerSelectionItem Insert(int index, IServerSource item)
         {
-            comboBox.Items.Insert(index, new ServerSelectionItem(item));
+            ServerSelectionItem result = new ServerSelectionItem(item);
+            comboBox.Items.Insert(index, result);
+            return result;
         }
 
         private int RemoveServer(Server server)

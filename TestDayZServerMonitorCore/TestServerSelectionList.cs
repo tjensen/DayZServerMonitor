@@ -58,9 +58,9 @@ namespace TestDayZServerMonitorCore
         [TestMethod]
         public void SaveServerAddsSavedServerToListAndReturnsItsIndex()
         {
-            int index = list.SaveServer(new Server("1.2.3.4", 5678));
+            ServerSelectionItem item = list.SaveServer(new Server("1.2.3.4", 5678));
 
-            Assert.AreEqual(2, index);
+            Assert.AreEqual(list[2], item);
 
             Assert.AreEqual(3, list.Count);
             Assert.AreEqual("1.2.3.4:5678", list[2].DisplayName);
@@ -80,9 +80,9 @@ namespace TestDayZServerMonitorCore
         [TestMethod]
         public void SaveServerAddsServerWithNameWhenSpecified()
         {
-            int index = list.SaveServer(new Server("1.2.3.4", 5678), "SERVER NAME");
+            ServerSelectionItem item = list.SaveServer(new Server("1.2.3.4", 5678), "SERVER NAME");
 
-            Assert.AreEqual(2, index);
+            Assert.AreEqual(list[2], item);
 
             Assert.AreEqual("SERVER NAME (1.2.3.4:5678)", list[2].DisplayName);
         }
@@ -113,7 +113,7 @@ namespace TestDayZServerMonitorCore
         {
             comboBox.SelectedIndex = 1;
 
-            int index = list.SaveProfile(@"X:\path\to\some.DayZProfile");
+            ServerSelectionItem item = list.SaveProfile(@"X:\path\to\some.DayZProfile");
 
             Assert.AreEqual(1, comboBox.SelectedIndex);
 
@@ -121,7 +121,7 @@ namespace TestDayZServerMonitorCore
             Assert.AreEqual(@"Most Recent (X:\path\to\some.DayZProfile)", list[2].DisplayName);
             Assert.IsInstanceOfType(list[2].GetSource(), typeof(LatestServerSource));
 
-            Assert.AreEqual(2, index);
+            Assert.AreEqual(list[2], item);
         }
 
         [TestMethod]
@@ -185,7 +185,7 @@ namespace TestDayZServerMonitorCore
             list.SaveProfile(@"Z:\path\to\some\other.DayZProfile");
             comboBox.SelectedIndex = 2;
 
-            int index = list.SaveProfile(@"X:\path\to\some.DayZProfile");
+            ServerSelectionItem item = list.SaveProfile(@"X:\path\to\some.DayZProfile");
 
             Assert.AreEqual(3, comboBox.SelectedIndex);
 
@@ -195,7 +195,7 @@ namespace TestDayZServerMonitorCore
             Assert.AreEqual(@"Most Recent (Z:\path\to\some\other.DayZProfile)", list[3].DisplayName);
             Assert.IsInstanceOfType(list[3].GetSource(), typeof(LatestServerSource));
 
-            Assert.AreEqual(2, index);
+            Assert.AreEqual(list[2], item);
         }
 
         [TestMethod]
@@ -205,7 +205,7 @@ namespace TestDayZServerMonitorCore
             list.SaveProfile(@"Z:\path\to\some\other.DayZProfile");
             comboBox.SelectedIndex = 3;
 
-            int index = list.SaveProfile(@"X:\path\to\some.DayZProfile");
+            list.SaveProfile(@"X:\path\to\some.DayZProfile");
 
             Assert.AreEqual(2, comboBox.SelectedIndex);
         }
@@ -218,7 +218,7 @@ namespace TestDayZServerMonitorCore
             list.SaveServer(new Server("5.6.7.8", 4321), "SAVED SECOND");
             comboBox.SelectedIndex = 2;
 
-            int index = list.Promote(3);
+            ServerSelectionItem item = list.Promote(3);
 
             Assert.AreEqual(3, comboBox.SelectedIndex);
 
@@ -229,17 +229,17 @@ namespace TestDayZServerMonitorCore
             Assert.AreEqual("SAVED SECOND (5.6.7.8:4321)", list[3].DisplayName);
             Assert.AreEqual("SAVED FIRST (1.2.3.4:5678)", list[4].DisplayName);
 
-            Assert.AreEqual(2, index);
+            Assert.AreEqual(list[2], item);
         }
 
         [TestMethod]
-        public void PromoteDoesNothingIfIndexIsTooLow()
+        public void PromoteReturnsNullAndDoesNothingIfIndexIsTooLow()
         {
             list.SaveServer(new Server("1.2.3.4", 5678), "SAVED FIRST");
             list.SaveProfile(@"X:\path\to\some.DayZProfile");
             list.SaveServer(new Server("5.6.7.8", 4321), "SAVED SECOND");
 
-            int index = list.Promote(1);
+            Assert.IsNull(list.Promote(1));
 
             Assert.AreEqual(5, list.Count);
             Assert.AreEqual("Most Recent (Stable)", list[0].DisplayName);
@@ -247,8 +247,6 @@ namespace TestDayZServerMonitorCore
             Assert.AreEqual("SAVED SECOND (5.6.7.8:4321)", list[2].DisplayName);
             Assert.AreEqual(@"Most Recent (X:\path\to\some.DayZProfile)", list[3].DisplayName);
             Assert.AreEqual("SAVED FIRST (1.2.3.4:5678)", list[4].DisplayName);
-
-            Assert.AreEqual(2, index);
         }
 
         [TestMethod]
