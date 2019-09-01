@@ -128,17 +128,23 @@ namespace DayZServerMonitor
             Poll();
         }
 
-        private string ServersFilename()
+        private string ApplicationDataFolder()
         {
             return Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "DayZServerMonitor.xml");
+                "DayZServerMonitor");
+        }
+
+        private string ServersFilename()
+        {
+            return Path.Combine(ApplicationDataFolder(), "servers.xml");
         }
 
         private void PersistSavedServers()
         {
             try
             {
+                Directory.CreateDirectory(ApplicationDataFolder());
                 serverList.SaveToFilename(ServersFilename());
             }
             catch (Exception error)
