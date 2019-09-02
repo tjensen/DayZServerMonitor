@@ -7,17 +7,17 @@ namespace DayZServerMonitorCore
     public class DynamicIcons : IDisposable
     {
         // Row positions
-        private static readonly int TOP = 1;
-        private static readonly int MIDDLE = 7;
-        private static readonly int BOTTOM = 13;
+        private const int TOP = 1;
+        private const int MIDDLE = 7;
+        private const int BOTTOM = 13;
 
         // Column positions (narrow)
-        private static readonly int LEFT = 1;
-        private static readonly int RIGHT = 4;
+        private const int LEFT = 1;
+        private const int RIGHT = 4;
 
         // Column adjustments for character width
-        private static readonly int NARROW = 0;
-        private static readonly int WIDE = 2;
+        private const int NARROW = 0;
+        private const int WIDE = 2;
 
         // Simulates a 7-segment display, where bits 0-6 represent whether to light the
         // corresponding segment

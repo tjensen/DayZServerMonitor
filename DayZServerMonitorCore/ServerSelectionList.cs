@@ -12,7 +12,7 @@ namespace DayZServerMonitorCore
             public List<SavedSource> Servers = new List<SavedSource>();
         }
 
-        private static readonly int SAVED_SERVER_INDEX = 2;
+        private const int SAVED_SERVER_INDEX = 2;
 
         private ComboBox comboBox;
         private ILogger logger;

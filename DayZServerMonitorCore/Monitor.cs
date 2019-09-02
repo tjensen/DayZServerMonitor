@@ -7,8 +7,8 @@ namespace DayZServerMonitorCore
 {
     public class Monitor : IDisposable
     {
-        public static readonly int POLLING_INTERVAL = 60000;
-        private static readonly int SERVER_TIMEOUT = 5000;
+        public const int POLLING_INTERVAL = 60000;
+        private const int SERVER_TIMEOUT = 5000;
 
         private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1);
         private readonly Dictionary<string, Server> gameServerMapping =

@@ -2,8 +2,8 @@
 {
     public class Server
     {
-        private readonly static int DEFAULT_PORT = 2301;
-        private readonly static int STATS_PORT_OFFSET = 24714;
+        private const int DEFAULT_PORT = 2301;
+        private const int STATS_PORT_OFFSET = 24714;
 
         public Server(string address)
         {

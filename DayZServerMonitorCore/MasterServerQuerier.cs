@@ -8,9 +8,9 @@ namespace DayZServerMonitorCore
 {
     public class MasterServerQuerier
     {
-        public readonly static byte REGION_REST = 0xFF;
-        private readonly static string MASTER_SERVER_HOST = "hl2master.steampowered.com";
-        private readonly static int MASTER_SERVER_PORT = 27011;
+        public const byte REGION_REST = 0xFF;
+        private const string MASTER_SERVER_HOST = "hl2master.steampowered.com";
+        private const int MASTER_SERVER_PORT = 27011;
 
         private readonly IClientFactory factory;
         private readonly ILogger logger;
