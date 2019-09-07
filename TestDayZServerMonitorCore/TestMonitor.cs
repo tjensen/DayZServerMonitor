@@ -110,12 +110,13 @@ namespace TestDayZServerMonitorCore
         }
 
         [TestMethod]
-        public async Task PollDoesNotQueryServerIfAtLeast60SecondsHasNotElapsedSinceTheLastCall()
+        public async Task PollDoesNotQueryServerIfAtLeast45SecondsHasNotElapsedSinceTheLastCall()
         {
             masterServerClient.ServerResponse = MasterServerResponse();
             serverInfoClient.ServerResponse = ServerInfoResponse();
             _ = await monitor.Poll(server);
             clientFactory.Reset();
+            clock.CurrentTime += TimeSpan.FromSeconds(44);
 
             Assert.IsNull(await monitor.Poll(server));
 
@@ -180,7 +181,7 @@ namespace TestDayZServerMonitorCore
             {
                 secondServerInfoClient.ServerResponse = ServerInfoResponse();
                 clientFactory.AddClient(secondServerInfoClient);
-                clock.CurrentTime += TimeSpan.FromSeconds(60);
+                clock.CurrentTime += TimeSpan.FromSeconds(45);
 
                 ServerInfo info = await monitor.Poll(server);
 

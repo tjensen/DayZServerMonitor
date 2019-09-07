@@ -8,6 +8,7 @@ namespace DayZServerMonitorCore
     public class Monitor : IDisposable
     {
         public const int POLLING_INTERVAL = 60000;
+        private const int MINIMUM_POLLING_INTERVAL = 45000;
         private const int SERVER_TIMEOUT = 5000;
 
         private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1);
@@ -34,7 +35,7 @@ namespace DayZServerMonitorCore
             try
             {
                 if (lastServer.Address == previousPolledServer &&
-                    (clock.UtcNow() - lastPoll).TotalMilliseconds < POLLING_INTERVAL)
+                    (clock.UtcNow() - lastPoll).TotalMilliseconds < MINIMUM_POLLING_INTERVAL)
                 {
                     return null;
                 }
