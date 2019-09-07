@@ -35,12 +35,40 @@ namespace DayZServerMonitor
                 return;
             }
 
+            bool selectionAtEnd = IsScrolledToEnd();
+
             logsDataGridView.Rows.Add(new string[] { DateTime.Now.ToString(), level, message });
+
             while (logsDataGridView.Rows.Count > 1000)
             {
                 logsDataGridView.Rows.RemoveAt(0);
             }
-            logsDataGridView.Refresh();
+
+            if (selectionAtEnd)
+            {
+                ScrollToEnd();
+            }
+        }
+
+        private bool IsScrolledToEnd()
+        {
+            Console.WriteLine("----");
+            int firstDisplayed = logsDataGridView.FirstDisplayedScrollingRowIndex;
+            Console.WriteLine($"firstDisplayed = {firstDisplayed}");
+            int displayed = logsDataGridView.DisplayedRowCount(true);
+            Console.WriteLine($"displayed = {displayed}");
+            int lastVisible = (firstDisplayed + displayed) - 1;
+            Console.WriteLine($"lastVisible = {lastVisible}");
+            int lastIndex = logsDataGridView.RowCount - 1;
+            Console.WriteLine($"lastIndex = {lastIndex}");
+            return lastVisible == lastIndex;
+        }
+
+        private void ScrollToEnd()
+        {
+            logsDataGridView.FirstDisplayedScrollingRowIndex = Math.Max(
+                0,
+                logsDataGridView.RowCount - logsDataGridView.DisplayedRowCount(true));
         }
 
         private void LogSelectionChanged(object source, EventArgs args)
