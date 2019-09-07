@@ -207,6 +207,7 @@ namespace DayZServerMonitor
         private void SystemTrayIcon_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             WindowState = FormWindowState.Normal;
+            Activate();
         }
 
         private void SelectionManage_Click(object sender, EventArgs e)
