@@ -52,15 +52,10 @@ namespace DayZServerMonitor
 
         private bool IsScrolledToEnd()
         {
-            Console.WriteLine("----");
             int firstDisplayed = logsDataGridView.FirstDisplayedScrollingRowIndex;
-            Console.WriteLine($"firstDisplayed = {firstDisplayed}");
             int displayed = logsDataGridView.DisplayedRowCount(true);
-            Console.WriteLine($"displayed = {displayed}");
             int lastVisible = (firstDisplayed + displayed) - 1;
-            Console.WriteLine($"lastVisible = {lastVisible}");
             int lastIndex = logsDataGridView.RowCount - 1;
-            Console.WriteLine($"lastIndex = {lastIndex}");
             return lastVisible == lastIndex;
         }
 
