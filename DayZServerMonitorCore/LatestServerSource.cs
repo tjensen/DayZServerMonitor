@@ -36,11 +36,11 @@ namespace DayZServerMonitorCore
             return $"Most Recent ({Modifier})";
         }
 
-        public async Task<Server> GetServer(ILogger logger)
+        public async Task<Server> GetServer(ILogger logger, IClock clock)
         {
             try
             {
-                return await ProfileParser.GetLastServer(Path.Combine(ProfileDirectory, ProfileFilename));
+                return await ProfileParser.GetLastServer(Path.Combine(ProfileDirectory, ProfileFilename), clock);
             }
             catch (Exception e)
             {

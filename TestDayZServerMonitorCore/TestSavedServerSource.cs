@@ -8,6 +8,7 @@ namespace TestDayZServerMonitorCore
     public class TestSavedServerSource
     {
         private readonly MockLogger logger = new MockLogger();
+        private readonly MockClock clock = new MockClock();
 
         [TestMethod]
         public void GetDisplayNameReturnsServerAddressWhenServerNameIsUnknown()
@@ -31,7 +32,7 @@ namespace TestDayZServerMonitorCore
             Server server = new Server("1.2.3.4", 5678);
             SavedServerSource serverSource = new SavedServerSource(server);
 
-            Assert.AreSame(server, await serverSource.GetServer(logger));
+            Assert.AreSame(server, await serverSource.GetServer(logger, clock));
         }
 
         [TestMethod]

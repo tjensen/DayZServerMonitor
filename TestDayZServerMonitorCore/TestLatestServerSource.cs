@@ -10,7 +10,8 @@ namespace TestDayZServerMonitorCore
     [TestClass]
     public class TestLatestServerSource
     {
-        private MockLogger logger = new MockLogger();
+        private readonly MockLogger logger = new MockLogger();
+        private readonly MockClock clock = new MockClock();
         private string filename;
         private LatestServerSource serverSource;
 
@@ -57,7 +58,7 @@ namespace TestDayZServerMonitorCore
             File.WriteAllText(
                 filename, "lastMPServer=\"12.34.56.78:12345\";\n");
 
-            Server server = await serverSource.GetServer(logger);
+            Server server = await serverSource.GetServer(logger, clock);
 
             Assert.AreEqual("12.34.56.78", server.Host);
             Assert.AreEqual(12345, server.Port);
@@ -66,7 +67,7 @@ namespace TestDayZServerMonitorCore
         [TestMethod]
         public async Task GetServerReturnsNullWhenGettingTheLastPlayedServerFails()
         {
-            Assert.IsNull(await serverSource.GetServer(logger));
+            Assert.IsNull(await serverSource.GetServer(logger, clock));
 
             Assert.AreEqual(1, logger.ErrorTexts.Count);
             Assert.AreEqual("Failed to determine last played server", logger.ErrorTexts[0]);

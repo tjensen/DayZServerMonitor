@@ -10,6 +10,7 @@ namespace TestDayZServerMonitorCore
     [TestClass]
     public class TestProfileParser
     {
+        private readonly MockClock clock = new MockClock();
         private string filename;
 
         [TestInitialize]
@@ -52,7 +53,7 @@ namespace TestDayZServerMonitorCore
         public async Task GetLastServerThrowsExceptionWhenFileDoesNotContainLastMPServerAsync()
         {
             MissingLastMPServer error = await Assert.ThrowsExceptionAsync<MissingLastMPServer>(
-                () => ProfileParser.GetLastServer(filename));
+                () => ProfileParser.GetLastServer(filename, clock));
             Assert.AreEqual("Unable to find last MP server in DayZ profile", error.Message);
         }
 
@@ -65,10 +66,27 @@ namespace TestDayZServerMonitorCore
                 "lastMPServer=\"87.65.43.21:1234\";\n" +
                 "otherThing=\"other-value\";\n");
 
-            Server server = await ProfileParser.GetLastServer(filename);
+            Server server = await ProfileParser.GetLastServer(filename, clock);
 
             Assert.AreEqual("87.65.43.21", server.Host);
             Assert.AreEqual(1234, server.Port);
+        }
+
+        [TestMethod]
+        public async Task GetLastServerRetriesWhenUnableToReadProfileDueToAccessViolation()
+        {
+            File.WriteAllText(filename, "lastMPServer=\"87.65.43.21:1234\";\n");
+
+            using (FileStream writeStream = File.OpenWrite(filename))
+            {
+                clock.SetDelayCompleted();
+                clock.DelayCalled = (source, args) => writeStream.Close();
+
+                Server server = await ProfileParser.GetLastServer(filename, clock);
+
+                Assert.AreEqual("87.65.43.21", server.Host);
+                Assert.AreEqual(1234, server.Port);
+            }
         }
     }
 }

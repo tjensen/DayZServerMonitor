@@ -12,6 +12,8 @@ namespace TestDayZServerMonitorCore
 
         public DateTime CurrentTime { get; set; }
 
+        public EventHandler DelayCalled;
+
         public MockClock()
         {
             CurrentTime = new DateTime(0);
@@ -24,6 +26,7 @@ namespace TestDayZServerMonitorCore
 
         public async Task Delay(int milliseconds, CancellationToken cancellationToken)
         {
+            OnDelayCalled(EventArgs.Empty);
             await delayCompleted.WaitAsync(cancellationToken);
             CurrentTime += new TimeSpan(0, 0, 0, 0, milliseconds);
         }
@@ -37,6 +40,12 @@ namespace TestDayZServerMonitorCore
         public void SetDelayCompleted()
         {
             delayCompleted.Release();
+        }
+
+        protected virtual void OnDelayCalled(EventArgs args)
+        {
+            EventHandler handler = DelayCalled;
+            handler?.Invoke(this, args);
         }
 
         #region IDisposable Support

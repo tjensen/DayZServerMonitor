@@ -48,7 +48,7 @@ namespace DayZServerMonitorCore
             return server.Address;
         }
 
-        public Task<Server> GetServer(ILogger logger)
+        public Task<Server> GetServer(ILogger logger, IClock clock)
         {
             return Task.FromResult(server);
         }

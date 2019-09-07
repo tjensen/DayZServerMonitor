@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DayZServerMonitorCore
@@ -27,20 +28,36 @@ namespace DayZServerMonitorCore
             return String.Format("{0}_settings.DayZProfile", Environment.UserName);
         }
 
-        public static async Task<Server> GetLastServer(string path)
+        public static async Task<Server> GetLastServer(string path, IClock clock)
         {
-            using (StreamReader reader = File.OpenText(path))
+            try
             {
-                string line;
-                while ((line = await reader.ReadLineAsync()) != null)
+                return await GetLastServerInternal(path);
+            }
+            catch (IOException)
+            {
+                await clock.Delay(1000, new CancellationToken());
+                return await GetLastServerInternal(path);
+            }
+        }
+
+        private static async Task<Server> GetLastServerInternal(string path)
+        {
+            using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+            {
+                using (StreamReader reader = new StreamReader(stream))
                 {
-                    Match results = LastMPServerRegex.Match(line);
-                    if (results.Success)
+                    string line;
+                    while ((line = await reader.ReadLineAsync()) != null)
                     {
-                        return new Server(results.Groups["address"].Value);
+                        Match results = LastMPServerRegex.Match(line);
+                        if (results.Success)
+                        {
+                            return new Server(results.Groups["address"].Value);
+                        }
                     }
+                    throw new MissingLastMPServer();
                 }
-                throw new MissingLastMPServer();
             }
         }
     }

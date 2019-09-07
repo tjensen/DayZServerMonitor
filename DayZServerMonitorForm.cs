@@ -71,7 +71,7 @@ namespace DayZServerMonitor
             {
                 item = serverList[SelectionCombo.SelectedIndex];
             }
-            return await item.GetSource().GetServer(logger);
+            return await item.GetSource().GetServer(logger, clock);
         }
 
         private void UpdateSystemTrayIcon(Icon icon, string players)
