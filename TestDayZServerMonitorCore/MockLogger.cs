@@ -8,6 +8,7 @@ namespace TestDayZServerMonitorCore
     {
         public List<string> StatusTexts { get; }
         public List<string> ErrorTexts { get; }
+        public List<string> DebugTexts { get; }
         public List<Exception> ErrorExceptions { get; }
 
         public MockLogger()
@@ -26,6 +27,11 @@ namespace TestDayZServerMonitorCore
         {
             ErrorTexts.Add(text);
             ErrorExceptions.Add(exception);
+        }
+
+        public void Debug(string text)
+        {
+            DebugTexts.Add(text);
         }
     }
 }

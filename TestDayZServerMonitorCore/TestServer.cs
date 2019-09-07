@@ -100,5 +100,13 @@ namespace TestDayZServerMonitorCore
 
             Assert.IsFalse(server1.Equals(server2));
         }
+
+        [TestMethod]
+        public void ToStringReturnsTheAddress()
+        {
+            Server server = new Server("12.34.56.78:4321");
+
+            Assert.AreEqual("12.34.56.78:4321", server.ToString());
+        }
     }
 }

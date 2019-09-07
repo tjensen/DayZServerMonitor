@@ -7,5 +7,7 @@ namespace DayZServerMonitorCore
         void Status(string text);
 
         void Error(string text, Exception exception);
+
+        void Debug(string text);
     }
 }

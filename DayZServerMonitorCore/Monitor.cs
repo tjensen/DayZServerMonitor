@@ -37,6 +37,7 @@ namespace DayZServerMonitorCore
                 if (lastServer.Address == previousPolledServer &&
                     (clock.UtcNow() - lastPoll).TotalMilliseconds < MINIMUM_POLLING_INTERVAL)
                 {
+                    logger.Debug("Not enough time has passed since last poll; skipping");
                     return null;
                 }
                 lastPoll = clock.UtcNow();
@@ -61,6 +62,8 @@ namespace DayZServerMonitorCore
             }
             if (gameServerMapping[server.Address] == null)
             {
+                logger.Debug(
+                    $"Server {server} is not in master list; guessing status port number");
                 gameServerMapping[server.Address] = new Server(server.Host, server.StatsPort);
             }
             return gameServerMapping[server.Address];

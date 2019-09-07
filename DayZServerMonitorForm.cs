@@ -10,6 +10,7 @@ namespace DayZServerMonitor
     public partial class DayZServerMonitorForm : Form
     {
         private readonly ContextMenu contextMenu = new ContextMenu();
+        private readonly LogViewer logViewer = new LogViewer();
         private readonly DynamicIcons dynamicIcons = new DynamicIcons();
         private readonly Clock clock = new Clock();
         private readonly ClientFactory clientFactory = new ClientFactory();
@@ -22,10 +23,13 @@ namespace DayZServerMonitor
         {
             InitializeComponent();
             components.Add(contextMenu);
-            contextMenu.MenuItems.Add("Add Server...", AddServer_Click);
-            contextMenu.MenuItems.Add("Add Profile Location...", AddProfile_Click);
+            components.Add(logViewer);
+            contextMenu.MenuItems.Add("Add &Server...", AddServer_Click);
+            contextMenu.MenuItems.Add("Add &Profile Location...", AddProfile_Click);
+            contextMenu.MenuItems.Add("-");
+            contextMenu.MenuItems.Add("View &Logs", ViewLogs_Click);
 
-            logger = new Logger(clock, StatusWriter);
+            logger = new Logger(clock, StatusWriter, logViewer.Add);
             monitor = new Monitor(clock, clientFactory, logger);
 
             SelectionCombo.DisplayMember = "DisplayName";
@@ -180,6 +184,7 @@ namespace DayZServerMonitor
 
         private async Task PollAsync()
         {
+            logger.Debug("Polling");
             Server server = await GetSelectedServer();
             if (server == null)
             {
@@ -194,6 +199,7 @@ namespace DayZServerMonitor
             ServerInfo info = await this.monitor.Poll(server);
             if (info != null)
             {
+                logger.Debug($"Received {info}");
                 SaveServer(new Server(info.Address), info.Name);
                 UpdateValues(info.Address, info.Name, info.NumPlayers, info.MaxPlayers);
             }
@@ -223,6 +229,7 @@ namespace DayZServerMonitor
                 {
                     try
                     {
+                        logger.Debug($"Adding server: {dialog.IPAddress}:{dialog.Port}");
                         ServerSelectionItem item = serverList.SaveServer(new Server(dialog.IPAddress, dialog.Port));
                         SelectionCombo.SelectedItem = item;
                     }
@@ -241,10 +248,18 @@ namespace DayZServerMonitor
                 dialog.Filter = "DayZ Profiles|*_settings.DayZProfile|All files|*.*";
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
+                    logger.Debug($"Adding custom profile location: {dialog.FileName}");
                     ServerSelectionItem item = serverList.SaveProfile(dialog.FileName);
                     SelectionCombo.SelectedItem = item;
                 }
             }
+        }
+
+        private void ViewLogs_Click(object sender, EventArgs e)
+        {
+            logViewer.WindowState = FormWindowState.Normal;
+            logViewer.Activate();
+            logViewer.Show();
         }
     }
 }

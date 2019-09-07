@@ -17,6 +17,13 @@ namespace DayZServerMonitorCore
         public int NumPlayers { get; }
         public int MaxPlayers { get; }
 
+        public override string ToString()
+        {
+            return $"Server at {Address} is:\r\n" +
+                $"Name: {Name}\r\n" +
+                $"Players: {NumPlayers}/{MaxPlayers}";
+        }
+
         public static ServerInfo Parse(string host, int port, byte[] buffer)
         {
             MessageParser parser = new MessageParser(buffer);

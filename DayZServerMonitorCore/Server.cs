@@ -39,5 +39,10 @@
         {
             return other != null && Host == other.Host && Port == other.Port;
         }
+
+        public override string ToString()
+        {
+            return Address;
+        }
     }
 }

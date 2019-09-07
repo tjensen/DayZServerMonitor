@@ -151,5 +151,12 @@ namespace TestDayZServerMonitorCore
             });
             Assert.AreEqual("Invalid Info Header", error.Message);
         }
+
+        [TestMethod]
+        public void ToStringReturnsInformationAboutServer()
+        {
+            Assert.AreEqual(
+                "Server at address is:\r\nName: name\r\nPlayers: 42/60", info.ToString());
+        }
     }
 }
