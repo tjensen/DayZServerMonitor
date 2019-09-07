@@ -15,6 +15,7 @@ namespace TestDayZServerMonitorCore
         {
             StatusTexts = new List<string>();
             ErrorTexts = new List<string>();
+            DebugTexts = new List<string>();
             ErrorExceptions = new List<Exception>();
         }
 
