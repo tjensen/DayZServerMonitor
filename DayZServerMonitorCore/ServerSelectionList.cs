@@ -148,6 +148,19 @@ namespace DayZServerMonitorCore
             }
         }
 
+        public bool IndexRemovable(int index)
+        {
+            return index >= SAVED_SERVER_INDEX;
+        }
+
+        public void RemoveIndex(int index)
+        {
+            if (IndexRemovable(index))
+            {
+                comboBox.Items.RemoveAt(index);
+            }
+        }
+
         private ServerSelectionItem Insert(int index, IServerSource item)
         {
             ServerSelectionItem result = new ServerSelectionItem(item);

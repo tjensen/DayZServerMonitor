@@ -15,6 +15,7 @@ namespace DayZServerMonitor
         private readonly DynamicIcons dynamicIcons = new DynamicIcons();
         private readonly Clock clock = new Clock();
         private readonly ClientFactory clientFactory = new ClientFactory();
+        private readonly MenuItem removeSelectedServer;
         private readonly LogViewer logViewer;
         private readonly Logger logger;
         private readonly Monitor monitor;
@@ -29,10 +30,12 @@ namespace DayZServerMonitor
             components.Add(logViewer);
             contextMenu.MenuItems.Add("Add &Server...", AddServer_Click);
             contextMenu.MenuItems.Add("Add &Profile Location...", AddProfile_Click);
+            removeSelectedServer = contextMenu.MenuItems.Add(
+                "&Remove Selected Server", RemoveServer_Click);
             contextMenu.MenuItems.Add("-");
             contextMenu.MenuItems.Add("View &Logs", ViewLogs_Click);
             contextMenu.MenuItems.Add("-");
-            contextMenu.MenuItems.Add("Settings...", Settings_Click);
+            contextMenu.MenuItems.Add("S&ettings...", Settings_Click);
 
             settings.SettingChanged += Settings_SettingChanged;
 
@@ -56,6 +59,9 @@ namespace DayZServerMonitor
 
         private void ServerSelectionChanged(object sender, EventArgs e)
         {
+            removeSelectedServer.Enabled = serverList.IndexRemovable(
+                SelectionCombo.SelectedIndex);
+
             ServerSelectionItem item = serverList[SelectionCombo.SelectedIndex];
             if (item != null)
             {
@@ -306,6 +312,13 @@ namespace DayZServerMonitor
                     SelectionCombo.SelectedItem = item;
                 }
             }
+        }
+
+        private void RemoveServer_Click(object sender, EventArgs args)
+        {
+            serverList.RemoveIndex(SelectionCombo.SelectedIndex);
+            PersistSavedServers();
+            SelectionCombo.SelectedIndex = 0;
         }
 
         private void ViewLogs_Click(object sender, EventArgs e)

@@ -318,5 +318,35 @@ namespace TestDayZServerMonitorCore
             Assert.AreEqual(@"Most Recent (X:\path\to\some.DayZProfile)", list[3].DisplayName);
             Assert.AreEqual("SAVED ONE (1.2.3.4:5678)", list[4].DisplayName);
         }
+
+        [TestMethod]
+        public void IndexRemovableReturnsFalseWhenIndexIsLessThanTwo()
+        {
+            Assert.IsFalse(list.IndexRemovable(1));
+        }
+
+        [TestMethod]
+        public void IndexRemovableReturnsTrueWhenIndexIsGreaterThanOrEqualToTwo()
+        {
+            Assert.IsTrue(list.IndexRemovable(2));
+        }
+
+        [TestMethod]
+        public void RemoveIndexRemovesItemFromList()
+        {
+            list.SaveServer(new Server("1.2.3.4", 5678), "SAVED");
+
+            list.RemoveIndex(2);
+
+            Assert.AreEqual(2, list.Count);
+        }
+
+        [TestMethod]
+        public void RemoveIndexDoesNothingIfIndexIsNotRemovable()
+        {
+            list.RemoveIndex(0);
+
+            Assert.AreEqual(2, list.Count);
+        }
     }
 }
