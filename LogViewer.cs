@@ -1,13 +1,20 @@
-﻿using System;
+﻿using DayZServerMonitorCore;
+using System;
 using System.Windows.Forms;
 
 namespace DayZServerMonitor
 {
     public partial class LogViewer : Form
     {
-        public LogViewer()
+        private readonly Settings settings;
+
+        public LogViewer(Settings settings)
         {
             InitializeComponent();
+
+            this.settings = settings;
+            this.settings.SettingChanged += Settings_SettingChanged;
+
             FormClosing += (source, args) => { args.Cancel = true; Hide(); };
             logsDataGridView.ColumnCount = 3;
             logsDataGridView.RowHeadersVisible = false;
@@ -27,6 +34,14 @@ namespace DayZServerMonitor
             logEntry.Navigate("about:blank");
         }
 
+        private void Settings_SettingChanged(object sender, SettingChangedArgs args)
+        {
+            if (args.SettingName == nameof(settings.MaxLogViewerEntries))
+            {
+                TrimEntries();
+            }
+        }
+
         public void Add(string level, string message)
         {
             if (InvokeRequired)
@@ -39,14 +54,19 @@ namespace DayZServerMonitor
 
             logsDataGridView.Rows.Add(new string[] { DateTime.Now.ToString(), level, message });
 
-            while (logsDataGridView.Rows.Count > 1000)
-            {
-                logsDataGridView.Rows.RemoveAt(0);
-            }
+            TrimEntries();
 
             if (selectionAtEnd)
             {
                 ScrollToEnd();
+            }
+        }
+
+        private void TrimEntries()
+        {
+            while (logsDataGridView.Rows.Count > settings.MaxLogViewerEntries)
+            {
+                logsDataGridView.Rows.RemoveAt(0);
             }
         }
 

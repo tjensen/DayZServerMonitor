@@ -9,11 +9,12 @@ namespace DayZServerMonitor
 {
     public partial class DayZServerMonitorForm : Form
     {
+        private readonly Settings settings = new Settings();
         private readonly ContextMenu contextMenu = new ContextMenu();
-        private readonly LogViewer logViewer = new LogViewer();
         private readonly DynamicIcons dynamicIcons = new DynamicIcons();
         private readonly Clock clock = new Clock();
         private readonly ClientFactory clientFactory = new ClientFactory();
+        private readonly LogViewer logViewer;
         private readonly Logger logger;
         private readonly Monitor monitor;
         private readonly ServerSelectionList serverList;
@@ -22,13 +23,19 @@ namespace DayZServerMonitor
         public DayZServerMonitorForm()
         {
             InitializeComponent();
+
             components.Add(contextMenu);
             components.Add(logViewer);
             contextMenu.MenuItems.Add("Add &Server...", AddServer_Click);
             contextMenu.MenuItems.Add("Add &Profile Location...", AddProfile_Click);
             contextMenu.MenuItems.Add("-");
             contextMenu.MenuItems.Add("View &Logs", ViewLogs_Click);
+            contextMenu.MenuItems.Add("-");
+            contextMenu.MenuItems.Add("Settings...", Settings_Click);
 
+            settings.SettingChanged += Settings_SettingChanged;
+
+            logViewer = new LogViewer(settings);
             logger = new Logger(clock, StatusWriter, logViewer.Add);
             monitor = new Monitor(clock, clientFactory, logger);
 
@@ -260,6 +267,47 @@ namespace DayZServerMonitor
             logViewer.WindowState = FormWindowState.Normal;
             logViewer.Activate();
             logViewer.Show();
+        }
+
+        private void DayZServerMonitorForm_Resize(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Minimized &&
+                settings.HideTaskBarIcon == Settings.HideTaskBarIconValues.WHEN_MINIMIZED)
+            {
+                ShowInTaskbar = false;
+            }
+            else if (WindowState == FormWindowState.Normal &&
+                settings.HideTaskBarIcon == Settings.HideTaskBarIconValues.WHEN_MINIMIZED)
+            {
+                ShowInTaskbar = true;
+            }
+        }
+
+        private void Settings_SettingChanged(object sender, SettingChangedArgs args)
+        {
+            if (args.SettingName == nameof(settings.HideTaskBarIcon))
+            {
+                if (settings.HideTaskBarIcon == Settings.HideTaskBarIconValues.NEVER)
+                {
+                    ShowInTaskbar = true;
+                }
+                else if (settings.HideTaskBarIcon == Settings.HideTaskBarIconValues.WHEN_MINIMIZED)
+                {
+                    ShowInTaskbar = WindowState != FormWindowState.Minimized;
+                }
+                else if (settings.HideTaskBarIcon == Settings.HideTaskBarIconValues.ALWAYS)
+                {
+                    ShowInTaskbar = false;
+                }
+            }
+        }
+
+        private void Settings_Click(object sender, EventArgs e)
+        {
+            using (SettingsDialog dialog = new SettingsDialog())
+            {
+                dialog.ShowDialog(settings);
+            }
         }
     }
 }

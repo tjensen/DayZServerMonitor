@@ -44,7 +44,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DayZServerMonitorForm));
             this.FormPanel = new System.Windows.Forms.Panel();
             this.FormTable = new System.Windows.Forms.TableLayoutPanel();
             this.ServerLabelPanel = new System.Windows.Forms.Panel();
@@ -423,13 +422,14 @@
             this.ClientSize = new System.Drawing.Size(635, 203);
             this.Controls.Add(this.FormPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Icon = global::DayZServerMonitor.Properties.Resources.DayZServerMonitorIcon;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(653, 250);
             this.MinimumSize = new System.Drawing.Size(653, 250);
             this.Name = "DayZServerMonitorForm";
             this.Text = "DayZ Server Monitor";
+            this.Resize += new System.EventHandler(this.DayZServerMonitorForm_Resize);
             this.FormPanel.ResumeLayout(false);
             this.FormPanel.PerformLayout();
             this.FormTable.ResumeLayout(false);

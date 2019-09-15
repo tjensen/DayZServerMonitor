@@ -92,7 +92,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.logViewerSplit);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Icon = Properties.Resources.DayZServerMonitorIcon;
             this.Name = "LogViewer";
             this.Text = "Logs";
             this.logViewerSplit.Panel1.ResumeLayout(false);
