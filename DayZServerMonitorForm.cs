@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 
 namespace DayZServerMonitor
 {
@@ -38,6 +39,8 @@ namespace DayZServerMonitor
             logViewer = new LogViewer(settings);
             logger = new Logger(clock, StatusWriter, logViewer.Add);
             monitor = new Monitor(clock, clientFactory, logger);
+
+            LoadSettings();
 
             SelectionCombo.DisplayMember = "DisplayName";
             SelectionCombo.ValueMember = "Value";
@@ -176,6 +179,49 @@ namespace DayZServerMonitor
             }
         }
 
+        private string SettingsFilename()
+        {
+            return Path.Combine(ApplicationDataFolder(), "settings.xml");
+        }
+
+        private void SaveSettings()
+        {
+            try
+            {
+                Directory.CreateDirectory(ApplicationDataFolder());
+                XmlSerializer serializer = new XmlSerializer(typeof(Settings));
+                using (TextWriter writer = new StreamWriter(SettingsFilename()))
+                {
+                    serializer.Serialize(writer, settings);
+                }
+            }
+            catch (Exception error)
+            {
+                logger.Error("Failed to save settings", error);
+            }
+        }
+
+        private void LoadSettings()
+        {
+            try
+            {
+                if (!File.Exists(SettingsFilename()))
+                {
+                    return;
+                }
+
+                XmlSerializer serializer = new XmlSerializer(typeof(Settings));
+                using (FileStream fs = new FileStream(SettingsFilename(), FileMode.Open))
+                {
+                    settings.Apply((Settings)serializer.Deserialize(fs));
+                }
+            }
+            catch (Exception error)
+            {
+                logger.Error("Failed to load settings", error);
+            }
+        }
+
         private void SaveServer(Server server, string name)
         {
             if (InvokeRequired)
@@ -307,6 +353,7 @@ namespace DayZServerMonitor
             using (SettingsDialog dialog = new SettingsDialog())
             {
                 dialog.ShowDialog(settings);
+                SaveSettings();
             }
         }
     }

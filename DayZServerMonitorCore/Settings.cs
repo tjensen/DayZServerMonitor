@@ -45,5 +45,11 @@ namespace DayZServerMonitorCore
                 OnSettingChanged();
             }
         }
+
+        public void Apply(Settings newSettings)
+        {
+            HideTaskBarIcon = newSettings.HideTaskBarIcon;
+            MaxLogViewerEntries = newSettings.MaxLogViewerEntries;
+        }
     }
 }

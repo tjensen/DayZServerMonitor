@@ -25,6 +25,21 @@ namespace TestDayZServerMonitorCore
         }
 
         [TestMethod]
+        public void ApplyAppliesNewSettings()
+        {
+            Settings newSettings = new Settings()
+            {
+                HideTaskBarIcon = Settings.HideTaskBarIconValues.ALWAYS,
+                MaxLogViewerEntries = 42
+            };
+
+            settings.Apply(newSettings);
+
+            Assert.AreEqual(Settings.HideTaskBarIconValues.ALWAYS, settings.HideTaskBarIcon);
+            Assert.AreEqual(42, settings.MaxLogViewerEntries);
+        }
+
+        [TestMethod]
         public void SettingChangedIsInvokedWhenHideTaskBarIconChanges()
         {
             settings.HideTaskBarIcon = Settings.HideTaskBarIconValues.ALWAYS;
