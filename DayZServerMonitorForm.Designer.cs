@@ -31,6 +31,18 @@
                 {
                     dynamicIcons.Dispose();
                 }
+                if (logViewer != null)
+                {
+                    logViewer.Dispose();
+                }
+                if (contextMenu != null)
+                {
+                    contextMenu.Dispose();
+                }
+                if (removeSelectedServer != null)
+                {
+                    removeSelectedServer.Dispose();
+                }
             }
             base.Dispose(disposing);
         }

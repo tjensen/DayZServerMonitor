@@ -26,8 +26,6 @@ namespace DayZServerMonitor
         {
             InitializeComponent();
 
-            components.Add(contextMenu);
-            components.Add(logViewer);
             contextMenu.MenuItems.Add("Add &Server...", AddServer_Click);
             contextMenu.MenuItems.Add("Add &Profile Location...", AddProfile_Click);
             removeSelectedServer = contextMenu.MenuItems.Add(

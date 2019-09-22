@@ -11,14 +11,12 @@ namespace TestDayZServerMonitorCore
     {
         private readonly MockLogger logger = new MockLogger();
         private readonly ComboBox comboBox = new ComboBox();
-        private ComboBox.ObjectCollection collection;
         private ServerSelectionList list;
         private string filename;
 
         [TestInitialize]
         public void Initialize()
         {
-            collection = comboBox.Items;
             list = new ServerSelectionList(comboBox, logger);
             filename = Path.GetTempFileName();
         }
