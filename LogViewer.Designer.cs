@@ -28,15 +28,19 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogViewer));
+            this.components = new System.ComponentModel.Container();
             this.logViewerSplit = new System.Windows.Forms.SplitContainer();
             this.logsDataGridView = new System.Windows.Forms.DataGridView();
             this.logEntry = new System.Windows.Forms.WebBrowser();
+            this.logEntryContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.logViewerSplit)).BeginInit();
             this.logViewerSplit.Panel1.SuspendLayout();
             this.logViewerSplit.Panel2.SuspendLayout();
             this.logViewerSplit.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logsDataGridView)).BeginInit();
+            this.logEntryContextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // logViewerSplit
@@ -77,6 +81,7 @@
             // 
             this.logEntry.AllowNavigation = false;
             this.logEntry.AllowWebBrowserDrop = false;
+            this.logEntry.ContextMenuStrip = this.logEntryContextMenuStrip;
             this.logEntry.Dock = System.Windows.Forms.DockStyle.Fill;
             this.logEntry.IsWebBrowserContextMenuEnabled = false;
             this.logEntry.Location = new System.Drawing.Point(0, 0);
@@ -85,6 +90,30 @@
             this.logEntry.Size = new System.Drawing.Size(800, 124);
             this.logEntry.TabIndex = 0;
             this.logEntry.WebBrowserShortcutsEnabled = false;
+            this.logEntry.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.LogEntry_PreviewKeyDown);
+            // 
+            // logEntryContextMenuStrip
+            // 
+            this.logEntryContextMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.logEntryContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.copyToolStripMenuItem,
+            this.selectAllToolStripMenuItem});
+            this.logEntryContextMenuStrip.Name = "logEntryContextMenuStrip";
+            this.logEntryContextMenuStrip.Size = new System.Drawing.Size(141, 52);
+            // 
+            // copyToolStripMenuItem
+            // 
+            this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
+            this.copyToolStripMenuItem.Text = "Copy";
+            this.copyToolStripMenuItem.Click += new System.EventHandler(this.CopyToolStripMenuItem_Click);
+            // 
+            // selectAllToolStripMenuItem
+            // 
+            this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
+            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
+            this.selectAllToolStripMenuItem.Text = "Select All";
+            this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.SelectAllToolStripMenuItem_Click);
             // 
             // LogViewer
             // 
@@ -92,7 +121,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.logViewerSplit);
-            this.Icon = Properties.Resources.DayZServerMonitorIcon;
+            this.Icon = global::DayZServerMonitor.Properties.Resources.DayZServerMonitorIcon;
             this.Name = "LogViewer";
             this.Text = "Logs";
             this.logViewerSplit.Panel1.ResumeLayout(false);
@@ -100,6 +129,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.logViewerSplit)).EndInit();
             this.logViewerSplit.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.logsDataGridView)).EndInit();
+            this.logEntryContextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -109,5 +139,8 @@
         private System.Windows.Forms.SplitContainer logViewerSplit;
         private System.Windows.Forms.DataGridView logsDataGridView;
         private System.Windows.Forms.WebBrowser logEntry;
+        private System.Windows.Forms.ContextMenuStrip logEntryContextMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem copyToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem selectAllToolStripMenuItem;
     }
 }

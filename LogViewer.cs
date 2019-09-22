@@ -118,5 +118,32 @@ namespace DayZServerMonitor
             messageDd.InnerText = cells[2].Value.ToString();
             dl.AppendChild(messageDd);
         }
+
+        private void CopyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            logEntry.Document.ExecCommand("copy", false, null);
+        }
+
+        private void SelectAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            logEntry.Document.ExecCommand("selectAll", false, null);
+        }
+
+        private void LogEntry_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            if (!e.Control)
+            {
+                return;
+            }
+
+            if (e.KeyCode == Keys.A)
+            {
+                logEntry.Document.ExecCommand("selectAll", false, null);
+            }
+            else if (e.KeyCode == Keys.C)
+            {
+                logEntry.Document.ExecCommand("copy", false, null);
+            }
+        }
     }
 }
