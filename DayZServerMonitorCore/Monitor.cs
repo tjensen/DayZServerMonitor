@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,12 +11,11 @@ namespace DayZServerMonitorCore
         private const int SERVER_TIMEOUT = 5000;
 
         private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1);
-        private readonly Dictionary<string, Server> gameServerMapping =
-            new Dictionary<string, Server>();
         private readonly IClock clock;
         private readonly IClientFactory clientFactory;
         private readonly ILogger logger;
         private DateTime lastPoll;
+        private (string address, Server server, DateTime dateTime) gameServerMapping = (null, null, new DateTime());
         private string previousPolledServer = null;
 
         public Monitor(IClock clock, IClientFactory clientFactory, ILogger logger)
@@ -54,19 +52,27 @@ namespace DayZServerMonitorCore
 
         private async Task<Server> GetGameServer(Server server)
         {
-            if (!gameServerMapping.ContainsKey(server.Address))
+            if (gameServerMapping.address != server.Address
+                || clock.UtcNow() - gameServerMapping.dateTime >= TimeSpan.FromMinutes(10))
             {
                 MasterServerQuerier masterQuerier = new MasterServerQuerier(clientFactory, logger);
-                gameServerMapping[server.Address] = await masterQuerier.FindDayZServerInRegion(
-                    server.Host, server.Port, MasterServerQuerier.REGION_REST, SERVER_TIMEOUT);
+                gameServerMapping = (
+                    address: server.Address,
+                    server: await masterQuerier.FindDayZServerInRegion(
+                        server.Host, server.Port,
+                        MasterServerQuerier.REGION_REST, SERVER_TIMEOUT),
+                    dateTime: clock.UtcNow());
             }
-            if (gameServerMapping[server.Address] == null)
+            if (gameServerMapping.server == null)
             {
                 logger.Debug(
                     $"Server {server} is not in master list; guessing status port number");
-                gameServerMapping[server.Address] = new Server(server.Host, server.StatsPort);
+                gameServerMapping = (
+                    address: server.Address,
+                    server: new Server(server.Host, server.StatsPort),
+                    dateTime: clock.UtcNow());
             }
-            return gameServerMapping[server.Address];
+            return gameServerMapping.server;
         }
 
         #region IDisposable Support
