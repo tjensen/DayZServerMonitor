@@ -3,6 +3,15 @@ body {
   background: #c0c0ff;
 }
 
+@media (orientation: portrait) {
+  img {
+    width: 100%;
+  }
+  body {
+    font-size: 24pt;
+  }
+}
+
 a {
   text-decoration: none;
   font-weight: bold;
@@ -23,7 +32,6 @@ a > div {
 }
 
 .title div {
-  font-size: 10pt;
   margin: 1em;
 }
 
