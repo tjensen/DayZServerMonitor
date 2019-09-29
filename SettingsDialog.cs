@@ -141,6 +141,7 @@ namespace DayZServerMonitor
             using (SaveFileDialog dialog = new SaveFileDialog())
             {
                 dialog.Filter = "All Files|*.*";
+                dialog.Title = "Log Filename";
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     logFilename.Text = dialog.FileName;
