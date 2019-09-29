@@ -55,17 +55,28 @@ namespace DayZServerMonitor
             Icon = Properties.Resources.DayZServerMonitorIcon;
             ShowInTaskbar = false;
             Width = 600;
+            MinimumSize = new Size(400, 200);
 
-            TableLayoutPanel panel = new TableLayoutPanel
+            TableLayoutPanel mainPanel = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 1,
+                RowCount = 2,
+                Padding = new Padding(4)
+            };
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 20));
+            Controls.Add(mainPanel);
+
+            TableLayoutPanel settingsPanel = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,
                 AutoSize = true,
                 AutoSizeMode = AutoSizeMode.GrowAndShrink,
                 ColumnCount = 2,
-                Padding = new Padding(8),
                 AutoScroll = true
             };
-            Controls.Add(panel);
+            mainPanel.Controls.Add(settingsPanel);
 
             Label hideTaskBarIconLabel = new Label()
             {
@@ -73,7 +84,7 @@ namespace DayZServerMonitor
                 Text = "Hide Task Bar Icon:",
                 TextAlign = ContentAlignment.MiddleLeft
             };
-            panel.Controls.Add(hideTaskBarIconLabel);
+            settingsPanel.Controls.Add(hideTaskBarIconLabel);
 
             hideTaskBarIcon.Dock = DockStyle.Fill;
             hideTaskBarIcon.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -81,7 +92,7 @@ namespace DayZServerMonitor
             {
                 hideTaskBarIcon.Items.Add(value);
             }
-            panel.Controls.Add(hideTaskBarIcon);
+            settingsPanel.Controls.Add(hideTaskBarIcon);
 
             Label maxLogViewerEntriesLabel = new Label()
             {
@@ -89,12 +100,12 @@ namespace DayZServerMonitor
                 Text = "Maximum Log Viewer Entries:",
                 TextAlign = ContentAlignment.MiddleLeft
             };
-            panel.Controls.Add(maxLogViewerEntriesLabel);
+            settingsPanel.Controls.Add(maxLogViewerEntriesLabel);
 
             maxLogViewerEntries.Dock = DockStyle.Left;
             maxLogViewerEntries.Minimum = 1;
             maxLogViewerEntries.Maximum = int.MaxValue;
-            panel.Controls.Add(maxLogViewerEntries);
+            settingsPanel.Controls.Add(maxLogViewerEntries);
 
             Label enableLogFileLabel = new Label()
             {
@@ -102,11 +113,11 @@ namespace DayZServerMonitor
                 Text = "Enable Log File:",
                 TextAlign = ContentAlignment.MiddleLeft
             };
-            panel.Controls.Add(enableLogFileLabel);
+            settingsPanel.Controls.Add(enableLogFileLabel);
 
             enableLogFile.Dock = DockStyle.Left;
             enableLogFile.CheckedChanged += EnableLogFile_CheckedChanged;
-            panel.Controls.Add(enableLogFile);
+            settingsPanel.Controls.Add(enableLogFile);
 
             Label logFilenameLabel = new Label()
             {
@@ -114,26 +125,39 @@ namespace DayZServerMonitor
                 Text = "Log File:",
                 TextAlign = ContentAlignment.MiddleLeft
             };
-            panel.Controls.Add(logFilenameLabel);
+            settingsPanel.Controls.Add(logFilenameLabel);
 
             logFilename.Dock = DockStyle.Fill;
             logFilename.ReadOnly = true;
             logFilename.Click += LogFilename_Click;
-            panel.Controls.Add(logFilename);
+            settingsPanel.Controls.Add(logFilename);
+
+            TableLayoutPanel buttonPanel = new TableLayoutPanel
+            {
+                Anchor = AnchorStyles.Bottom | AnchorStyles.Right,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                ColumnCount = 2,
+                RowCount = 1
+            };
+            mainPanel.Controls.Add(buttonPanel);
 
             Button okButton = new Button()
             {
                 DialogResult = DialogResult.OK,
                 Text = "OK"
             };
-            panel.Controls.Add(okButton);
+            buttonPanel.Controls.Add(okButton);
 
             Button cancelButton = new Button()
             {
                 DialogResult = DialogResult.Cancel,
                 Text = "Cancel"
             };
-            panel.Controls.Add(cancelButton);
+            buttonPanel.Controls.Add(cancelButton);
+
+            AcceptButton = okButton;
+            CancelButton = cancelButton;
 
             ResumeLayout();
         }
