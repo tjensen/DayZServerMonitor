@@ -54,6 +54,7 @@ namespace DayZServerMonitor
             Text = "Settings";
             Icon = Properties.Resources.DayZServerMonitorIcon;
             ShowInTaskbar = false;
+            Width = 600;
 
             TableLayoutPanel panel = new TableLayoutPanel
             {
@@ -104,6 +105,7 @@ namespace DayZServerMonitor
             panel.Controls.Add(enableLogFileLabel);
 
             enableLogFile.Dock = DockStyle.Left;
+            enableLogFile.CheckedChanged += EnableLogFile_CheckedChanged;
             panel.Controls.Add(enableLogFile);
 
             Label logFilenameLabel = new Label()
@@ -136,19 +138,37 @@ namespace DayZServerMonitor
             ResumeLayout();
         }
 
-        private void LogFilename_Click(object sender, EventArgs args)
+        private bool SelectLogFile()
         {
             using (SaveFileDialog dialog = new SaveFileDialog())
             {
                 dialog.Filter = "All Files|*.*";
                 dialog.Title = "Log Filename";
+                dialog.OverwritePrompt = false;
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     logFilename.Text = dialog.FileName;
                     enableLogFile.Checked = true;
+                    return true;
                 }
             }
+            return false;
+        }
 
+        private void LogFilename_Click(object sender, EventArgs args)
+        {
+            SelectLogFile();
+        }
+
+        private void EnableLogFile_CheckedChanged(object sender, EventArgs args)
+        {
+            if (enableLogFile.Checked)
+            {
+                if (!SelectLogFile() && logFilename.Text == "")
+                {
+                    enableLogFile.Checked = false;
+                }
+            }
         }
     }
 }
