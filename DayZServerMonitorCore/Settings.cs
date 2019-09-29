@@ -25,7 +25,7 @@ namespace DayZServerMonitorCore
         public enum HideTaskBarIconValues { NEVER, WHEN_MINIMIZED, ALWAYS };
 
         private HideTaskBarIconValues hideTaskBarIcon = HideTaskBarIconValues.NEVER;
-        private int maxLogViewerEntries = 1000;
+        private int maxLogViewerEntries = 100;
         private string logPathname = null;
 
         public HideTaskBarIconValues HideTaskBarIcon

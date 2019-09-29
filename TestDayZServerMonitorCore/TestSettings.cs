@@ -21,7 +21,7 @@ namespace TestDayZServerMonitorCore
         public void IsConstructedWithDefaultSettings()
         {
             Assert.AreEqual(Settings.HideTaskBarIconValues.NEVER, settings.HideTaskBarIcon);
-            Assert.AreEqual(1000, settings.MaxLogViewerEntries);
+            Assert.AreEqual(100, settings.MaxLogViewerEntries);
             Assert.IsNull(settings.LogPathname);
         }
 
