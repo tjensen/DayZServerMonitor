@@ -22,6 +22,7 @@ namespace TestDayZServerMonitorCore
         {
             Assert.AreEqual(Settings.HideTaskBarIconValues.NEVER, settings.HideTaskBarIcon);
             Assert.AreEqual(1000, settings.MaxLogViewerEntries);
+            Assert.IsNull(settings.LogPathname);
         }
 
         [TestMethod]
@@ -30,13 +31,15 @@ namespace TestDayZServerMonitorCore
             Settings newSettings = new Settings()
             {
                 HideTaskBarIcon = Settings.HideTaskBarIconValues.ALWAYS,
-                MaxLogViewerEntries = 42
+                MaxLogViewerEntries = 42,
+                LogPathname = "/path/to/log"
             };
 
             settings.Apply(newSettings);
 
             Assert.AreEqual(Settings.HideTaskBarIconValues.ALWAYS, settings.HideTaskBarIcon);
             Assert.AreEqual(42, settings.MaxLogViewerEntries);
+            Assert.AreEqual("/path/to/log", settings.LogPathname);
         }
 
         [TestMethod]
@@ -53,6 +56,14 @@ namespace TestDayZServerMonitorCore
             settings.MaxLogViewerEntries = 42;
 
             Assert.AreEqual("MaxLogViewerEntries", settingThatChanged);
+        }
+
+        [TestMethod]
+        public void SettingChangedIsInvokedWhenLogPathnameisChanged()
+        {
+            settings.LogPathname = "LOGFILE";
+
+            Assert.AreEqual("LogPathname", settingThatChanged);
         }
     }
 }

@@ -38,7 +38,7 @@ namespace DayZServerMonitor
             settings.SettingChanged += Settings_SettingChanged;
 
             logViewer = new LogViewer(settings);
-            logger = new Logger(clock, StatusWriter, logViewer.Add);
+            logger = new Logger(settings, clock, StatusWriter, logViewer.Add);
             monitor = new Monitor(clock, clientFactory, logger);
 
             LoadSettings();

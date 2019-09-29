@@ -26,6 +26,7 @@ namespace DayZServerMonitorCore
 
         private HideTaskBarIconValues hideTaskBarIcon = HideTaskBarIconValues.NEVER;
         private int maxLogViewerEntries = 1000;
+        private string logPathname = null;
 
         public HideTaskBarIconValues HideTaskBarIcon
         {
@@ -46,10 +47,21 @@ namespace DayZServerMonitorCore
             }
         }
 
+        public string LogPathname
+        {
+            get => logPathname;
+            set
+            {
+                logPathname = value;
+                OnSettingChanged();
+            }
+        }
+
         public void Apply(Settings newSettings)
         {
             HideTaskBarIcon = newSettings.HideTaskBarIcon;
             MaxLogViewerEntries = newSettings.MaxLogViewerEntries;
+            LogPathname = newSettings.LogPathname;
         }
     }
 }
