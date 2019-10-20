@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DayZServerMonitorCore;
+using System;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -11,11 +12,9 @@ namespace DayZServerMonitor
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            using (DayZServerMonitorForm form = new DayZServerMonitorForm())
+           using (NewDayZServerMonitorForm form = new NewDayZServerMonitorForm(
+               Assembly.GetExecutingAssembly().GetName().Version.ToString()))
             {
-                form.Text += " v";
-                form.Text += Assembly.GetExecutingAssembly().GetName().Version.ToString();
-                form.Initialize();
                 Application.Run(form);
             }
         }
