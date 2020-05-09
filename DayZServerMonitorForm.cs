@@ -276,7 +276,10 @@ namespace DayZServerMonitor
 
         private void AddServer_Click(object sender, EventArgs e)
         {
-            using AddServerDialog dialog = new AddServerDialog();
+            using AddServerDialog dialog = new AddServerDialog
+            {
+                TopMost = settings.AlwaysOnTop
+            };
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 try
@@ -359,7 +362,10 @@ namespace DayZServerMonitor
 
         private void Settings_Click(object sender, EventArgs e)
         {
-            using SettingsDialog dialog = new SettingsDialog();
+            using SettingsDialog dialog = new SettingsDialog
+            {
+                TopMost = settings.AlwaysOnTop
+            };
             dialog.ShowDialog(settings);
             SaveSettings();
         }
