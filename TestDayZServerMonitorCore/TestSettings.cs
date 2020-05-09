@@ -62,7 +62,7 @@ namespace TestDayZServerMonitorCore
         }
 
         [TestMethod]
-        public void SettingChangedIsInvokedWhenLogPathnameisChanged()
+        public void SettingChangedIsInvokedWhenLogPathnameIsChanged()
         {
             settings.LogPathname = "LOGFILE";
 
