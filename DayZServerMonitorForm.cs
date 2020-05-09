@@ -194,10 +194,8 @@ namespace DayZServerMonitor
             {
                 Directory.CreateDirectory(ApplicationDataFolder());
                 XmlSerializer serializer = new XmlSerializer(typeof(Settings));
-                using (TextWriter writer = new StreamWriter(SettingsFilename()))
-                {
-                    serializer.Serialize(writer, settings);
-                }
+                using TextWriter writer = new StreamWriter(SettingsFilename());
+                serializer.Serialize(writer, settings);
             }
             catch (Exception error)
             {
@@ -215,10 +213,8 @@ namespace DayZServerMonitor
                 }
 
                 XmlSerializer serializer = new XmlSerializer(typeof(Settings));
-                using (FileStream fs = new FileStream(SettingsFilename(), FileMode.Open))
-                {
-                    settings.Apply((Settings)serializer.Deserialize(fs));
-                }
+                using FileStream fs = new FileStream(SettingsFilename(), FileMode.Open);
+                settings.Apply((Settings)serializer.Deserialize(fs));
             }
             catch (Exception error)
             {
@@ -280,35 +276,33 @@ namespace DayZServerMonitor
 
         private void AddServer_Click(object sender, EventArgs e)
         {
-            using (AddServerDialog dialog = new AddServerDialog())
+            using AddServerDialog dialog = new AddServerDialog();
+            if (dialog.ShowDialog() == DialogResult.OK)
             {
-                if (dialog.ShowDialog() == DialogResult.OK)
+                try
                 {
-                    try
-                    {
-                        logger.Debug($"Adding server: {dialog.IPAddress}:{dialog.Port}");
-                        ServerSelectionItem item = serverList.SaveServer(new Server(dialog.IPAddress, dialog.Port));
-                        SelectionCombo.SelectedItem = item;
-                    }
-                    catch (Exception error)
-                    {
-                        logger.Error("Failed to add server", error);
-                    }
+                    logger.Debug($"Adding server: {dialog.IPAddress}:{dialog.Port}");
+                    ServerSelectionItem item = serverList.SaveServer(new Server(dialog.IPAddress, dialog.Port));
+                    SelectionCombo.SelectedItem = item;
+                }
+                catch (Exception error)
+                {
+                    logger.Error("Failed to add server", error);
                 }
             }
         }
 
         private void AddProfile_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog dialog = new OpenFileDialog())
+            using OpenFileDialog dialog = new OpenFileDialog
             {
-                dialog.Filter = "DayZ Profiles|*_settings.DayZProfile|All files|*.*";
-                if (dialog.ShowDialog() == DialogResult.OK)
-                {
-                    logger.Debug($"Adding custom profile location: {dialog.FileName}");
-                    ServerSelectionItem item = serverList.SaveProfile(dialog.FileName);
-                    SelectionCombo.SelectedItem = item;
-                }
+                Filter = "DayZ Profiles|*_settings.DayZProfile|All files|*.*"
+            };
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                logger.Debug($"Adding custom profile location: {dialog.FileName}");
+                ServerSelectionItem item = serverList.SaveProfile(dialog.FileName);
+                SelectionCombo.SelectedItem = item;
             }
         }
 
@@ -365,11 +359,9 @@ namespace DayZServerMonitor
 
         private void Settings_Click(object sender, EventArgs e)
         {
-            using (SettingsDialog dialog = new SettingsDialog())
-            {
-                dialog.ShowDialog(settings);
-                SaveSettings();
-            }
+            using SettingsDialog dialog = new SettingsDialog();
+            dialog.ShowDialog(settings);
+            SaveSettings();
         }
     }
 }
