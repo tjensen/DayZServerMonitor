@@ -27,6 +27,7 @@ namespace DayZServerMonitorCore
         private HideTaskBarIconValues hideTaskBarIcon = HideTaskBarIconValues.NEVER;
         private int maxLogViewerEntries = 100;
         private string logPathname = null;
+        private bool alwaysOnTop = false;
 
         public HideTaskBarIconValues HideTaskBarIcon
         {
@@ -57,11 +58,22 @@ namespace DayZServerMonitorCore
             }
         }
 
+        public bool AlwaysOnTop
+        {
+            get => alwaysOnTop;
+            set
+            {
+                alwaysOnTop = value;
+                OnSettingChanged();
+            }
+        }
+
         public void Apply(Settings newSettings)
         {
             HideTaskBarIcon = newSettings.HideTaskBarIcon;
             MaxLogViewerEntries = newSettings.MaxLogViewerEntries;
             LogPathname = newSettings.LogPathname;
+            AlwaysOnTop = newSettings.AlwaysOnTop;
         }
     }
 }

@@ -23,6 +23,7 @@ namespace TestDayZServerMonitorCore
             Assert.AreEqual(Settings.HideTaskBarIconValues.NEVER, settings.HideTaskBarIcon);
             Assert.AreEqual(100, settings.MaxLogViewerEntries);
             Assert.IsNull(settings.LogPathname);
+            Assert.IsFalse(settings.AlwaysOnTop);
         }
 
         [TestMethod]
@@ -32,7 +33,8 @@ namespace TestDayZServerMonitorCore
             {
                 HideTaskBarIcon = Settings.HideTaskBarIconValues.ALWAYS,
                 MaxLogViewerEntries = 42,
-                LogPathname = "/path/to/log"
+                LogPathname = "/path/to/log",
+                AlwaysOnTop = true
             };
 
             settings.Apply(newSettings);
@@ -40,6 +42,7 @@ namespace TestDayZServerMonitorCore
             Assert.AreEqual(Settings.HideTaskBarIconValues.ALWAYS, settings.HideTaskBarIcon);
             Assert.AreEqual(42, settings.MaxLogViewerEntries);
             Assert.AreEqual("/path/to/log", settings.LogPathname);
+            Assert.IsTrue(settings.AlwaysOnTop);
         }
 
         [TestMethod]
@@ -64,6 +67,14 @@ namespace TestDayZServerMonitorCore
             settings.LogPathname = "LOGFILE";
 
             Assert.AreEqual("LogPathname", settingThatChanged);
+        }
+
+        [TestMethod]
+        public void SettingChangedIsInvokedWhenAlwaysOnTopIsChanged()
+        {
+            settings.AlwaysOnTop = true;
+
+            Assert.AreEqual("AlwaysOnTop", settingThatChanged);
         }
     }
 }

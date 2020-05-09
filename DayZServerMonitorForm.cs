@@ -357,6 +357,10 @@ namespace DayZServerMonitor
                     ShowInTaskbar = false;
                 }
             }
+            else if (args.SettingName == nameof(settings.AlwaysOnTop))
+            {
+                TopMost = settings.AlwaysOnTop;
+            }
         }
 
         private void Settings_Click(object sender, EventArgs e)

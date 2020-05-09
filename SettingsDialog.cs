@@ -8,6 +8,7 @@ namespace DayZServerMonitor
     public class SettingsDialog : Form
     {
         private readonly ComboBox hideTaskBarIcon = new ComboBox();
+        private readonly CheckBox alwaysOnTop = new CheckBox();
         private readonly NumericUpDown maxLogViewerEntries = new NumericUpDown();
         private readonly CheckBox enableLogFile = new CheckBox();
         private readonly TextBox logFilename = new TextBox();
@@ -20,6 +21,7 @@ namespace DayZServerMonitor
         public void ShowDialog(Settings settings)
         {
             hideTaskBarIcon.SelectedItem = settings.HideTaskBarIcon;
+            alwaysOnTop.Checked = settings.AlwaysOnTop;
             maxLogViewerEntries.Value = settings.MaxLogViewerEntries;
             if (settings.LogPathname == null)
             {
@@ -35,6 +37,7 @@ namespace DayZServerMonitor
             if (ShowDialog() == DialogResult.OK)
             {
                 settings.HideTaskBarIcon = (Settings.HideTaskBarIconValues)hideTaskBarIcon.SelectedItem;
+                settings.AlwaysOnTop = alwaysOnTop.Checked;
                 settings.MaxLogViewerEntries = (int)maxLogViewerEntries.Value;
                 if (enableLogFile.Checked && logFilename.Text != "")
                 {
@@ -93,6 +96,17 @@ namespace DayZServerMonitor
                 hideTaskBarIcon.Items.Add(value);
             }
             settingsPanel.Controls.Add(hideTaskBarIcon);
+
+            Label alwaysOnTopLabel = new Label()
+            {
+                Dock = DockStyle.Fill,
+                Text = "Always On Top:",
+                TextAlign = ContentAlignment.MiddleLeft
+            };
+            settingsPanel.Controls.Add(alwaysOnTopLabel);
+
+            alwaysOnTop.Dock = DockStyle.Left;
+            settingsPanel.Controls.Add(alwaysOnTop);
 
             Label maxLogViewerEntriesLabel = new Label()
             {
