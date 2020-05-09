@@ -53,8 +53,12 @@ namespace TestDayZServerMonitorCore
             var error = new Exception("some message");
             logger.Error("description of error", error);
 
+            TimeSpan expectedTimestamp = clock.CurrentTime.AddMilliseconds(
+                -clock.CurrentTime.Millisecond).ToLocalTime().TimeOfDay;
+
             Assert.AreEqual(1, statusTexts.Count);
-            Assert.AreEqual("16:34:12 - description of error: some message", statusTexts[0]);
+            Assert.AreEqual(
+                $"{expectedTimestamp:c} - description of error: some message", statusTexts[0]);
 
             Assert.AreEqual(1, logEntries.Count);
             Assert.AreEqual("ERROR", logEntries[0].Item1);
@@ -78,19 +82,20 @@ namespace TestDayZServerMonitorCore
         {
             settings.LogPathname = tempFilename;
 
+            DateTime firstTime = clock.CurrentTime;
             logger.Debug("debug text");
-            clock.CurrentTime += TimeSpan.FromSeconds(1);
+            DateTime secondTime = clock.CurrentTime += TimeSpan.FromSeconds(1);
             logger.Status("status text");
-            clock.CurrentTime += TimeSpan.FromSeconds(1);
+            DateTime thirdTime = clock.CurrentTime += TimeSpan.FromSeconds(1);
             logger.Error("error text", new Exception("exception message"));
 
             settings.LogPathname = null; // Closes the log file so that the test can read it
 
             string logContents = File.ReadAllText(tempFilename);
             Assert.AreEqual(
-                "8/24/2019 4:34:12 PM - DEBUG - debug text\r\n" +
-                "8/24/2019 4:34:13 PM - STATUS - status text\r\n" +
-                "8/24/2019 4:34:14 PM - ERROR - error text\r\n" +
+                $"{firstTime.ToLocalTime()} - DEBUG - debug text\r\n" +
+                $"{secondTime.ToLocalTime()} - STATUS - status text\r\n" +
+                $"{thirdTime.ToLocalTime()} - ERROR - error text\r\n" +
                 "System.Exception: exception message\r\n",
                 logContents);
         }
@@ -101,6 +106,9 @@ namespace TestDayZServerMonitorCore
             File.WriteAllText(tempFilename, "existing text\r\n");
             settings.LogPathname = tempFilename;
 
+            DateTime expectedTimestamp = clock.CurrentTime.AddMilliseconds(
+                -clock.CurrentTime.Millisecond).ToLocalTime();
+
             logger.Status("status text");
 
             settings.LogPathname = null; // Closes the log file so that the test can read it
@@ -108,7 +116,7 @@ namespace TestDayZServerMonitorCore
             string logContents = File.ReadAllText(tempFilename);
             Assert.AreEqual(
                 "existing text\r\n" +
-                "8/24/2019 4:34:12 PM - STATUS - status text\r\n",
+                $"{expectedTimestamp} - STATUS - status text\r\n",
                 logContents);
         }
 
