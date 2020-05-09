@@ -12,6 +12,8 @@ namespace DayZServerMonitor
         private readonly NumericUpDown maxLogViewerEntries = new NumericUpDown();
         private readonly CheckBox enableLogFile = new CheckBox();
         private readonly TextBox logFilename = new TextBox();
+        private readonly Button trayIconBackground = new Button();
+        private readonly Button trayIconForeground = new Button();
 
         public SettingsDialog()
         {
@@ -33,6 +35,8 @@ namespace DayZServerMonitor
                 enableLogFile.Checked = true;
                 logFilename.Text = settings.LogPathname;
             }
+            trayIconBackground.BackColor = settings.TrayIconBackground;
+            trayIconForeground.BackColor = settings.TrayIconForeground;
 
             if (ShowDialog() == DialogResult.OK)
             {
@@ -47,6 +51,8 @@ namespace DayZServerMonitor
                 {
                     settings.LogPathname = null;
                 }
+                settings.TrayIconBackground = trayIconBackground.BackColor;
+                settings.TrayIconForeground = trayIconForeground.BackColor;
             }
         }
 
@@ -146,6 +152,30 @@ namespace DayZServerMonitor
             logFilename.Click += LogFilename_Click;
             settingsPanel.Controls.Add(logFilename);
 
+            Label trayIconBackgroundLabel = new Label()
+            {
+                Dock = DockStyle.Fill,
+                Text = "Tray Icon Background:",
+                TextAlign = ContentAlignment.MiddleLeft
+            };
+            settingsPanel.Controls.Add(trayIconBackgroundLabel);
+
+            trayIconBackground.Dock = DockStyle.Left;
+            trayIconBackground.Click += ColorButton_Click;
+            settingsPanel.Controls.Add(trayIconBackground);
+
+            Label trayIconForegroundLabel = new Label()
+            {
+                Dock = DockStyle.Fill,
+                Text = "Tray Icon Foreground:",
+                TextAlign = ContentAlignment.MiddleLeft
+            };
+            settingsPanel.Controls.Add(trayIconForegroundLabel);
+
+            trayIconForeground.Dock = DockStyle.Left;
+            trayIconForeground.Click += ColorButton_Click;
+            settingsPanel.Controls.Add(trayIconForeground);
+
             TableLayoutPanel buttonPanel = new TableLayoutPanel
             {
                 Anchor = AnchorStyles.Bottom | AnchorStyles.Right,
@@ -206,6 +236,19 @@ namespace DayZServerMonitor
                 {
                     enableLogFile.Checked = false;
                 }
+            }
+        }
+
+        private void ColorButton_Click(object sender, EventArgs args)
+        {
+            Button colorButton = (Button) sender;
+            using ColorDialog dialog = new ColorDialog
+            {
+                Color = colorButton.BackColor
+            };
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                colorButton.BackColor = dialog.Color;
             }
         }
     }

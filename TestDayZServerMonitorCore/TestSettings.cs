@@ -1,5 +1,8 @@
 ﻿using DayZServerMonitorCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Drawing;
+using System.IO;
+using System.Xml.Serialization;
 
 namespace TestDayZServerMonitorCore
 {
@@ -24,6 +27,8 @@ namespace TestDayZServerMonitorCore
             Assert.AreEqual(100, settings.MaxLogViewerEntries);
             Assert.IsNull(settings.LogPathname);
             Assert.IsFalse(settings.AlwaysOnTop);
+            Assert.AreEqual(Color.Black, settings.TrayIconBackground);
+            Assert.AreEqual(Color.White, settings.TrayIconForeground);
         }
 
         [TestMethod]
@@ -34,7 +39,9 @@ namespace TestDayZServerMonitorCore
                 HideTaskBarIcon = Settings.HideTaskBarIconValues.ALWAYS,
                 MaxLogViewerEntries = 42,
                 LogPathname = "/path/to/log",
-                AlwaysOnTop = true
+                AlwaysOnTop = true,
+                TrayIconBackground = Color.Green,
+                TrayIconForeground = Color.Blue
             };
 
             settings.Apply(newSettings);
@@ -43,9 +50,47 @@ namespace TestDayZServerMonitorCore
             Assert.AreEqual(42, settings.MaxLogViewerEntries);
             Assert.AreEqual("/path/to/log", settings.LogPathname);
             Assert.IsTrue(settings.AlwaysOnTop);
+            Assert.AreEqual(Color.Green, settings.TrayIconBackground);
+            Assert.AreEqual(Color.Blue, settings.TrayIconForeground);
         }
 
         [TestMethod]
+        public void SettinsgAreSerializable()
+        {
+            Settings settingsToSave = new Settings()
+            {
+                HideTaskBarIcon = Settings.HideTaskBarIconValues.ALWAYS,
+                MaxLogViewerEntries = 42,
+                LogPathname = "/path/to/log",
+                AlwaysOnTop = true,
+                TrayIconBackground = Color.Green,
+                TrayIconForeground = Color.Blue
+            };
+
+            XmlSerializer serializer = new XmlSerializer(typeof(Settings));
+
+            MemoryStream writeStream = new MemoryStream();
+            using (TextWriter writer = new StreamWriter(writeStream))
+            {
+                serializer.Serialize(writer, settingsToSave);
+            }
+
+            MemoryStream readStream = new MemoryStream(writeStream.GetBuffer());
+            Settings settingsToLoad = new Settings();
+            using (TextReader reader = new StreamReader(readStream))
+            {
+                settingsToLoad.Apply((Settings)serializer.Deserialize(reader));
+            }
+
+            Assert.AreEqual(settingsToSave.HideTaskBarIcon, settingsToLoad.HideTaskBarIcon);
+            Assert.AreEqual(settingsToSave.MaxLogViewerEntries, settingsToLoad.MaxLogViewerEntries);
+            Assert.AreEqual(settingsToSave.LogPathname, settingsToLoad.LogPathname);
+            Assert.AreEqual(settingsToSave.AlwaysOnTop, settingsToLoad.AlwaysOnTop);
+            Assert.AreEqual(settingsToSave.TrayIconBackground.ToArgb(), settingsToLoad.TrayIconBackground.ToArgb());
+            Assert.AreEqual(settingsToSave.TrayIconForeground.ToArgb(), settingsToLoad.TrayIconForeground.ToArgb());
+        }
+
+[TestMethod]
         public void SettingChangedIsInvokedWhenHideTaskBarIconChanges()
         {
             settings.HideTaskBarIcon = Settings.HideTaskBarIconValues.ALWAYS;
@@ -75,6 +120,22 @@ namespace TestDayZServerMonitorCore
             settings.AlwaysOnTop = true;
 
             Assert.AreEqual("AlwaysOnTop", settingThatChanged);
+        }
+
+        [TestMethod]
+        public void SettingChangedIsInvokedWhenTrayIconBackgroundIsChanged()
+        {
+            settings.TrayIconBackground = Color.Red;
+
+            Assert.AreEqual("TrayIconBackground", settingThatChanged);
+        }
+
+        [TestMethod]
+        public void SettingChangedIsInvokedWhenTrayIconForegroundIsChanged()
+        {
+            settings.TrayIconForeground = Color.Magenta;
+
+            Assert.AreEqual("TrayIconForeground", settingThatChanged);
         }
     }
 }

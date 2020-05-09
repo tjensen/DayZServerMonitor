@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Drawing;
 using System.Runtime.CompilerServices;
+using System.Xml.Serialization;
 
 namespace DayZServerMonitorCore
 {
@@ -28,6 +30,8 @@ namespace DayZServerMonitorCore
         private int maxLogViewerEntries = 100;
         private string logPathname = null;
         private bool alwaysOnTop = false;
+        private Color trayIconBackground = Color.Black;
+        private Color trayIconForeground = Color.White;
 
         public HideTaskBarIconValues HideTaskBarIcon
         {
@@ -68,12 +72,48 @@ namespace DayZServerMonitorCore
             }
         }
 
+        [XmlIgnore]
+        public Color TrayIconBackground
+        {
+            get => trayIconBackground;
+            set
+            {
+                trayIconBackground = value;
+                OnSettingChanged();
+            }
+        }
+
+        [XmlIgnore]
+        public Color TrayIconForeground
+        {
+            get => trayIconForeground;
+            set
+            {
+                trayIconForeground = value;
+                OnSettingChanged();
+            }
+        }
+
+        public int TrayIconBackgroundARGB
+        {
+            get => TrayIconBackground.ToArgb();
+            set => TrayIconBackground = Color.FromArgb(value);
+        }
+
+        public int TrayIconForegroundARGB
+        {
+            get => TrayIconForeground.ToArgb();
+            set => TrayIconForeground = Color.FromArgb(value);
+        }
+
         public void Apply(Settings newSettings)
         {
             HideTaskBarIcon = newSettings.HideTaskBarIcon;
             MaxLogViewerEntries = newSettings.MaxLogViewerEntries;
             LogPathname = newSettings.LogPathname;
             AlwaysOnTop = newSettings.AlwaysOnTop;
+            TrayIconBackground = newSettings.TrayIconBackground;
+            TrayIconForeground = newSettings.TrayIconForeground;
         }
     }
 }

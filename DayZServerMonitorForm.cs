@@ -131,13 +131,19 @@ namespace DayZServerMonitor
                 playersColor = Color.Red;
             }
             UpdateValues(server, name, players.ToString(), maxPlayers.ToString(), playersColor);
-            UpdateSystemTrayIcon(dynamicIcons.GetIconForNumber((uint)players), $"{players}/{maxPlayers}");
+            UpdateSystemTrayIcon(
+                dynamicIcons.GetIconForNumber(
+                    (uint)players, settings.TrayIconForeground, settings.TrayIconBackground),
+                $"{players}/{maxPlayers}");
         }
 
         internal void UpdateValues(string server)
         {
             UpdateValues(server, "", "?", "?", Color.Gray);
-            UpdateSystemTrayIcon(dynamicIcons.GetIconForUnknown(), "?");
+            UpdateSystemTrayIcon(
+                dynamicIcons.GetIconForUnknown(
+                    settings.TrayIconForeground, settings.TrayIconBackground),
+                "?");
         }
 
         internal void Initialize()
@@ -357,6 +363,10 @@ namespace DayZServerMonitor
             else if (args.SettingName == nameof(settings.AlwaysOnTop))
             {
                 TopMost = settings.AlwaysOnTop;
+            }
+            else if (args.SettingName == nameof(settings.TrayIconBackground) || args.SettingName == nameof(settings.TrayIconForeground))
+            {
+                dynamicIcons.Reset();
             }
         }
 

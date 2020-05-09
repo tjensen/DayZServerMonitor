@@ -37,38 +37,42 @@ namespace DayZServerMonitorCore
         private readonly Dictionary<uint, Icon> numberIcons = new Dictionary<uint, Icon>();
         private Icon unknownIcon = null;
 
-        public Icon GetIconForNumber(uint value)
+        public Icon GetIconForNumber(uint value, Color fg, Color bg)
         {
             if (!numberIcons.ContainsKey(value))
             {
-                using (Bitmap bmp = new Bitmap(16, 16))
-                {
-                    using (Graphics graph = Graphics.FromImage(bmp))
-                    {
-                        graph.FillRectangle(Brushes.Black, 0, 0, 16, 16);
-                        DrawNumber(graph, value, Brushes.White);
-                        numberIcons[value] = Icon.FromHandle(bmp.GetHicon());
-                    }
-                }
+                using Bitmap bmp = new Bitmap(16, 16);
+                using Brush fgBrush = new SolidBrush(fg);
+                using Brush bgBrush = new SolidBrush(bg);
+                using Graphics graph = Graphics.FromImage(bmp);
+                graph.FillRectangle(bgBrush, 0, 0, 16, 16);
+                DrawNumber(graph, value, fgBrush);
+                numberIcons[value] = Icon.FromHandle(bmp.GetHicon());
             }
             return numberIcons[value];
         }
 
-        public Icon GetIconForUnknown()
+        public Icon GetIconForUnknown(Color fg, Color bg)
         {
             if (unknownIcon == null)
             {
-                using (Bitmap bmp = new Bitmap(16, 16))
+                using Bitmap bmp = new Bitmap(16, 16);
+                using Brush fgBrush = new SolidBrush(fg);
+                using Brush bgBrush = new SolidBrush(bg);
+                using (Graphics graph = Graphics.FromImage(bmp))
                 {
-                    using (Graphics graph = Graphics.FromImage(bmp))
-                    {
-                        graph.FillRectangle(Brushes.Black, 0, 0, 16, 16);
-                        DrawX(graph, Brushes.White);
-                    }
-                    unknownIcon = Icon.FromHandle(bmp.GetHicon());
+                    graph.FillRectangle(bgBrush, 0, 0, 16, 16);
+                    DrawX(graph, fgBrush);
                 }
+                unknownIcon = Icon.FromHandle(bmp.GetHicon());
             }
             return unknownIcon;
+        }
+
+        public void Reset()
+        {
+            numberIcons.Clear();
+            unknownIcon = null;
         }
 
         private Point AdjustX(Point point, int widthAdjust, int left)
@@ -96,42 +100,38 @@ namespace DayZServerMonitorCore
 
         private void DrawNumber(Graphics graph, uint value, Brush brush)
         {
-            using (Pen pen = new Pen(brush))
+            using Pen pen = new Pen(brush);
+            if (value < 10)
             {
-                if (value < 10)
-                {
-                    DrawDigit(graph, 4, value, WIDE, pen);
-                }
-                else if (value < 100)
-                {
-                    DrawDigit(graph, 0, (value / 10) % 10, WIDE, pen);
-                    DrawDigit(graph, 8, value % 10, WIDE, pen);
-                }
-                else
-                {
-                    // This really only works for 100...199 since the third digit only has enough
-                    // room for a one.
-                    DrawDigit(graph, -2, (value / 100) % 10, NARROW, pen);
-                    DrawDigit(graph, 4, (value / 10) % 10, NARROW, pen);
-                    DrawDigit(graph, 10, value % 10, NARROW, pen);
-                }
+                DrawDigit(graph, 4, value, WIDE, pen);
+            }
+            else if (value < 100)
+            {
+                DrawDigit(graph, 0, (value / 10) % 10, WIDE, pen);
+                DrawDigit(graph, 8, value % 10, WIDE, pen);
+            }
+            else
+            {
+                // This really only works for 100...199 since the third digit only has enough
+                // room for a one.
+                DrawDigit(graph, -2, (value / 100) % 10, NARROW, pen);
+                DrawDigit(graph, 4, (value / 10) % 10, NARROW, pen);
+                DrawDigit(graph, 10, value % 10, NARROW, pen);
             }
         }
 
         private void DrawX(Graphics graph, Brush brush)
         {
-            using (Pen pen = new Pen(brush))
-            {
-                const int left = 4;
-                graph.DrawLine(
-                    new Pen(brush),
-                    AdjustX(new Point(LEFT, TOP), WIDE, left),
-                    AdjustX(new Point(RIGHT, BOTTOM), WIDE, left));
-                graph.DrawLine(
-                    new Pen(brush),
-                    AdjustX(new Point(RIGHT, TOP), WIDE, left),
-                    AdjustX(new Point(LEFT, BOTTOM), WIDE, left));
-            }
+            using Pen pen = new Pen(brush);
+            const int left = 4;
+            graph.DrawLine(
+                new Pen(brush),
+                AdjustX(new Point(LEFT, TOP), WIDE, left),
+                AdjustX(new Point(RIGHT, BOTTOM), WIDE, left));
+            graph.DrawLine(
+                new Pen(brush),
+                AdjustX(new Point(RIGHT, TOP), WIDE, left),
+                AdjustX(new Point(LEFT, BOTTOM), WIDE, left));
         }
 
         #region IDisposable Support
