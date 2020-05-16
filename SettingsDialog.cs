@@ -7,6 +7,7 @@ namespace DayZServerMonitor
 {
     public class SettingsDialog : Form
     {
+        private readonly TableLayoutPanel mainPanel = new TableLayoutPanel();
         private readonly ComboBox hideTaskBarIcon = new ComboBox();
         private readonly CheckBox alwaysOnTop = new CheckBox();
         private readonly NumericUpDown maxLogViewerEntries = new NumericUpDown();
@@ -16,6 +17,8 @@ namespace DayZServerMonitor
         private readonly ComboBox notifyOnPlayerCount = new ComboBox();
         private readonly Button trayIconBackground = new Button();
         private readonly Button trayIconForeground = new Button();
+        private readonly Button trayIconAlertBackground = new Button();
+        private readonly Button trayIconAlertForeground = new Button();
 
         public SettingsDialog()
         {
@@ -41,6 +44,8 @@ namespace DayZServerMonitor
             notifyOnPlayerCount.SelectedItem = settings.NotifyOnPlayerCount;
             trayIconBackground.BackColor = settings.TrayIconBackground;
             trayIconForeground.BackColor = settings.TrayIconForeground;
+            trayIconAlertBackground.BackColor = settings.TrayIconAlertBackground;
+            trayIconAlertForeground.BackColor = settings.TrayIconAlertForeground;
 
             if (ShowDialog() == DialogResult.OK)
             {
@@ -61,7 +66,29 @@ namespace DayZServerMonitor
                     (Settings.NotifyOnPlayerCountValues)notifyOnPlayerCount.SelectedItem;
                 settings.TrayIconBackground = trayIconBackground.BackColor;
                 settings.TrayIconForeground = trayIconForeground.BackColor;
+                settings.TrayIconAlertBackground = trayIconAlertBackground.BackColor;
+                settings.TrayIconAlertForeground = trayIconAlertForeground.BackColor;
             }
+        }
+
+        private void InitializeSetting(Panel panel, Control control, string labelText)
+        {
+            Label label = new Label()
+            {
+                Dock = DockStyle.Fill,
+                Text = labelText + ":",
+                TextAlign = ContentAlignment.MiddleLeft
+            };
+            panel.Controls.Add(label);
+
+            panel.Controls.Add(control);
+        }
+
+        private void InitializeColorSetting(Panel panel, Button colorButton, string labelText)
+        {
+            colorButton.Dock = DockStyle.Left;
+            colorButton.Click += ColorButton_Click;
+            InitializeSetting(panel, colorButton, labelText);
         }
 
         private void InitializeComponent()
@@ -73,16 +100,17 @@ namespace DayZServerMonitor
             ShowInTaskbar = false;
             Width = 600;
             MinimumSize = new Size(400, 200);
+            SizeChanged += SettingsDialog_SizeChanged;
 
-            TableLayoutPanel mainPanel = new TableLayoutPanel
-            {
-                Dock = DockStyle.Fill,
-                ColumnCount = 1,
-                RowCount = 2,
-                Padding = new Padding(4)
-            };
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 20));
+            mainPanel.Dock = DockStyle.Fill;
+            mainPanel.ColumnCount = 1;
+            mainPanel.RowCount = 2;
+            mainPanel.Padding = new Padding(4);
+            mainPanel.RowStyles.Add(
+                new RowStyle(
+                    SizeType.Absolute,
+                    ClientSize.Height - (mainPanel.Padding.Top + mainPanel.Padding.Bottom) - 35));
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 35));
             Controls.Add(mainPanel);
 
             TableLayoutPanel settingsPanel = new TableLayoutPanel
@@ -91,17 +119,11 @@ namespace DayZServerMonitor
                 AutoSize = true,
                 AutoSizeMode = AutoSizeMode.GrowAndShrink,
                 ColumnCount = 2,
-                AutoScroll = true
+                AutoScroll = true,
             };
+            settingsPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150));
+            settingsPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
             mainPanel.Controls.Add(settingsPanel);
-
-            Label hideTaskBarIconLabel = new Label()
-            {
-                Dock = DockStyle.Fill,
-                Text = "Hide Task Bar Icon:",
-                TextAlign = ContentAlignment.MiddleLeft
-            };
-            settingsPanel.Controls.Add(hideTaskBarIconLabel);
 
             hideTaskBarIcon.Dock = DockStyle.Fill;
             hideTaskBarIcon.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -109,64 +131,24 @@ namespace DayZServerMonitor
             {
                 hideTaskBarIcon.Items.Add(value);
             }
-            settingsPanel.Controls.Add(hideTaskBarIcon);
-
-            Label alwaysOnTopLabel = new Label()
-            {
-                Dock = DockStyle.Fill,
-                Text = "Always On Top:",
-                TextAlign = ContentAlignment.MiddleLeft
-            };
-            settingsPanel.Controls.Add(alwaysOnTopLabel);
+            InitializeSetting(settingsPanel, hideTaskBarIcon, "Hide Task Bar Icon");
 
             alwaysOnTop.Dock = DockStyle.Left;
-            settingsPanel.Controls.Add(alwaysOnTop);
-
-            Label maxLogViewerEntriesLabel = new Label()
-            {
-                Dock = DockStyle.Fill,
-                Text = "Maximum Log Viewer Entries:",
-                TextAlign = ContentAlignment.MiddleLeft
-            };
-            settingsPanel.Controls.Add(maxLogViewerEntriesLabel);
+            InitializeSetting(settingsPanel, alwaysOnTop, "Always On Top");
 
             maxLogViewerEntries.Dock = DockStyle.Left;
             maxLogViewerEntries.Minimum = 1;
             maxLogViewerEntries.Maximum = int.MaxValue;
-            settingsPanel.Controls.Add(maxLogViewerEntries);
-
-            Label enableLogFileLabel = new Label()
-            {
-                Dock = DockStyle.Fill,
-                Text = "Enable Log File:",
-                TextAlign = ContentAlignment.MiddleLeft
-            };
-            settingsPanel.Controls.Add(enableLogFileLabel);
+            InitializeSetting(settingsPanel, maxLogViewerEntries, "Maximum Log Viewer Entries");
 
             enableLogFile.Dock = DockStyle.Left;
             enableLogFile.CheckedChanged += EnableLogFile_CheckedChanged;
-            settingsPanel.Controls.Add(enableLogFile);
-
-            Label logFilenameLabel = new Label()
-            {
-                Dock = DockStyle.Fill,
-                Text = "Log File:",
-                TextAlign = ContentAlignment.MiddleLeft
-            };
-            settingsPanel.Controls.Add(logFilenameLabel);
+            InitializeSetting(settingsPanel, enableLogFile, "Enable Log File");
 
             logFilename.Dock = DockStyle.Fill;
             logFilename.ReadOnly = true;
             logFilename.Click += LogFilename_Click;
-            settingsPanel.Controls.Add(logFilename);
-
-            Label notifyOnPlayerCountLabel = new Label()
-            {
-                Dock = DockStyle.Fill,
-                Text = "Notify On Player Count:",
-                TextAlign = ContentAlignment.MiddleLeft
-            };
-            settingsPanel.Controls.Add(notifyOnPlayerCountLabel);
+            InitializeSetting(settingsPanel, logFilename, "Log File");
 
             notifyOnPlayerCount.Dock = DockStyle.Fill;
             notifyOnPlayerCount.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -174,44 +156,24 @@ namespace DayZServerMonitor
             {
                 notifyOnPlayerCount.Items.Add(value);
             }
-            settingsPanel.Controls.Add(notifyOnPlayerCount);
-
-            Label playerCountThresholdLabel = new Label()
-            {
-                Dock = DockStyle.Fill,
-                Text = "Player Count Threshold:",
-                TextAlign = ContentAlignment.MiddleLeft
-            };
-            settingsPanel.Controls.Add(playerCountThresholdLabel);
+            InitializeSetting(settingsPanel, notifyOnPlayerCount, "Notify On Player Count");
 
             playerCountThreshold.Dock = DockStyle.Left;
             playerCountThreshold.Minimum = 0;
             playerCountThreshold.Maximum = int.MaxValue;
-            settingsPanel.Controls.Add(playerCountThreshold);
+            InitializeSetting(settingsPanel, playerCountThreshold, "Player Count Threshold");
 
-            Label trayIconBackgroundLabel = new Label()
-            {
-                Dock = DockStyle.Fill,
-                Text = "Tray Icon Background:",
-                TextAlign = ContentAlignment.MiddleLeft
-            };
-            settingsPanel.Controls.Add(trayIconBackgroundLabel);
+            InitializeColorSetting(settingsPanel, trayIconBackground, "Tray Icon Background");
+            InitializeColorSetting(settingsPanel, trayIconForeground, "Tray Icon Foreground");
 
-            trayIconBackground.Dock = DockStyle.Left;
-            trayIconBackground.Click += ColorButton_Click;
-            settingsPanel.Controls.Add(trayIconBackground);
+            InitializeColorSetting(
+                settingsPanel, trayIconAlertBackground, "Tray Icon Alert Background");
+            InitializeColorSetting(
+                settingsPanel, trayIconAlertForeground, "Tray Icon Alert Foreground");
 
-            Label trayIconForegroundLabel = new Label()
-            {
-                Dock = DockStyle.Fill,
-                Text = "Tray Icon Foreground:",
-                TextAlign = ContentAlignment.MiddleLeft
-            };
-            settingsPanel.Controls.Add(trayIconForegroundLabel);
-
-            trayIconForeground.Dock = DockStyle.Left;
-            trayIconForeground.Click += ColorButton_Click;
-            settingsPanel.Controls.Add(trayIconForeground);
+            // Add an extra empty row to fill any remaining space
+            settingsPanel.Controls.Add(new Panel { Height = 0 });
+            settingsPanel.Controls.Add(new Panel { Height = 0 });
 
             TableLayoutPanel buttonPanel = new TableLayoutPanel
             {
@@ -241,6 +203,11 @@ namespace DayZServerMonitor
             CancelButton = cancelButton;
 
             ResumeLayout();
+        }
+
+        private void SettingsDialog_SizeChanged(object sender, EventArgs e)
+        {
+            mainPanel.RowStyles[0].Height = ClientSize.Height - (mainPanel.Padding.Top + mainPanel.Padding.Bottom) - 35;
         }
 
         private bool SelectLogFile()

@@ -34,12 +34,39 @@ namespace DayZServerMonitorCore
             new Tuple<Point, Point>(new Point(RIGHT, MIDDLE), new Point (RIGHT, BOTTOM))
         };
 
-        private readonly Dictionary<uint, Icon> numberIcons = new Dictionary<uint, Icon>();
-        private Icon unknownIcon = null;
+        private readonly struct NumberIconParams
+        {
+            public NumberIconParams(uint number, Color foreground, Color background)
+            {
+                Number = number;
+                Foreground = foreground.ToArgb();
+                Background = background.ToArgb();
+            }
+            public uint Number { get; }
+            public int Foreground { get; }
+            public int Background { get; }
+        }
+
+        private readonly struct UnknownIconParams
+        {
+            public UnknownIconParams(Color foreground, Color background)
+            {
+                Foreground = foreground.ToArgb();
+                Background = background.ToArgb();
+            }
+            public int Foreground { get; }
+            public int Background { get; }
+        }
+
+        private readonly Dictionary<NumberIconParams, Icon> numberIcons =
+            new Dictionary<NumberIconParams, Icon>();
+        private readonly Dictionary<UnknownIconParams, Icon> unknownIcons =
+            new Dictionary<UnknownIconParams, Icon>();
 
         public Icon GetIconForNumber(uint value, Color fg, Color bg)
         {
-            if (!numberIcons.ContainsKey(value))
+            NumberIconParams iconParams = new NumberIconParams(value, fg, bg);
+            if (!numberIcons.ContainsKey(iconParams))
             {
                 using Bitmap bmp = new Bitmap(16, 16);
                 using Brush fgBrush = new SolidBrush(fg);
@@ -47,14 +74,15 @@ namespace DayZServerMonitorCore
                 using Graphics graph = Graphics.FromImage(bmp);
                 graph.FillRectangle(bgBrush, 0, 0, 16, 16);
                 DrawNumber(graph, value, fgBrush);
-                numberIcons[value] = Icon.FromHandle(bmp.GetHicon());
+                numberIcons[iconParams] = Icon.FromHandle(bmp.GetHicon());
             }
-            return numberIcons[value];
+            return numberIcons[iconParams];
         }
 
         public Icon GetIconForUnknown(Color fg, Color bg)
         {
-            if (unknownIcon == null)
+            UnknownIconParams iconParams = new UnknownIconParams(fg, bg);
+            if (!unknownIcons.ContainsKey(iconParams))
             {
                 using Bitmap bmp = new Bitmap(16, 16);
                 using Brush fgBrush = new SolidBrush(fg);
@@ -64,9 +92,9 @@ namespace DayZServerMonitorCore
                     graph.FillRectangle(bgBrush, 0, 0, 16, 16);
                     DrawX(graph, fgBrush);
                 }
-                unknownIcon = Icon.FromHandle(bmp.GetHicon());
+                unknownIcons[iconParams] = Icon.FromHandle(bmp.GetHicon());
             }
-            return unknownIcon;
+            return unknownIcons[iconParams];
         }
 
         public void Reset()
@@ -77,11 +105,11 @@ namespace DayZServerMonitorCore
             }
             numberIcons.Clear();
 
-            if (unknownIcon != null)
+            foreach (var entry in unknownIcons)
             {
-                unknownIcon.Dispose();
+                entry.Value.Dispose();
             }
-            unknownIcon = null;
+            unknownIcons.Clear();
         }
 
         private Point AdjustX(Point point, int widthAdjust, int left)
@@ -156,9 +184,9 @@ namespace DayZServerMonitorCore
                     {
                         entry.Value.Dispose();
                     }
-                    if (unknownIcon != null)
+                    foreach (var entry in unknownIcons)
                     {
-                        unknownIcon.Dispose();
+                        entry.Value.Dispose();
                     }
                 }
 

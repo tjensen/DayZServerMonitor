@@ -35,6 +35,8 @@ namespace DayZServerMonitorCore
         private NotifyOnPlayerCountValues notifyOnPlayerCount = NotifyOnPlayerCountValues.NEVER;
         private Color trayIconBackground = Color.Black;
         private Color trayIconForeground = Color.White;
+        private Color trayIconAlertBackground = Color.DarkRed;
+        private Color trayIconAlertForeground = Color.Yellow;
 
         public HideTaskBarIconValues HideTaskBarIcon
         {
@@ -129,6 +131,40 @@ namespace DayZServerMonitorCore
             set => TrayIconForeground = Color.FromArgb(value);
         }
 
+        [XmlIgnore]
+        public Color TrayIconAlertBackground
+        {
+            get => trayIconAlertBackground;
+            set
+            {
+                trayIconAlertBackground = value;
+                OnSettingChanged();
+            }
+        }
+
+        [XmlIgnore]
+        public Color TrayIconAlertForeground
+        {
+            get => trayIconAlertForeground;
+            set
+            {
+                trayIconAlertForeground = value;
+                OnSettingChanged();
+            }
+        }
+
+        public int TrayIconAlertBackgroundARGB
+        {
+            get => TrayIconAlertBackground.ToArgb();
+            set => TrayIconAlertBackground = Color.FromArgb(value);
+        }
+
+        public int TrayIconAlertForegroundARGB
+        {
+            get => TrayIconAlertForeground.ToArgb();
+            set => TrayIconAlertForeground = Color.FromArgb(value);
+        }
+
         public void Apply(Settings newSettings)
         {
             HideTaskBarIcon = newSettings.HideTaskBarIcon;
@@ -139,6 +175,8 @@ namespace DayZServerMonitorCore
             NotifyOnPlayerCount = newSettings.NotifyOnPlayerCount;
             TrayIconBackground = newSettings.TrayIconBackground;
             TrayIconForeground = newSettings.TrayIconForeground;
+            TrayIconAlertBackground = newSettings.TrayIconAlertBackground;
+            TrayIconAlertForeground = newSettings.TrayIconAlertForeground;
         }
     }
 }

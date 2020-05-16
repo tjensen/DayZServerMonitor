@@ -31,6 +31,8 @@ namespace TestDayZServerMonitorCore
             Assert.AreEqual(Settings.NotifyOnPlayerCountValues.NEVER, settings.NotifyOnPlayerCount);
             Assert.AreEqual(Color.Black, settings.TrayIconBackground);
             Assert.AreEqual(Color.White, settings.TrayIconForeground);
+            Assert.AreEqual(Color.DarkRed, settings.TrayIconAlertBackground);
+            Assert.AreEqual(Color.Yellow, settings.TrayIconAlertForeground);
         }
 
         [TestMethod]
@@ -45,7 +47,9 @@ namespace TestDayZServerMonitorCore
                 PlayerCountThreshold = 37,
                 NotifyOnPlayerCount = Settings.NotifyOnPlayerCountValues.WHEN_ABOVE,
                 TrayIconBackground = Color.Green,
-                TrayIconForeground = Color.Blue
+                TrayIconForeground = Color.Blue,
+                TrayIconAlertBackground = Color.Yellow,
+                TrayIconAlertForeground = Color.Maroon
             };
 
             settings.Apply(newSettings);
@@ -58,6 +62,8 @@ namespace TestDayZServerMonitorCore
             Assert.AreEqual(Settings.NotifyOnPlayerCountValues.WHEN_ABOVE, settings.NotifyOnPlayerCount);
             Assert.AreEqual(Color.Green, settings.TrayIconBackground);
             Assert.AreEqual(Color.Blue, settings.TrayIconForeground);
+            Assert.AreEqual(Color.Yellow, settings.TrayIconAlertBackground);
+            Assert.AreEqual(Color.Maroon, settings.TrayIconAlertForeground);
         }
 
         [TestMethod]
@@ -72,7 +78,9 @@ namespace TestDayZServerMonitorCore
                 PlayerCountThreshold = 55,
                 NotifyOnPlayerCount = Settings.NotifyOnPlayerCountValues.WHEN_BELOW,
                 TrayIconBackground = Color.Green,
-                TrayIconForeground = Color.Blue
+                TrayIconForeground = Color.Blue,
+                TrayIconAlertBackground = Color.Yellow,
+                TrayIconAlertForeground = Color.Maroon
             };
 
             XmlSerializer serializer = new XmlSerializer(typeof(Settings));
@@ -91,13 +99,21 @@ namespace TestDayZServerMonitorCore
             }
 
             Assert.AreEqual(settingsToSave.HideTaskBarIcon, settingsToLoad.HideTaskBarIcon);
-            Assert.AreEqual(settingsToSave.MaxLogViewerEntries, settingsToLoad.MaxLogViewerEntries);
+            Assert.AreEqual(settingsToSave.MaxLogViewerEntries,
+                settingsToLoad.MaxLogViewerEntries);
             Assert.AreEqual(settingsToSave.LogPathname, settingsToLoad.LogPathname);
             Assert.AreEqual(settingsToSave.AlwaysOnTop, settingsToLoad.AlwaysOnTop);
             Assert.AreEqual(55, settingsToLoad.PlayerCountThreshold);
-            Assert.AreEqual(Settings.NotifyOnPlayerCountValues.WHEN_BELOW, settingsToLoad.NotifyOnPlayerCount);
-            Assert.AreEqual(settingsToSave.TrayIconBackground.ToArgb(), settingsToLoad.TrayIconBackground.ToArgb());
-            Assert.AreEqual(settingsToSave.TrayIconForeground.ToArgb(), settingsToLoad.TrayIconForeground.ToArgb());
+            Assert.AreEqual(Settings.NotifyOnPlayerCountValues.WHEN_BELOW,
+                settingsToLoad.NotifyOnPlayerCount);
+            Assert.AreEqual(settingsToSave.TrayIconBackground.ToArgb(),
+                settingsToLoad.TrayIconBackground.ToArgb());
+            Assert.AreEqual(settingsToSave.TrayIconForeground.ToArgb(),
+                settingsToLoad.TrayIconForeground.ToArgb());
+            Assert.AreEqual(settingsToSave.TrayIconAlertBackground.ToArgb(),
+                settingsToLoad.TrayIconAlertBackground.ToArgb());
+            Assert.AreEqual(settingsToSave.TrayIconAlertForeground.ToArgb(),
+                settingsToLoad.TrayIconAlertForeground.ToArgb());
         }
 
         [TestMethod]
@@ -162,6 +178,22 @@ namespace TestDayZServerMonitorCore
             settings.TrayIconForeground = Color.Magenta;
 
             Assert.AreEqual("TrayIconForeground", settingThatChanged);
+        }
+
+        [TestMethod]
+        public void SettingChangedIsInvokedWhenTrayIconAlertBackgroundIsChanged()
+        {
+            settings.TrayIconAlertBackground = Color.Yellow;
+
+            Assert.AreEqual("TrayIconAlertBackground", settingThatChanged);
+        }
+
+        [TestMethod]
+        public void SettingChangedIsInvokedWhenTrayIconAlertForegroundIsChanged()
+        {
+            settings.TrayIconAlertForeground = Color.Maroon;
+
+            Assert.AreEqual("TrayIconAlertForeground", settingThatChanged);
         }
     }
 }

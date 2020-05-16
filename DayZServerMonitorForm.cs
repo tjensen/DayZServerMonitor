@@ -124,27 +124,31 @@ namespace DayZServerMonitor
 
         private void UpdateSystemTrayIcon(int players, int maxPlayers)
         {
-            if (ShouldNotify(players))
+            Color foreground = settings.TrayIconForeground;
+            Color background = settings.TrayIconBackground;
+            bool notify = ShouldNotify(players);
+            if (notify)
             {
                 logger.Debug("Playing beep sound because player count crossed threshold");
                 SystemSounds.Beep.Play();
+
+                foreground = settings.TrayIconAlertForeground;
+                background = settings.TrayIconAlertBackground;
             }
+
             lastIconUpdatePlayers = players;
             lastIconUpdateMaxPlayers = maxPlayers;
 
             if (players >= 0)
             {
                 UpdateSystemTrayIcon(
-                    dynamicIcons.GetIconForNumber(
-                        (uint)players, settings.TrayIconForeground, settings.TrayIconBackground),
+                    dynamicIcons.GetIconForNumber((uint)players, foreground, background),
                     $"{players}/{maxPlayers}");
             }
             else
             {
                 UpdateSystemTrayIcon(
-                    dynamicIcons.GetIconForUnknown(
-                        settings.TrayIconForeground, settings.TrayIconBackground),
-                    "?");
+                    dynamicIcons.GetIconForUnknown(foreground, background), "?");
             }
         }
 

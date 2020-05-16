@@ -10,17 +10,17 @@ namespace TestDayZServerMonitorCore
         private readonly Color FG = Color.Orange;
         private readonly Color BG = Color.Green;
 
-        private ushort GetRowFromBitmap(Bitmap bmp, int row)
+        private ushort GetRowFromBitmap(Bitmap bmp, int row, int fg, int bg)
         {
             ushort result = 0;
             for (int column = 0; column < 16; column++)
             {
                 Color pixel = bmp.GetPixel(column, row);
-                if (pixel.ToArgb() == FG.ToArgb())
+                if (pixel.ToArgb() == fg)
                 {
                     result |= (ushort)(1 << column);
                 }
-                else if (pixel.ToArgb() != BG.ToArgb())
+                else if (pixel.ToArgb() != bg)
                 {
                     Assert.Fail($"Invalid pixel color {pixel} at column {column}, row {row}");
                 }
@@ -28,17 +28,21 @@ namespace TestDayZServerMonitorCore
             return result;
         }
 
-        private void AssertIconHasPixels(ushort[] rows, Icon icon)
+        private void AssertIconHasPixels(ushort[] rows, Icon icon, Color fg, Color bg)
         {
             using Bitmap bmp = icon.ToBitmap();
             for (int row = 0; row < 16; row++)
             {
-                ushort actual = GetRowFromBitmap(bmp, row);
+                ushort actual = GetRowFromBitmap(bmp, row, fg.ToArgb(), bg.ToArgb());
                 Assert.AreEqual(
                     rows[row],
                     actual,
                     $"Row {row} pixels (0x{actual:X4}) do not match expected (0x{rows[row]:X4})");
             }
+        }
+        private void AssertIconHasPixels(ushort[] rows, Icon icon)
+        {
+            AssertIconHasPixels(rows, icon, FG, BG);
         }
 
         [TestMethod]
@@ -100,11 +104,21 @@ namespace TestDayZServerMonitorCore
         }
 
         [TestMethod]
-        public void GetIconForNumberReturnsDifferentIconsForDifferentInputs()
+        public void GetIconForNumberReturnsDifferentIconsForDifferentNumbers()
         {
             using DynamicIcons icons = new DynamicIcons();
             Icon icon1 = icons.GetIconForNumber(42, FG, BG);
             Icon icon2 = icons.GetIconForNumber(24, FG, BG);
+
+            Assert.AreNotSame(icon1, icon2);
+        }
+
+        [TestMethod]
+        public void GetIconForNumberReturnsDifferentIconsForDifferentColors()
+        {
+            using DynamicIcons icons = new DynamicIcons();
+            Icon icon1 = icons.GetIconForNumber(42, FG, BG);
+            Icon icon2 = icons.GetIconForNumber(42, Color.Blue, Color.Purple);
 
             Assert.AreNotSame(icon1, icon2);
         }
@@ -126,13 +140,23 @@ namespace TestDayZServerMonitorCore
         }
 
         [TestMethod]
-        public void GetIconForUnknownReturnsSameIconEachTime()
+        public void GetIconForUnknownReturnsSameIconForSameColors()
         {
             using DynamicIcons icons = new DynamicIcons();
             Icon icon1 = icons.GetIconForUnknown(FG, BG);
             Icon icon2 = icons.GetIconForUnknown(FG, BG);
 
             Assert.AreSame(icon1, icon2);
+        }
+
+        [TestMethod]
+        public void GetIconForUnknownReturnsDifferentIconForDifferentColors()
+        {
+            using DynamicIcons icons = new DynamicIcons();
+            Icon icon1 = icons.GetIconForUnknown(FG, BG);
+            Icon icon2 = icons.GetIconForUnknown(Color.Black, Color.White);
+
+            Assert.AreNotSame(icon1, icon2);
         }
 
         [TestMethod]
