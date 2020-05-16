@@ -21,6 +21,8 @@ namespace DayZServerMonitor
         private readonly Monitor monitor;
         private readonly ServerSelectionList serverList;
         private ProfileWatcher watcher = null;
+        private int lastIconUpdatePlayers = -1;
+        private int lastIconUpdateMaxPlayers = -1;
 
         public DayZServerMonitorForm()
         {
@@ -98,6 +100,32 @@ namespace DayZServerMonitor
             systemTrayIcon.Text = $"{Text}\nPlayers: {players}";
         }
 
+        private void UpdateSystemTrayIcon(int players, int maxPlayers)
+        {
+            lastIconUpdatePlayers = players;
+            lastIconUpdateMaxPlayers = maxPlayers;
+
+            if (players >= 0)
+            {
+                UpdateSystemTrayIcon(
+                    dynamicIcons.GetIconForNumber(
+                        (uint)players, settings.TrayIconForeground, settings.TrayIconBackground),
+                    $"{players}/{maxPlayers}");
+            }
+            else
+            {
+                UpdateSystemTrayIcon(
+                    dynamicIcons.GetIconForUnknown(
+                        settings.TrayIconForeground, settings.TrayIconBackground),
+                    "?");
+            }
+        }
+
+        private void UpdateSystemTrayIcon()
+        {
+            UpdateSystemTrayIcon(lastIconUpdatePlayers, lastIconUpdateMaxPlayers);
+        }
+
         internal void UpdateValues(string server, string name, string players, string maxPlayers, Color playersColor)
         {
             if (InvokeRequired)
@@ -131,19 +159,13 @@ namespace DayZServerMonitor
                 playersColor = Color.Red;
             }
             UpdateValues(server, name, players.ToString(), maxPlayers.ToString(), playersColor);
-            UpdateSystemTrayIcon(
-                dynamicIcons.GetIconForNumber(
-                    (uint)players, settings.TrayIconForeground, settings.TrayIconBackground),
-                $"{players}/{maxPlayers}");
+            UpdateSystemTrayIcon(players, maxPlayers);
         }
 
         internal void UpdateValues(string server)
         {
             UpdateValues(server, "", "?", "?", Color.Gray);
-            UpdateSystemTrayIcon(
-                dynamicIcons.GetIconForUnknown(
-                    settings.TrayIconForeground, settings.TrayIconBackground),
-                "?");
+            UpdateSystemTrayIcon(-1, -1);
         }
 
         internal void Initialize()
@@ -367,6 +389,7 @@ namespace DayZServerMonitor
             else if (args.SettingName == nameof(settings.TrayIconBackground) || args.SettingName == nameof(settings.TrayIconForeground))
             {
                 dynamicIcons.Reset();
+                UpdateSystemTrayIcon();
             }
         }
 
