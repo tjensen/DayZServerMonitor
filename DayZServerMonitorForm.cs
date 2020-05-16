@@ -12,6 +12,7 @@ namespace DayZServerMonitor
     public partial class DayZServerMonitorForm : Form
     {
         private readonly Label miniLabel = new Label();
+        private readonly ToolTip miniLabelToolTip = new ToolTip();
         private readonly Settings settings = new Settings();
         private readonly ContextMenu contextMenu = new ContextMenu();
         private readonly DynamicIcons dynamicIcons = new DynamicIcons();
@@ -230,6 +231,12 @@ namespace DayZServerMonitor
                 PlayersValue.ForeColor = playersColor;
                 PlayersValue.BackColor = SystemColors.Control; // Force readonly control to update foreground color
                 MaxPlayersValue.Text = maxPlayers;
+
+                this.miniLabelToolTip.SetToolTip(
+                    this.miniLabel,
+                    $"Players: {players}/{maxPlayers}\n" +
+                    $"Server: {name}\n" +
+                    $"Last Update: {clock.UtcNow().ToLocalTime()}");
             }
         }
 
