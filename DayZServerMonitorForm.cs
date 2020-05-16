@@ -392,6 +392,7 @@ namespace DayZServerMonitor
         {
             WindowState = FormWindowState.Normal;
             Activate();
+            TopMost = settings.AlwaysOnTop;
         }
 
         private void SelectionManage_Click(object sender, EventArgs e)
