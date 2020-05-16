@@ -12,6 +12,8 @@ namespace DayZServerMonitor
         private readonly NumericUpDown maxLogViewerEntries = new NumericUpDown();
         private readonly CheckBox enableLogFile = new CheckBox();
         private readonly TextBox logFilename = new TextBox();
+        private readonly NumericUpDown playerCountThreshold = new NumericUpDown();
+        private readonly ComboBox notifyOnPlayerCount = new ComboBox();
         private readonly Button trayIconBackground = new Button();
         private readonly Button trayIconForeground = new Button();
 
@@ -35,12 +37,15 @@ namespace DayZServerMonitor
                 enableLogFile.Checked = true;
                 logFilename.Text = settings.LogPathname;
             }
+            playerCountThreshold.Value = settings.PlayerCountThreshold;
+            notifyOnPlayerCount.SelectedItem = settings.NotifyOnPlayerCount;
             trayIconBackground.BackColor = settings.TrayIconBackground;
             trayIconForeground.BackColor = settings.TrayIconForeground;
 
             if (ShowDialog() == DialogResult.OK)
             {
-                settings.HideTaskBarIcon = (Settings.HideTaskBarIconValues)hideTaskBarIcon.SelectedItem;
+                settings.HideTaskBarIcon =
+                    (Settings.HideTaskBarIconValues)hideTaskBarIcon.SelectedItem;
                 settings.AlwaysOnTop = alwaysOnTop.Checked;
                 settings.MaxLogViewerEntries = (int)maxLogViewerEntries.Value;
                 if (enableLogFile.Checked && logFilename.Text != "")
@@ -51,6 +56,9 @@ namespace DayZServerMonitor
                 {
                     settings.LogPathname = null;
                 }
+                settings.PlayerCountThreshold = (int)playerCountThreshold.Value;
+                settings.NotifyOnPlayerCount =
+                    (Settings.NotifyOnPlayerCountValues)notifyOnPlayerCount.SelectedItem;
                 settings.TrayIconBackground = trayIconBackground.BackColor;
                 settings.TrayIconForeground = trayIconForeground.BackColor;
             }
@@ -151,6 +159,35 @@ namespace DayZServerMonitor
             logFilename.ReadOnly = true;
             logFilename.Click += LogFilename_Click;
             settingsPanel.Controls.Add(logFilename);
+
+            Label notifyOnPlayerCountLabel = new Label()
+            {
+                Dock = DockStyle.Fill,
+                Text = "Notify On Player Count:",
+                TextAlign = ContentAlignment.MiddleLeft
+            };
+            settingsPanel.Controls.Add(notifyOnPlayerCountLabel);
+
+            notifyOnPlayerCount.Dock = DockStyle.Fill;
+            notifyOnPlayerCount.DropDownStyle = ComboBoxStyle.DropDownList;
+            foreach (var value in Enum.GetValues(typeof(Settings.NotifyOnPlayerCountValues)))
+            {
+                notifyOnPlayerCount.Items.Add(value);
+            }
+            settingsPanel.Controls.Add(notifyOnPlayerCount);
+
+            Label playerCountThresholdLabel = new Label()
+            {
+                Dock = DockStyle.Fill,
+                Text = "Player Count Threshold:",
+                TextAlign = ContentAlignment.MiddleLeft
+            };
+            settingsPanel.Controls.Add(playerCountThresholdLabel);
+
+            playerCountThreshold.Dock = DockStyle.Left;
+            playerCountThreshold.Minimum = 0;
+            playerCountThreshold.Maximum = int.MaxValue;
+            settingsPanel.Controls.Add(playerCountThreshold);
 
             Label trayIconBackgroundLabel = new Label()
             {

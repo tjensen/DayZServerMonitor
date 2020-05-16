@@ -2,6 +2,7 @@
 using System;
 using System.Drawing;
 using System.IO;
+using System.Media;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
@@ -100,8 +101,34 @@ namespace DayZServerMonitor
             systemTrayIcon.Text = $"{Text}\nPlayers: {players}";
         }
 
+        private bool ShouldNotify(int players)
+        {
+            if (players < 0)
+            {
+                return false;
+            }
+
+            if (settings.NotifyOnPlayerCount == Settings.NotifyOnPlayerCountValues.WHEN_ABOVE)
+            {
+                return players > settings.PlayerCountThreshold
+                    && lastIconUpdatePlayers <= settings.PlayerCountThreshold;
+            }
+            else if (settings.NotifyOnPlayerCount == Settings.NotifyOnPlayerCountValues.WHEN_BELOW)
+            {
+                return players < settings.PlayerCountThreshold
+                    && lastIconUpdatePlayers >= settings.PlayerCountThreshold;
+            }
+
+            return false;
+        }
+
         private void UpdateSystemTrayIcon(int players, int maxPlayers)
         {
+            if (ShouldNotify(players))
+            {
+                logger.Debug("Playing beep sound because player count crossed threshold");
+                SystemSounds.Beep.Play();
+            }
             lastIconUpdatePlayers = players;
             lastIconUpdateMaxPlayers = maxPlayers;
 

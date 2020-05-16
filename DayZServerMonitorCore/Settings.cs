@@ -25,11 +25,14 @@ namespace DayZServerMonitorCore
         }
 
         public enum HideTaskBarIconValues { NEVER, WHEN_MINIMIZED, ALWAYS };
+        public enum NotifyOnPlayerCountValues { NEVER, WHEN_ABOVE, WHEN_BELOW };
 
         private HideTaskBarIconValues hideTaskBarIcon = HideTaskBarIconValues.NEVER;
         private int maxLogViewerEntries = 100;
         private string logPathname = null;
         private bool alwaysOnTop = false;
+        private int playerCountThreshold = 10;
+        private NotifyOnPlayerCountValues notifyOnPlayerCount = NotifyOnPlayerCountValues.NEVER;
         private Color trayIconBackground = Color.Black;
         private Color trayIconForeground = Color.White;
 
@@ -68,6 +71,26 @@ namespace DayZServerMonitorCore
             set
             {
                 alwaysOnTop = value;
+                OnSettingChanged();
+            }
+        }
+
+        public int PlayerCountThreshold
+        {
+            get => playerCountThreshold;
+            set
+            {
+                playerCountThreshold = value;
+                OnSettingChanged();
+            }
+        }
+
+        public NotifyOnPlayerCountValues NotifyOnPlayerCount
+        {
+            get => notifyOnPlayerCount;
+            set
+            {
+                notifyOnPlayerCount = value;
                 OnSettingChanged();
             }
         }
@@ -112,6 +135,8 @@ namespace DayZServerMonitorCore
             MaxLogViewerEntries = newSettings.MaxLogViewerEntries;
             LogPathname = newSettings.LogPathname;
             AlwaysOnTop = newSettings.AlwaysOnTop;
+            PlayerCountThreshold = newSettings.PlayerCountThreshold;
+            NotifyOnPlayerCount = newSettings.NotifyOnPlayerCount;
             TrayIconBackground = newSettings.TrayIconBackground;
             TrayIconForeground = newSettings.TrayIconForeground;
         }

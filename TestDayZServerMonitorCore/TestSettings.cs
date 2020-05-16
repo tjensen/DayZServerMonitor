@@ -27,6 +27,8 @@ namespace TestDayZServerMonitorCore
             Assert.AreEqual(100, settings.MaxLogViewerEntries);
             Assert.IsNull(settings.LogPathname);
             Assert.IsFalse(settings.AlwaysOnTop);
+            Assert.AreEqual(10, settings.PlayerCountThreshold);
+            Assert.AreEqual(Settings.NotifyOnPlayerCountValues.NEVER, settings.NotifyOnPlayerCount);
             Assert.AreEqual(Color.Black, settings.TrayIconBackground);
             Assert.AreEqual(Color.White, settings.TrayIconForeground);
         }
@@ -40,6 +42,8 @@ namespace TestDayZServerMonitorCore
                 MaxLogViewerEntries = 42,
                 LogPathname = "/path/to/log",
                 AlwaysOnTop = true,
+                PlayerCountThreshold = 37,
+                NotifyOnPlayerCount = Settings.NotifyOnPlayerCountValues.WHEN_ABOVE,
                 TrayIconBackground = Color.Green,
                 TrayIconForeground = Color.Blue
             };
@@ -50,6 +54,8 @@ namespace TestDayZServerMonitorCore
             Assert.AreEqual(42, settings.MaxLogViewerEntries);
             Assert.AreEqual("/path/to/log", settings.LogPathname);
             Assert.IsTrue(settings.AlwaysOnTop);
+            Assert.AreEqual(37, settings.PlayerCountThreshold);
+            Assert.AreEqual(Settings.NotifyOnPlayerCountValues.WHEN_ABOVE, settings.NotifyOnPlayerCount);
             Assert.AreEqual(Color.Green, settings.TrayIconBackground);
             Assert.AreEqual(Color.Blue, settings.TrayIconForeground);
         }
@@ -63,6 +69,8 @@ namespace TestDayZServerMonitorCore
                 MaxLogViewerEntries = 42,
                 LogPathname = "/path/to/log",
                 AlwaysOnTop = true,
+                PlayerCountThreshold = 55,
+                NotifyOnPlayerCount = Settings.NotifyOnPlayerCountValues.WHEN_BELOW,
                 TrayIconBackground = Color.Green,
                 TrayIconForeground = Color.Blue
             };
@@ -86,11 +94,13 @@ namespace TestDayZServerMonitorCore
             Assert.AreEqual(settingsToSave.MaxLogViewerEntries, settingsToLoad.MaxLogViewerEntries);
             Assert.AreEqual(settingsToSave.LogPathname, settingsToLoad.LogPathname);
             Assert.AreEqual(settingsToSave.AlwaysOnTop, settingsToLoad.AlwaysOnTop);
+            Assert.AreEqual(55, settingsToLoad.PlayerCountThreshold);
+            Assert.AreEqual(Settings.NotifyOnPlayerCountValues.WHEN_BELOW, settingsToLoad.NotifyOnPlayerCount);
             Assert.AreEqual(settingsToSave.TrayIconBackground.ToArgb(), settingsToLoad.TrayIconBackground.ToArgb());
             Assert.AreEqual(settingsToSave.TrayIconForeground.ToArgb(), settingsToLoad.TrayIconForeground.ToArgb());
         }
 
-[TestMethod]
+        [TestMethod]
         public void SettingChangedIsInvokedWhenHideTaskBarIconChanges()
         {
             settings.HideTaskBarIcon = Settings.HideTaskBarIconValues.ALWAYS;
@@ -120,6 +130,22 @@ namespace TestDayZServerMonitorCore
             settings.AlwaysOnTop = true;
 
             Assert.AreEqual("AlwaysOnTop", settingThatChanged);
+        }
+
+        [TestMethod]
+        public void SettingsChangedIsInvokedWhenPlayerCountThresholdIsChanged()
+        {
+            settings.PlayerCountThreshold = 23;
+
+            Assert.AreEqual("PlayerCountThreshold", settingThatChanged);
+        }
+
+        [TestMethod]
+        public void SettingsChangedIsInvokedWhenNotifyOnPlayerCountIsChanged()
+        {
+            settings.NotifyOnPlayerCount = Settings.NotifyOnPlayerCountValues.WHEN_ABOVE;
+
+            Assert.AreEqual("NotifyOnPlayerCount", settingThatChanged);
         }
 
         [TestMethod]
