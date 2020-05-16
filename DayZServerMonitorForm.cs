@@ -11,6 +11,7 @@ namespace DayZServerMonitor
 {
     public partial class DayZServerMonitorForm : Form
     {
+        private readonly Label miniLabel = new Label();
         private readonly Settings settings = new Settings();
         private readonly ContextMenu contextMenu = new ContextMenu();
         private readonly DynamicIcons dynamicIcons = new DynamicIcons();
@@ -24,6 +25,11 @@ namespace DayZServerMonitor
         private ProfileWatcher watcher = null;
         private int lastIconUpdatePlayers = -1;
         private int lastIconUpdateMaxPlayers = -1;
+        private Size normalMinimumSize;
+        private Size normalMaximumSize;
+        private bool draggingMiniWindow = false;
+        private int dragStartX;
+        private int dragStartY;
 
         public DayZServerMonitorForm()
         {
@@ -35,6 +41,8 @@ namespace DayZServerMonitor
                 "&Remove Selected Server", RemoveServer_Click);
             contextMenu.MenuItems.Add("-");
             contextMenu.MenuItems.Add("View &Logs", ViewLogs_Click);
+            contextMenu.MenuItems.Add("-");
+            contextMenu.MenuItems.Add("&Mini Window", MiniWindow_Click);
             contextMenu.MenuItems.Add("-");
             contextMenu.MenuItems.Add("S&ettings...", Settings_Click);
 
@@ -51,6 +59,24 @@ namespace DayZServerMonitor
             serverList = new ServerSelectionList(SelectionCombo, logger);
             RestoreSavedServers();
             SelectionCombo.SelectedValueChanged += new EventHandler(ServerSelectionChanged);
+
+            this.SuspendLayout();
+            this.miniLabel.Hide();
+            this.miniLabel.Dock = DockStyle.None;
+            this.miniLabel.Location = new Point(-32, -32);
+            this.miniLabel.Size = new Size(128, 128);
+            this.miniLabel.BackColor = Color.Black;
+            this.miniLabel.ForeColor = Color.White;
+            this.miniLabel.Font = new Font(FontFamily.GenericSansSerif, 24, FontStyle.Bold);
+            this.miniLabel.TextAlign = ContentAlignment.MiddleCenter;
+            this.miniLabel.Padding = new Padding(0);
+            this.miniLabel.Margin = new Padding(0);
+            this.miniLabel.DoubleClick += MiniLabel_DoubleClick;
+            this.miniLabel.MouseDown += MiniLabel_MouseDown;
+            this.miniLabel.MouseUp += MiniLabel_MouseUp;
+            this.miniLabel.MouseMove += MiniLabel_MouseMove;
+            this.Controls.Add(this.miniLabel);
+            this.ResumeLayout();
         }
 
         private void StatusWriter(string text)
@@ -101,6 +127,25 @@ namespace DayZServerMonitor
             systemTrayIcon.Text = $"{Text}\nPlayers: {players}";
         }
 
+        private bool CrossedThreshold(int players)
+        {
+            if (players < 0)
+            {
+                return false;
+            }
+
+            if (settings.NotifyOnPlayerCount == Settings.NotifyOnPlayerCountValues.WHEN_ABOVE)
+            {
+                return players > settings.PlayerCountThreshold;
+            }
+            else if (settings.NotifyOnPlayerCount == Settings.NotifyOnPlayerCountValues.WHEN_BELOW)
+            {
+                return players < settings.PlayerCountThreshold;
+            }
+
+            return false;
+        }
+
         private bool ShouldNotify(int players)
         {
             if (players < 0)
@@ -124,31 +169,45 @@ namespace DayZServerMonitor
 
         private void UpdateSystemTrayIcon(int players, int maxPlayers)
         {
-            Color foreground = settings.TrayIconForeground;
-            Color background = settings.TrayIconBackground;
-            bool notify = ShouldNotify(players);
-            if (notify)
+            if (InvokeRequired)
             {
-                logger.Debug("Playing beep sound because player count crossed threshold");
-                SystemSounds.Beep.Play();
-
-                foreground = settings.TrayIconAlertForeground;
-                background = settings.TrayIconAlertBackground;
-            }
-
-            lastIconUpdatePlayers = players;
-            lastIconUpdateMaxPlayers = maxPlayers;
-
-            if (players >= 0)
-            {
-                UpdateSystemTrayIcon(
-                    dynamicIcons.GetIconForNumber((uint)players, foreground, background),
-                    $"{players}/{maxPlayers}");
+                Invoke(new MethodInvoker(delegate { UpdateSystemTrayIcon(players, maxPlayers); }));
             }
             else
             {
-                UpdateSystemTrayIcon(
-                    dynamicIcons.GetIconForUnknown(foreground, background), "?");
+                Color foreground = settings.TrayIconForeground;
+                Color background = settings.TrayIconBackground;
+                if (ShouldNotify(players))
+                {
+                    logger.Debug("Playing beep sound because player count crossed threshold");
+                    SystemSounds.Beep.Play();
+                }
+
+                if (CrossedThreshold(players))
+                {
+                    foreground = settings.TrayIconAlertForeground;
+                    background = settings.TrayIconAlertBackground;
+                }
+
+                lastIconUpdatePlayers = players;
+                lastIconUpdateMaxPlayers = maxPlayers;
+
+                this.miniLabel.ForeColor = foreground;
+                this.miniLabel.BackColor = background;
+
+                if (players >= 0)
+                {
+                    UpdateSystemTrayIcon(
+                        dynamicIcons.GetIconForNumber((uint)players, foreground, background),
+                        $"{players}/{maxPlayers}");
+                    this.miniLabel.Text = players.ToString();
+                }
+                else
+                {
+                    UpdateSystemTrayIcon(
+                        dynamicIcons.GetIconForUnknown(foreground, background), "?");
+                    this.miniLabel.Text = "X";
+                }
             }
         }
 
@@ -432,6 +491,53 @@ namespace DayZServerMonitor
             };
             dialog.ShowDialog(settings);
             SaveSettings();
+        }
+
+        private void MiniWindow_Click(object sender, EventArgs e)
+        {
+            this.normalMinimumSize = this.MinimumSize;
+            this.normalMaximumSize = this.MaximumSize;
+
+            this.SuspendLayout();
+            this.MaximumSize = new Size(64, 64);
+            this.MinimumSize = new Size(64, 64);
+            this.FormPanel.Hide();
+            this.FormBorderStyle = FormBorderStyle.None;
+            this.miniLabel.Show();
+            this.ResumeLayout();
+        }
+
+        private void MiniLabel_DoubleClick(object sender, EventArgs e)
+        {
+            this.SuspendLayout();
+            this.MaximumSize = this.normalMaximumSize;
+            this.MinimumSize = this.normalMinimumSize;
+            this.miniLabel.Hide();
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.FormPanel.Show();
+            this.ResumeLayout();
+        }
+
+        private void MiniLabel_MouseDown(object sender, MouseEventArgs e)
+        {
+            this.dragStartX = e.X;
+            this.dragStartY = e.Y;
+            this.draggingMiniWindow = true;
+        }
+
+        private void MiniLabel_MouseUp(object sender, MouseEventArgs e)
+        {
+            this.draggingMiniWindow = false;
+        }
+
+        private void MiniLabel_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (this.draggingMiniWindow)
+            {
+                this.Location = new Point(
+                    this.Location.X + (e.X - this.dragStartX),
+                    this.Location.Y + (e.Y - this.dragStartY));
+            }
         }
     }
 }
