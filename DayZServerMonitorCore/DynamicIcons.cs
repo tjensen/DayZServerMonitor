@@ -71,7 +71,16 @@ namespace DayZServerMonitorCore
 
         public void Reset()
         {
+            foreach (var entry in numberIcons)
+            {
+                entry.Value.Dispose();
+            }
             numberIcons.Clear();
+
+            if (unknownIcon != null)
+            {
+                unknownIcon.Dispose();
+            }
             unknownIcon = null;
         }
 
