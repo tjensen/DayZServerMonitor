@@ -65,23 +65,34 @@ jobs:
       with:
         fetch-depth: 0
 
-    # Install the .NET Core workload
+    - name: Update Version
+      run: |
+        $projectFile = "$PWD\DayZServerMonitor.csproj"
+        [xml]$projectXML = Get-Content($projectFile)
+        $projectXML.Project.ChildNodes.Item(1).ApplicationRevision = "$env:GITHUB_RUN_NUMBER"
+        $newVersion = [string]::Join(".", $projectXML.Project.ChildNodes.Item(1).ApplicationVersion.Split("."), 0, 3) + ".$env:GITHUB_RUN_NUMBER"
+        $projectXML.Project.ChildNodes.Item(1).ApplicationVersion = "$newVersion"
+        $projectXML.Save($projectFile)
+
+        $regex = new-object System.Text.RegularExpressions.Regex('(Assembly(File)?Version)\(\"([0-9.]*)\"\)', [System.Text.RegularExpressions.RegexOptions]::MultiLine)
+        $assemblyFile = "$PWD\Properties\AssemblyInfo.cs"
+        $assemblyContent = [IO.File]::ReadAllText($assemblyFile)
+        $assemblyContent = $regex.Replace($assemblyContent, '${1}("' + $newVersion + '")')
+        [IO.File]::WriteAllText($assemblyFile, $assemblyContent)
+
     - name: Install .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
 
-    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.0.2
 
-    # Execute all unit tests in the solution
     - name: Execute unit tests
       run: dotnet test --verbosity normal
 
-    # Restore the application to populate the obj folder with RuntimeIdentifiers
-    - name: Restore the application
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
+    - name: Build the application
+      run: msbuild $env:Solution_Name /t:Publish /p:Configuration=$env:Configuration /m
       env:
         Configuration: ${{ matrix.configuration }}
 
