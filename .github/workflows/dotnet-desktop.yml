@@ -89,7 +89,7 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Execute unit tests
-      run: dotnet test --verbosity normal
+      run: dotnet test
 
     - name: Restore the application
       run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
@@ -97,7 +97,7 @@ jobs:
         Configuration: ${{ matrix.configuration }}
 
     - name: Build the application
-      run: msbuild $env:Solution_Name /t:Publish /p:Configuration=$env:Configuration /m
+      run: msbuild $env:Solution_Name /t:Publish /p:Configuration=$env:Configuration /m /verbosity:minimal
       env:
         Configuration: ${{ matrix.configuration }}
 
