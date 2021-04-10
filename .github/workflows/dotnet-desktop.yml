@@ -48,10 +48,6 @@ jobs:
 
   build:
 
-    strategy:
-      matrix:
-        configuration: [Release]
-
     runs-on: windows-latest  # For a list of available runner types, refer to
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
 
@@ -92,14 +88,10 @@ jobs:
       run: dotnet test
 
     - name: Restore the application
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
-      env:
-        Configuration: ${{ matrix.configuration }}
+      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=Release
 
     - name: Build the application
-      run: msbuild $env:Solution_Name /t:Publish /p:Configuration=$env:Configuration /m /verbosity:minimal
-      env:
-        Configuration: ${{ matrix.configuration }}
+      run: msbuild $env:Solution_Name /t:Publish /p:Configuration=Release /m /verbosity:minimal
 
 #    # Decode the base 64 encoded pfx and save the Signing_Certificate
 #    - name: Decode the pfx
@@ -110,20 +102,33 @@ jobs:
 #
 #    # Create the app package by building and packaging the Windows Application Packaging project
 #    - name: Create the app package
-#      run: msbuild $env:Wap_Project_Path /p:Configuration=$env:Configuration /p:UapAppxPackageBuildMode=$env:Appx_Package_Build_Mode /p:AppxBundle=$env:Appx_Bundle /p:PackageCertificateKeyFile=GitHubActionsWorkflow.pfx /p:PackageCertificatePassword=${{ secrets.Pfx_Key }}
+#      run: msbuild $env:Wap_Project_Path /p:Configuration=Release /p:UapAppxPackageBuildMode=$env:Appx_Package_Build_Mode /p:AppxBundle=$env:Appx_Bundle /p:PackageCertificateKeyFile=GitHubActionsWorkflow.pfx /p:PackageCertificatePassword=${{ secrets.Pfx_Key }}
 #      env:
 #        Appx_Bundle: Always
 #        Appx_Bundle_Platforms: x86|x64
 #        Appx_Package_Build_Mode: StoreUpload
-#        Configuration: ${{ matrix.configuration }}
 #
 #    # Remove the pfx
 #    - name: Remove the pfx
 #      run: Remove-Item -path $env:Wap_Project_Directory\$env:Signing_Certificate
-#
-#    # Upload the MSIX package: https://github.com/marketplace/actions/upload-artifact
-#    - name: Upload build artifacts
-#      uses: actions/upload-artifact@v2
-#      with:
-#        name: MSIX Package
-#        path: ${{ env.Wap_Project_Directory }}\AppPackages
+
+    - name: Create "portable build" zip archive
+      run: |
+        Compress-Archive -Path ".\bin\Release\DayZServerMonitor.exe", ".\bin\Release\DayZServerMonitorCore.dll" -DestinationPath "dayz-server-monitor-portable.zip"
+
+    - name: Create installer zip archive
+      run: |
+        Remove-Item ".\bin\Release\app.publish\DayZServerMonitor.exe"
+        Compress-Archive -Path ".\bin\Release\app.publish\*" -DestinationPath "dayz-server-monitor-installer.zip"
+
+    - name: Upload portable build
+      uses: actions/upload-artifact@v2
+      with:
+        name: Portable Build
+        path: dayz-server-monitor-portable.zip
+
+    - name: Upload installer
+      uses: actions/upload-artifact@v2
+      with:
+        name: Installer
+        path: dayz-server-monitor-installer.zip
