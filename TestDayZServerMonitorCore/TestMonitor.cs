@@ -248,9 +248,12 @@ namespace TestDayZServerMonitorCore
         }
 
         [TestMethod]
-        public async Task PollDoesNotReuseMasterServerResponseWhenResponseIsTooOld()
+        public async Task PollDoesNotReuseGuessedGameServerPort()
         {
-            masterServerClient.ServerResponse = MasterServerResponse();
+            masterServerClient.ServerResponse = new byte[] {
+                0xFF, 0xFF, 0xFF, 0xFF, 0x66, 0x0A, // Header
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00  // End
+            };
             serverInfoClient.ServerResponse = ServerInfoResponse();
 
             _ = await monitor.Poll(server, source);

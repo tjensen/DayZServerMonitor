@@ -52,8 +52,7 @@ namespace DayZServerMonitorCore
 
         private async Task<Server> GetGameServer(Server server, CancellationTokenSource source)
         {
-            if (gameServerMapping.address != server.Address
-                || clock.UtcNow() - gameServerMapping.dateTime >= TimeSpan.FromMinutes(10))
+            if (gameServerMapping.address != server.Address)
             {
                 MasterServerQuerier masterQuerier = new MasterServerQuerier(clientFactory, logger);
                 gameServerMapping = (
@@ -65,12 +64,10 @@ namespace DayZServerMonitorCore
             }
             if (gameServerMapping.server == null)
             {
+                gameServerMapping = (null, null, new DateTime());
                 logger.Debug(
                     $"Server {server} is not in master list; guessing status port number");
-                gameServerMapping = (
-                    address: server.Address,
-                    server: new Server(server.Host, server.StatsPort),
-                    dateTime: clock.UtcNow());
+                return new Server(server.Host, server.StatsPort);
             }
             return gameServerMapping.server;
         }
