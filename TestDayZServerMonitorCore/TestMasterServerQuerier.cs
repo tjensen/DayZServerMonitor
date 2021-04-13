@@ -1,6 +1,7 @@
 ﻿using DayZServerMonitorCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TestDayZServerMonitorCore
@@ -11,11 +12,19 @@ namespace TestDayZServerMonitorCore
         private readonly MockClient client = new MockClient();
         private readonly MockLogger logger = new MockLogger();
         private MockClientFactory clientFactory;
+        private CancellationTokenSource source;
 
         [TestInitialize]
         public void Initialize()
         {
             clientFactory = new MockClientFactory(client);
+            source = new CancellationTokenSource();
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            source.Dispose();
         }
 
         [TestMethod]
@@ -30,12 +39,13 @@ namespace TestDayZServerMonitorCore
             MasterServerQuerier querier = new MasterServerQuerier(clientFactory, logger);
 
             Server server = await querier.FindDayZServerInRegion(
-                "12.34.56.78", 12345, MasterServerQuerier.REGION_REST, 100);
+                "12.34.56.78", 12345, MasterServerQuerier.REGION_REST, 100, source);
 
             Assert.AreEqual(1, clientFactory.MockCalls.Count);
             Assert.AreEqual("hl2master.steampowered.com", clientFactory.MockCalls[0].Item1);
             Assert.AreEqual(27011, clientFactory.MockCalls[0].Item2);
             Assert.AreEqual(100, client.ServerTimeout);
+            Assert.AreSame(source, client.Source);
             CollectionAssert.AreEqual(
                 new byte[]
                 {
@@ -64,7 +74,7 @@ namespace TestDayZServerMonitorCore
             MasterServerQuerier querier = new MasterServerQuerier(clientFactory, logger);
 
             Assert.IsNull(await querier.FindDayZServerInRegion(
-                "12.34.56.78", 12345, MasterServerQuerier.REGION_REST, 100));
+                "12.34.56.78", 12345, MasterServerQuerier.REGION_REST, 100, source));
 
             Assert.AreEqual(1, logger.StatusTexts.Count);
         }
@@ -76,7 +86,7 @@ namespace TestDayZServerMonitorCore
             MasterServerQuerier querier = new MasterServerQuerier(clientFactory, logger);
 
             Assert.IsNull(await querier.FindDayZServerInRegion(
-                "12.34.56.78", 12345, MasterServerQuerier.REGION_REST, 100));
+                "12.34.56.78", 12345, MasterServerQuerier.REGION_REST, 100, source));
 
             Assert.AreEqual(1, logger.ErrorTexts.Count);
             Assert.AreEqual("Error querying master server", logger.ErrorTexts[0]);
@@ -92,7 +102,7 @@ namespace TestDayZServerMonitorCore
             MasterServerQuerier querier = new MasterServerQuerier(clientFactory, logger);
 
             Assert.IsNull(await querier.FindDayZServerInRegion(
-                "12.34.56.78", 12345, MasterServerQuerier.REGION_REST, 100));
+                "12.34.56.78", 12345, MasterServerQuerier.REGION_REST, 100, source));
 
             Assert.AreEqual(1, logger.ErrorTexts.Count);
             Assert.AreEqual("Error querying master server", logger.ErrorTexts[0]);

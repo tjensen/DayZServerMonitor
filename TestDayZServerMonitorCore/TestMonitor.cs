@@ -1,6 +1,7 @@
 ﻿using DayZServerMonitorCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TestDayZServerMonitorCore
@@ -15,7 +16,8 @@ namespace TestDayZServerMonitorCore
         private MockClient masterServerClient;
         private MockClient serverInfoClient;
         private MockClientFactory clientFactory;
-        private Monitor monitor;
+        private DayZServerMonitorCore.Monitor monitor;
+        private CancellationTokenSource source;
 
         [TestInitialize]
         public void Initialize()
@@ -27,7 +29,8 @@ namespace TestDayZServerMonitorCore
             serverInfoClient = new MockClient();
             clientFactory = new MockClientFactory(masterServerClient);
             clientFactory.AddClient(serverInfoClient);
-            monitor = new Monitor(clock, clientFactory, new MockLogger());
+            monitor = new DayZServerMonitorCore.Monitor(clock, clientFactory, new MockLogger());
+            source = new CancellationTokenSource();
         }
 
         [TestCleanup]
@@ -37,6 +40,7 @@ namespace TestDayZServerMonitorCore
             masterServerClient.Dispose();
             serverInfoClient.Dispose();
             monitor.Dispose();
+            source.Dispose();
         }
 
         private byte[] MasterServerResponse(byte[] address)
@@ -83,7 +87,7 @@ namespace TestDayZServerMonitorCore
             masterServerClient.ServerResponse = MasterServerResponse();
             serverInfoClient.ServerResponse = ServerInfoResponse();
 
-            ServerInfo info = await monitor.Poll(server);
+            ServerInfo info = await monitor.Poll(server, source);
 
             Assert.AreEqual("4.3.2.1:4660", info.Address);
             Assert.AreEqual("SERVER-NAME", info.Name);
@@ -97,6 +101,7 @@ namespace TestDayZServerMonitorCore
             Assert.AreEqual(4660, clientFactory.MockCalls[1].Item2);
 
             Assert.AreEqual(5000, masterServerClient.ServerTimeout);
+            Assert.AreSame(source, masterServerClient.Source);
             CollectionAssert.AreEqual(
                 new byte[]
                 {
@@ -108,6 +113,7 @@ namespace TestDayZServerMonitorCore
                 masterServerClient.ServerRequest);
 
             Assert.AreEqual(5000, serverInfoClient.ServerTimeout);
+            Assert.AreSame(source, serverInfoClient.Source);
             CollectionAssert.AreEqual(
                 new byte[] {
                     0xFF, 0xFF, 0xFF, 0xFF, 0x54, 0x53, 0x6F, 0x75, 0x72, 0x63, 0x65, 0x20, 0x45,
@@ -121,11 +127,11 @@ namespace TestDayZServerMonitorCore
         {
             masterServerClient.ServerResponse = MasterServerResponse();
             serverInfoClient.ServerResponse = ServerInfoResponse();
-            _ = await monitor.Poll(server);
+            _ = await monitor.Poll(server, source);
             clientFactory.Reset();
             clock.CurrentTime += TimeSpan.FromSeconds(44);
 
-            Assert.IsNull(await monitor.Poll(server));
+            Assert.IsNull(await monitor.Poll(server, source));
 
             Assert.AreEqual(0, clientFactory.MockCalls.Count);
         }
@@ -135,7 +141,9 @@ namespace TestDayZServerMonitorCore
         {
             masterServerClient.ServerResponse = MasterServerResponse();
             serverInfoClient.ServerResponse = ServerInfoResponse();
-            _ = await monitor.Poll(server);
+
+            _ = await monitor.Poll(server, source);
+
             clientFactory.Reset();
             using (MockClient secondServerInfoClient = new MockClient(),
                 secondMasterServerClient = new MockClient())
@@ -145,7 +153,7 @@ namespace TestDayZServerMonitorCore
                 clientFactory.AddClient(secondMasterServerClient);
                 clientFactory.AddClient(secondServerInfoClient);
 
-                ServerInfo info = await monitor.Poll(new Server("9.9.9.9", 8888));
+                ServerInfo info = await monitor.Poll(new Server("9.9.9.9", 8888), source);
 
                 Assert.AreEqual("4.3.2.1:4660", info.Address);
                 Assert.AreEqual("SERVER-NAME", info.Name);
@@ -182,7 +190,7 @@ namespace TestDayZServerMonitorCore
         {
             masterServerClient.ServerResponse = MasterServerResponse();
             serverInfoClient.ServerResponse = ServerInfoResponse();
-            _ = await monitor.Poll(server);
+            _ = await monitor.Poll(server, source);
             clientFactory.Reset();
             using (MockClient secondServerInfoClient = new MockClient())
             {
@@ -190,7 +198,7 @@ namespace TestDayZServerMonitorCore
                 clientFactory.AddClient(secondServerInfoClient);
                 clock.CurrentTime += TimeSpan.FromSeconds(45);
 
-                ServerInfo info = await monitor.Poll(server);
+                ServerInfo info = await monitor.Poll(server, source);
 
                 Assert.AreEqual("4.3.2.1:4660", info.Address);
                 Assert.AreEqual("SERVER-NAME", info.Name);
@@ -217,8 +225,8 @@ namespace TestDayZServerMonitorCore
             serverInfoClient.ServerResponse = ServerInfoResponse();
             clientFactory.AddClient(masterServerClient);
             clientFactory.AddClient(serverInfoClient);
-            _ = await monitor.Poll(server);
-            _ = await monitor.Poll(new Server("5.5.5.5", 5555));
+            _ = await monitor.Poll(server, source);
+            _ = await monitor.Poll(new Server("5.5.5.5", 5555), source);
             clientFactory.Reset();
             using (MockClient thirdMasterServerClient = new MockClient(),
                 thirdServerInfoClient = new MockClient())
@@ -229,7 +237,7 @@ namespace TestDayZServerMonitorCore
                 thirdServerInfoClient.ServerResponse = ServerInfoResponse();
                 clientFactory.AddClient(thirdServerInfoClient);
 
-                ServerInfo info = await monitor.Poll(server);
+                ServerInfo info = await monitor.Poll(server, source);
 
                 Assert.AreEqual(2, clientFactory.MockCalls.Count);
                 Assert.AreEqual("hl2master.steampowered.com", clientFactory.MockCalls[0].Item1);
@@ -244,7 +252,9 @@ namespace TestDayZServerMonitorCore
         {
             masterServerClient.ServerResponse = MasterServerResponse();
             serverInfoClient.ServerResponse = ServerInfoResponse();
-            _ = await monitor.Poll(server);
+
+            _ = await monitor.Poll(server, source);
+
             clientFactory.Reset();
             using (MockClient secondMasterServerClient = new MockClient(),
                 secondServerInfoClient = new MockClient())
@@ -256,7 +266,7 @@ namespace TestDayZServerMonitorCore
                 clientFactory.AddClient(secondServerInfoClient);
                 clock.CurrentTime += TimeSpan.FromMinutes(10);
 
-                ServerInfo info = await monitor.Poll(server);
+                ServerInfo info = await monitor.Poll(server, source);
 
                 Assert.AreEqual(2, clientFactory.MockCalls.Count);
                 Assert.AreEqual("hl2master.steampowered.com", clientFactory.MockCalls[0].Item1);
@@ -284,8 +294,8 @@ namespace TestDayZServerMonitorCore
                     clock.CurrentTime += TimeSpan.FromSeconds(60);
                 };
 
-                Task<ServerInfo> firstPollTask = monitor.Poll(server);
-                Task<ServerInfo> secondPollTask = monitor.Poll(server);
+                Task<ServerInfo> firstPollTask = monitor.Poll(server, source);
+                Task<ServerInfo> secondPollTask = monitor.Poll(server, source);
 
                 _ = await firstPollTask;
                 _ = await secondPollTask;
@@ -302,7 +312,7 @@ namespace TestDayZServerMonitorCore
             };
             serverInfoClient.ServerResponse = ServerInfoResponse();
 
-            ServerInfo info = await monitor.Poll(server);
+            ServerInfo info = await monitor.Poll(server, source);
 
             Assert.AreEqual("1.2.3.4:30392", info.Address);
             Assert.AreEqual("SERVER-NAME", info.Name);
