@@ -13,12 +13,14 @@ namespace TestDayZServerMonitorCore
         internal byte[] ServerRequest { get; private set; }
         internal int ServerTimeout { get; private set; }
         internal Action RequestAction { get; set; }
+        internal CancellationTokenSource Source { get; set; }
 
-        public Task<byte[]> Request(byte[] request, int timeout)
+        public Task<byte[]> Request(byte[] request, int timeout, CancellationTokenSource source)
         {
             RequestAction?.Invoke();
             ServerRequest = request;
             ServerTimeout = timeout;
+            Source = source;
             if (ServerError != null)
             {
                 throw ServerError;

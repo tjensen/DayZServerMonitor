@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TestDayZServerMonitorCore
@@ -13,6 +14,7 @@ namespace TestDayZServerMonitorCore
         private MockServer server;
         private MockClock clock;
         private Client client;
+        private CancellationTokenSource source;
 
         [TestInitialize]
         public void Initialize()
@@ -20,6 +22,7 @@ namespace TestDayZServerMonitorCore
             server = new MockServer();
             clock = new MockClock();
             client = new Client("127.0.0.1", server.Port, clock);
+            source = new CancellationTokenSource();
         }
 
         [TestCleanup]
@@ -29,6 +32,7 @@ namespace TestDayZServerMonitorCore
             {
                 server.Dispose();
                 clock.Dispose();
+                source.Dispose();
             }
         }
 
@@ -37,7 +41,7 @@ namespace TestDayZServerMonitorCore
         {
             server.Response = new byte[] { 21, 12 };
 
-            byte[] response = await client.Request(new byte[] { 1, 2, 3, 4, 5 }, 100);
+            byte[] response = await client.Request(new byte[] { 1, 2, 3, 4, 5 }, 100, source);
 
             Assert.IsTrue(server.RequestCompleted);
             CollectionAssert.AreEqual(server.Response, response);
@@ -50,7 +54,7 @@ namespace TestDayZServerMonitorCore
             clock.SetDelayCompleted();
 
             _ = await Assert.ThrowsExceptionAsync<TimeoutException>(
-                async () => await client.Request(new byte[] { 1, 2, 3, 4, 5 }, 100));
+                async () => await client.Request(new byte[] { 1, 2, 3, 4, 5 }, 100, source));
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using DayZServerMonitorCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TestDayZServerMonitorCore
@@ -10,11 +11,19 @@ namespace TestDayZServerMonitorCore
         private readonly MockClient client = new MockClient();
         private readonly MockLogger logger = new MockLogger();
         private MockClientFactory clientFactory;
+        private CancellationTokenSource source;
 
         [TestInitialize]
         public void Initialize()
         {
             clientFactory = new MockClientFactory(client);
+            source = new CancellationTokenSource();
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            source.Dispose();
         }
 
         [TestMethod]
@@ -41,12 +50,13 @@ namespace TestDayZServerMonitorCore
             };
             ServerInfoQuerier querier = new ServerInfoQuerier(clientFactory, logger);
 
-            ServerInfo info = await querier.Query("12.34.56.78", 12345, 100);
+            ServerInfo info = await querier.Query("12.34.56.78", 12345, 100, source);
 
             Assert.AreEqual(1, clientFactory.MockCalls.Count);
             Assert.AreEqual("12.34.56.78", clientFactory.MockCalls[0].Item1);
             Assert.AreEqual(12345, clientFactory.MockCalls[0].Item2);
             Assert.AreEqual(100, client.ServerTimeout);
+            Assert.AreSame(source, client.Source);
             CollectionAssert.AreEqual(
                 new byte[] {
                     0xFF, 0xFF, 0xFF, 0xFF, 0x54, 0x53, 0x6F, 0x75, 0x72, 0x63, 0x65, 0x20, 0x45,
@@ -71,7 +81,7 @@ namespace TestDayZServerMonitorCore
             client.ServerResponse = new byte[] { 0 }; // Bad response
             ServerInfoQuerier querier = new ServerInfoQuerier(clientFactory, logger);
 
-            Assert.IsNull(await querier.Query("12.34.56.78", 12345, 100));
+            Assert.IsNull(await querier.Query("12.34.56.78", 12345, 100, source));
 
             Assert.AreEqual(1, logger.StatusTexts.Count);
             Assert.AreEqual(1, logger.ErrorTexts.Count);

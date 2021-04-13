@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DayZServerMonitorCore
@@ -16,7 +17,7 @@ namespace DayZServerMonitorCore
             this.logger = logger;
         }
 
-        public async Task<ServerInfo> Query(string host, int port, int timeout)
+        public async Task<ServerInfo> Query(string host, int port, int timeout, CancellationTokenSource source)
         {
             logger.Status($"Reading DayZ server status at {host}:{port}");
             try
@@ -27,7 +28,7 @@ namespace DayZServerMonitorCore
                     request.AddRange(Encoding.UTF8.GetBytes("Source Engine Query"));
                     request.Add(0);
 
-                    byte[] response = await client.Request(request.ToArray(), timeout);
+                    byte[] response = await client.Request(request.ToArray(), timeout, source);
 
                     ServerInfo info = ServerInfo.Parse(host, port, response);
 

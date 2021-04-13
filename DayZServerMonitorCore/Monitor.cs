@@ -27,7 +27,7 @@ namespace DayZServerMonitorCore
             lastPoll = new DateTime(0);
         }
 
-        public async Task<ServerInfo> Poll(Server lastServer)
+        public async Task<ServerInfo> Poll(Server lastServer, CancellationTokenSource source)
         {
             await semaphore.WaitAsync();
             try
@@ -40,9 +40,9 @@ namespace DayZServerMonitorCore
                 }
                 lastPoll = clock.UtcNow();
                 previousPolledServer = lastServer.Address;
-                Server server = await GetGameServer(lastServer);
+                Server server = await GetGameServer(lastServer, source);
                 ServerInfoQuerier querier = new ServerInfoQuerier(clientFactory, logger);
-                return await querier.Query(server.Host, server.Port, SERVER_TIMEOUT);
+                return await querier.Query(server.Host, server.Port, SERVER_TIMEOUT, source);
             }
             finally
             {
@@ -50,7 +50,7 @@ namespace DayZServerMonitorCore
             }
         }
 
-        private async Task<Server> GetGameServer(Server server)
+        private async Task<Server> GetGameServer(Server server, CancellationTokenSource source)
         {
             if (gameServerMapping.address != server.Address
                 || clock.UtcNow() - gameServerMapping.dateTime >= TimeSpan.FromMinutes(10))
@@ -60,7 +60,7 @@ namespace DayZServerMonitorCore
                     address: server.Address,
                     server: await masterQuerier.FindDayZServerInRegion(
                         server.Host, server.Port,
-                        MasterServerQuerier.REGION_REST, SERVER_TIMEOUT),
+                        MasterServerQuerier.REGION_REST, SERVER_TIMEOUT, source),
                     dateTime: clock.UtcNow());
             }
             if (gameServerMapping.server == null)

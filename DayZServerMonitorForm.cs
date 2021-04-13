@@ -3,6 +3,7 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Media;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
@@ -21,7 +22,7 @@ namespace DayZServerMonitor
         private readonly MenuItem removeSelectedServer;
         private readonly LogViewer logViewer;
         private readonly Logger logger;
-        private readonly Monitor monitor;
+        private readonly DayZServerMonitorCore.Monitor monitor;
         private readonly ServerSelectionList serverList;
         private ProfileWatcher watcher = null;
         private int lastIconUpdatePlayers = -1;
@@ -31,6 +32,7 @@ namespace DayZServerMonitor
         private bool draggingMiniWindow = false;
         private int dragStartX;
         private int dragStartY;
+        private CancellationTokenSource cancellationTokenSource;
 
         public DayZServerMonitorForm()
         {
@@ -51,7 +53,7 @@ namespace DayZServerMonitor
 
             logViewer = new LogViewer(settings);
             logger = new Logger(settings, clock, StatusWriter, logViewer.Add);
-            monitor = new Monitor(clock, clientFactory, logger);
+            monitor = new DayZServerMonitorCore.Monitor(clock, clientFactory, logger);
 
             LoadSettings();
 
@@ -267,7 +269,7 @@ namespace DayZServerMonitor
 
         internal void Initialize()
         {
-            clock.CreateIntervalTimer(Poll, Monitor.POLLING_INTERVAL, this);
+            clock.CreateIntervalTimer(Poll, DayZServerMonitorCore.Monitor.POLLING_INTERVAL, this);
             Poll();
         }
 
@@ -360,7 +362,7 @@ namespace DayZServerMonitor
             }
         }
 
-        private async Task PollAsync()
+        private async Task PollAsync(CancellationTokenSource source)
         {
             logger.Debug("Polling");
             Server server = await GetSelectedServer();
@@ -374,7 +376,8 @@ namespace DayZServerMonitor
             {
                 UpdateValues(server.Address);
             }
-            ServerInfo info = await this.monitor.Poll(server);
+
+            ServerInfo info = await this.monitor.Poll(server, source);
             if (info != null)
             {
                 logger.Debug($"Received {info}");
@@ -385,7 +388,13 @@ namespace DayZServerMonitor
 
         private void Poll()
         {
-            _ = Task.Run(async delegate { await PollAsync(); });
+            if (cancellationTokenSource != null)
+            {
+                cancellationTokenSource.Cancel();
+            }
+            cancellationTokenSource = new CancellationTokenSource();
+            CancellationToken token = cancellationTokenSource.Token;
+            _ = Task.Run(async delegate { await PollAsync(cancellationTokenSource); }, token);
         }
 
         private void SystemTrayIcon_MouseDoubleClick(object sender, MouseEventArgs e)

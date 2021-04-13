@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DayZServerMonitorCore
@@ -22,7 +23,7 @@ namespace DayZServerMonitorCore
         }
 
         public async Task<Server> FindDayZServerInRegion(
-            string host, int port, byte region, int timeout)
+            string host, int port, byte region, int timeout, CancellationTokenSource source)
         {
             try
             {
@@ -36,7 +37,7 @@ namespace DayZServerMonitorCore
                     request.AddRange(Encoding.UTF8.GetBytes(string.Format("{0}:{1}", host, port)));
                     request.Add(0);
 
-                    byte[] response = await client.Request(request.ToArray(), timeout);
+                    byte[] response = await client.Request(request.ToArray(), timeout, source);
                     MessageParser parser = new MessageParser(response);
                     _ = parser.GetBytes(6);
                     IPAddress ip = parser.GetIPAddress();

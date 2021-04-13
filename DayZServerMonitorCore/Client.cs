@@ -16,9 +16,9 @@ namespace DayZServerMonitorCore
             this.clock = clock;
         }
 
-        public async Task<byte[]> Request(byte[] request, int timeout)
+        public async Task<byte[]> Request(byte[] request, int timeout, CancellationTokenSource source)
         {
-            return await WithTimeout<byte[]>(MakeRequest(request), timeout);
+            return await WithTimeout<byte[]>(MakeRequest(request), timeout, source);
         }
 
         private async Task<byte[]> MakeRequest(byte[] request)
@@ -33,19 +33,15 @@ namespace DayZServerMonitorCore
             return response.Buffer;
         }
 
-        private async Task<T> WithTimeout<T>(Task<T> mainTask, int timeout)
+        private async Task<T> WithTimeout<T>(Task<T> mainTask, int timeout, CancellationTokenSource source)
         {
-            using (CancellationTokenSource source = new CancellationTokenSource())
+            Task timeoutTask = clock.Delay(timeout, source.Token);
+            Task result = await Task.WhenAny(mainTask, timeoutTask);
+            if (result.Equals(mainTask))
             {
-                Task timeoutTask = clock.Delay(timeout, source.Token);
-                Task result = await Task.WhenAny(mainTask, timeoutTask);
-                if (result.Equals(mainTask))
-                {
-                    source.Cancel();
-                    return mainTask.Result;
-                }
-                throw new TimeoutException();
+                return mainTask.Result;
             }
+            throw new TimeoutException();
         }
 
         #region IDisposable Support
