@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DayZServerMonitorCore
@@ -36,11 +37,11 @@ namespace DayZServerMonitorCore
             return $"Most Recent ({Modifier})";
         }
 
-        public async Task<Server> GetServer(ILogger logger, IClock clock)
+        public async Task<Server> GetServer(ILogger logger, IClock clock, CancellationTokenSource source)
         {
             try
             {
-                return await ProfileParser.GetLastServer(Path.Combine(ProfileDirectory, ProfileFilename), clock);
+                return await ProfileParser.GetLastServer(Path.Combine(ProfileDirectory, ProfileFilename), clock, source);
             }
             catch (Exception e)
             {

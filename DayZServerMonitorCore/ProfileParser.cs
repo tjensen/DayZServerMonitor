@@ -28,7 +28,7 @@ namespace DayZServerMonitorCore
             return String.Format("{0}_settings.DayZProfile", Environment.UserName);
         }
 
-        public static async Task<Server> GetLastServer(string path, IClock clock)
+        public static async Task<Server> GetLastServer(string path, IClock clock, CancellationTokenSource source)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace DayZServerMonitorCore
             }
             catch (IOException)
             {
-                await clock.Delay(1000, new CancellationToken());
+                await clock.Delay(1000, source.Token);
                 return await GetLastServerInternal(path);
             }
         }

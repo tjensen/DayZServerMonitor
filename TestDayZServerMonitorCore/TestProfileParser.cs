@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TestDayZServerMonitorCore
@@ -12,16 +13,19 @@ namespace TestDayZServerMonitorCore
     {
         private readonly MockClock clock = new MockClock();
         private string filename;
+        private CancellationTokenSource source;
 
         [TestInitialize]
         public void Initialize()
         {
             filename = Path.GetTempFileName();
+            source = new CancellationTokenSource();
         }
 
         [TestCleanup]
         public void Cleanup()
         {
+            source.Dispose();
             File.Delete(filename);
         }
 
@@ -53,7 +57,7 @@ namespace TestDayZServerMonitorCore
         public async Task GetLastServerThrowsExceptionWhenFileDoesNotContainLastMPServerAsync()
         {
             MissingLastMPServer error = await Assert.ThrowsExceptionAsync<MissingLastMPServer>(
-                () => ProfileParser.GetLastServer(filename, clock));
+                () => ProfileParser.GetLastServer(filename, clock, source));
             Assert.AreEqual("Unable to find last MP server in DayZ profile", error.Message);
         }
 
@@ -66,7 +70,7 @@ namespace TestDayZServerMonitorCore
                 "lastMPServer=\"87.65.43.21:1234\";\n" +
                 "otherThing=\"other-value\";\n");
 
-            Server server = await ProfileParser.GetLastServer(filename, clock);
+            Server server = await ProfileParser.GetLastServer(filename, clock, source);
 
             Assert.AreEqual("87.65.43.21", server.Host);
             Assert.AreEqual(1234, server.Port);
@@ -82,7 +86,7 @@ namespace TestDayZServerMonitorCore
                 clock.SetDelayCompleted();
                 clock.DelayCalled = (source, args) => writeStream.Close();
 
-                Server server = await ProfileParser.GetLastServer(filename, clock);
+                Server server = await ProfileParser.GetLastServer(filename, clock, source);
 
                 Assert.AreEqual("87.65.43.21", server.Host);
                 Assert.AreEqual(1234, server.Port);

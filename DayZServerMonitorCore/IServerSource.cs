@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DayZServerMonitorCore
@@ -8,7 +9,7 @@ namespace DayZServerMonitorCore
     {
         string GetDisplayName();
 
-        Task<Server> GetServer(ILogger logger, IClock clock);
+        Task<Server> GetServer(ILogger logger, IClock clock, CancellationTokenSource source);
 
         ProfileWatcher CreateWatcher(Action action, ISynchronizeInvoke synchronizingObject);
 

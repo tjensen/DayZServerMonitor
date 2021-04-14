@@ -32,7 +32,7 @@ namespace DayZServerMonitor
         private bool draggingMiniWindow = false;
         private int dragStartX;
         private int dragStartY;
-        private CancellationTokenSource cancellationTokenSource;
+        private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
         public DayZServerMonitorForm()
         {
@@ -110,7 +110,7 @@ namespace DayZServerMonitor
             Poll();
         }
 
-        private async Task<Server> GetSelectedServer()
+        private async Task<Server> GetSelectedServer(CancellationTokenSource source)
         {
             ServerSelectionItem item = null;
             if (InvokeRequired)
@@ -121,7 +121,7 @@ namespace DayZServerMonitor
             {
                 item = serverList[SelectionCombo.SelectedIndex];
             }
-            return await item.GetSource().GetServer(logger, clock);
+            return await item.GetSource().GetServer(logger, clock, source);
         }
 
         private void UpdateSystemTrayIcon(Icon icon, string players)
@@ -365,7 +365,7 @@ namespace DayZServerMonitor
         private async Task PollAsync(CancellationTokenSource source)
         {
             logger.Debug("Polling");
-            Server server = await GetSelectedServer();
+            Server server = await GetSelectedServer(source);
             if (server == null)
             {
                 UpdateValues("?");

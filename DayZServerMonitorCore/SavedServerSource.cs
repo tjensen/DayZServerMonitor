@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DayZServerMonitorCore
@@ -48,7 +49,7 @@ namespace DayZServerMonitorCore
             return server.Address;
         }
 
-        public Task<Server> GetServer(ILogger logger, IClock clock)
+        public Task<Server> GetServer(ILogger logger, IClock clock, CancellationTokenSource source)
         {
             return Task.FromResult(server);
         }

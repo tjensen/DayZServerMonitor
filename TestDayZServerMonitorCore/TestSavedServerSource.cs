@@ -1,5 +1,6 @@
 ﻿using DayZServerMonitorCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TestDayZServerMonitorCore
@@ -9,6 +10,19 @@ namespace TestDayZServerMonitorCore
     {
         private readonly MockLogger logger = new MockLogger();
         private readonly MockClock clock = new MockClock();
+        private CancellationTokenSource source;
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            source = new CancellationTokenSource();
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            source.Dispose();
+        }
 
         [TestMethod]
         public void GetDisplayNameReturnsServerAddressWhenServerNameIsUnknown()
@@ -32,7 +46,7 @@ namespace TestDayZServerMonitorCore
             Server server = new Server("1.2.3.4", 5678);
             SavedServerSource serverSource = new SavedServerSource(server);
 
-            Assert.AreSame(server, await serverSource.GetServer(logger, clock));
+            Assert.AreSame(server, await serverSource.GetServer(logger, clock, source));
         }
 
         [TestMethod]
