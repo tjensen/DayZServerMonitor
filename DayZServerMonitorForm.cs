@@ -260,6 +260,9 @@ namespace DayZServerMonitor
             }
             UpdateValues(server, name, players.ToString(), maxPlayers.ToString(), playersColor);
             UpdateSystemTrayIcon(players, maxPlayers);
+
+            StatusFileWriter writer = new StatusFileWriter(settings.StatusFile, logger);
+            writer.WriteStatus(server, name, players, maxPlayers);
         }
 
         internal void UpdateValues(string server)

@@ -22,6 +22,7 @@ namespace DayZServerMonitor
         private readonly Button trayIconForeground = new Button();
         private readonly Button trayIconAlertBackground = new Button();
         private readonly Button trayIconAlertForeground = new Button();
+        private bool honorCheckedChangedEvents = false;
 
         public SettingsDialog()
         {
@@ -35,6 +36,20 @@ namespace DayZServerMonitor
                 statusFileContent[i] = new TextBox();
             }
             InitializeComponent();
+        }
+
+        public new DialogResult ShowDialog()
+        {
+            honorCheckedChangedEvents = true;
+
+            try
+            {
+                return base.ShowDialog();
+            }
+            finally
+            {
+                honorCheckedChangedEvents = false;
+            }
         }
 
         public void ShowDialog(Settings settings)
@@ -270,13 +285,13 @@ namespace DayZServerMonitor
             mainPanel.RowStyles[0].Height = ClientSize.Height - (mainPanel.Padding.Top + mainPanel.Padding.Bottom) - 35;
         }
 
-        private string SelectFile(string title)
+        private string SelectFile(string title, bool overwritePrompt)
         {
             using (SaveFileDialog dialog = new SaveFileDialog())
             {
                 dialog.Filter = "All Files|*.*";
                 dialog.Title = title;
-                dialog.OverwritePrompt = false;
+                dialog.OverwritePrompt = overwritePrompt;
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     return dialog.FileName;
@@ -287,7 +302,7 @@ namespace DayZServerMonitor
 
         private bool SelectLogFile()
         {
-            string filename = SelectFile("Log Filename");
+            string filename = SelectFile("Log Filename", false);
             if (filename != null)
             {
                 logFilename.Text = filename;
@@ -304,7 +319,7 @@ namespace DayZServerMonitor
 
         private void EnableLogFile_CheckedChanged(object sender, EventArgs args)
         {
-            if (enableLogFile.Checked)
+            if (honorCheckedChangedEvents && enableLogFile.Checked)
             {
                 if (!SelectLogFile() && logFilename.Text == "")
                 {
@@ -328,7 +343,7 @@ namespace DayZServerMonitor
 
         private bool SelectStatusFile(int index)
         {
-            string filename = SelectFile($"Status Filename {index}");
+            string filename = SelectFile($"Status Filename {index}", true);
             if (filename != null)
             {
                 statusFilename[index].Text = filename;
@@ -340,7 +355,7 @@ namespace DayZServerMonitor
 
         private void EnableStatusFile_CheckedChanged(int index)
         {
-            if (enableStatusFile[index].Checked)
+            if (honorCheckedChangedEvents && enableStatusFile[index].Checked)
             {
                 if (!SelectStatusFile(index) && statusFilename[index].Text == "")
                 {
