@@ -15,6 +15,9 @@ namespace DayZServerMonitor
         private readonly TextBox logFilename = new TextBox();
         private readonly NumericUpDown playerCountThreshold = new NumericUpDown();
         private readonly ComboBox notifyOnPlayerCount = new ComboBox();
+        private readonly CheckBox[] enableStatusFile;
+        private readonly TextBox[] statusFilename;
+        private readonly TextBox[] statusFileContent;
         private readonly Button trayIconBackground = new Button();
         private readonly Button trayIconForeground = new Button();
         private readonly Button trayIconAlertBackground = new Button();
@@ -22,6 +25,15 @@ namespace DayZServerMonitor
 
         public SettingsDialog()
         {
+            enableStatusFile = new CheckBox[Settings.NUM_STATUS_FILES];
+            statusFilename = new TextBox[Settings.NUM_STATUS_FILES];
+            statusFileContent = new TextBox[Settings.NUM_STATUS_FILES];
+            for (int i = 0; i < Settings.NUM_STATUS_FILES; i++)
+            {
+                enableStatusFile[i] = new CheckBox();
+                statusFilename[i] = new TextBox();
+                statusFileContent[i] = new TextBox();
+            }
             InitializeComponent();
         }
 
@@ -42,6 +54,20 @@ namespace DayZServerMonitor
             }
             playerCountThreshold.Value = settings.PlayerCountThreshold;
             notifyOnPlayerCount.SelectedItem = settings.NotifyOnPlayerCount;
+            for (int i = 0; i < Settings.NUM_STATUS_FILES; i++)
+            {
+                if (settings.StatusFile[i].Pathname == null)
+                {
+                    enableStatusFile[i].Checked = false;
+                    statusFilename[i].Text = "";
+                }
+                else
+                {
+                    enableStatusFile[i].Checked = true;
+                    statusFilename[i].Text = settings.StatusFile[i].Pathname;
+                }
+                statusFileContent[i].Text = settings.StatusFile[i].Content;
+            }
             trayIconBackground.BackColor = settings.TrayIconBackground;
             trayIconForeground.BackColor = settings.TrayIconForeground;
             trayIconAlertBackground.BackColor = settings.TrayIconAlertBackground;
@@ -64,6 +90,16 @@ namespace DayZServerMonitor
                 settings.PlayerCountThreshold = (int)playerCountThreshold.Value;
                 settings.NotifyOnPlayerCount =
                     (Settings.NotifyOnPlayerCountValues)notifyOnPlayerCount.SelectedItem;
+                StatusFileSetting[] newStatusFiles = new StatusFileSetting[Settings.NUM_STATUS_FILES];
+                for (int i = 0; i < Settings.NUM_STATUS_FILES; i++)
+                {
+                    newStatusFiles[i] = new StatusFileSetting
+                    {
+                        Pathname = enableStatusFile[i].Checked && statusFilename[i].Text != "" ? statusFilename[i].Text : null,
+                        Content = statusFileContent[i].Text
+                    };
+                }
+                settings.StatusFile = newStatusFiles;
                 settings.TrayIconBackground = trayIconBackground.BackColor;
                 settings.TrayIconForeground = trayIconForeground.BackColor;
                 settings.TrayIconAlertBackground = trayIconAlertBackground.BackColor;
@@ -89,6 +125,25 @@ namespace DayZServerMonitor
             colorButton.Dock = DockStyle.Left;
             colorButton.Click += ColorButton_Click;
             InitializeSetting(panel, colorButton, labelText);
+        }
+
+        private void InitializeStatusFileSetting(Panel panel, int index)
+        {
+            enableStatusFile[index].Dock = DockStyle.Left;
+            enableStatusFile[index].CheckedChanged += (object source, EventArgs args) => EnableStatusFile_CheckedChanged(index);
+            InitializeSetting(panel, enableStatusFile[index], $"Enable Status File {index}");
+
+            statusFilename[index].Dock = DockStyle.Fill;
+            statusFilename[index].ReadOnly = true;
+            statusFilename[index].Click += (object source, EventArgs args) => StatusFilename_Click(index);
+            InitializeSetting(panel, statusFilename[index], $"Status Filename {index}");
+
+            statusFileContent[index].Dock = DockStyle.Fill;
+            statusFileContent[index].Height = statusFileContent[index].Font.Height * 5;
+            statusFileContent[index].ScrollBars = ScrollBars.Both;
+            statusFileContent[index].Multiline = true;
+            statusFileContent[index].AcceptsReturn = true;
+            InitializeSetting(panel, statusFileContent[index], $"Status File Content {index}");
         }
 
         private void InitializeComponent()
@@ -163,6 +218,11 @@ namespace DayZServerMonitor
             playerCountThreshold.Maximum = int.MaxValue;
             InitializeSetting(settingsPanel, playerCountThreshold, "Player Count Threshold");
 
+            for (int i = 0; i < Settings.NUM_STATUS_FILES; i++)
+            {
+                InitializeStatusFileSetting(settingsPanel, i);
+            }
+
             InitializeColorSetting(settingsPanel, trayIconBackground, "Tray Icon Background");
             InitializeColorSetting(settingsPanel, trayIconForeground, "Tray Icon Foreground");
 
@@ -210,19 +270,29 @@ namespace DayZServerMonitor
             mainPanel.RowStyles[0].Height = ClientSize.Height - (mainPanel.Padding.Top + mainPanel.Padding.Bottom) - 35;
         }
 
-        private bool SelectLogFile()
+        private string SelectFile(string title)
         {
             using (SaveFileDialog dialog = new SaveFileDialog())
             {
                 dialog.Filter = "All Files|*.*";
-                dialog.Title = "Log Filename";
+                dialog.Title = title;
                 dialog.OverwritePrompt = false;
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    logFilename.Text = dialog.FileName;
-                    enableLogFile.Checked = true;
-                    return true;
+                    return dialog.FileName;
                 }
+            }
+            return null;
+        }
+
+        private bool SelectLogFile()
+        {
+            string filename = SelectFile("Log Filename");
+            if (filename != null)
+            {
+                logFilename.Text = filename;
+                enableLogFile.Checked = true;
+                return true;
             }
             return false;
         }
@@ -254,6 +324,34 @@ namespace DayZServerMonitor
             {
                 colorButton.BackColor = dialog.Color;
             }
+        }
+
+        private bool SelectStatusFile(int index)
+        {
+            string filename = SelectFile($"Status Filename {index}");
+            if (filename != null)
+            {
+                statusFilename[index].Text = filename;
+                enableStatusFile[index].Checked = true;
+                return true;
+            }
+            return false;
+        }
+
+        private void EnableStatusFile_CheckedChanged(int index)
+        {
+            if (enableStatusFile[index].Checked)
+            {
+                if (!SelectStatusFile(index) && statusFilename[index].Text == "")
+                {
+                    enableStatusFile[index].Checked = false;
+                }
+            }
+        }
+
+        private void StatusFilename_Click(int index)
+        {
+            SelectStatusFile(index);
         }
     }
 }

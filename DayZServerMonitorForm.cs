@@ -6,6 +6,7 @@ using System.Media;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace DayZServerMonitor
@@ -341,7 +342,8 @@ namespace DayZServerMonitor
 
                 XmlSerializer serializer = new XmlSerializer(typeof(Settings));
                 using FileStream fs = new FileStream(SettingsFilename(), FileMode.Open);
-                settings.Apply((Settings)serializer.Deserialize(fs));
+                XmlTextReader reader = new XmlTextReader(fs) { Normalization = false };
+                settings.Apply((Settings)serializer.Deserialize(reader));
             }
             catch (Exception error)
             {
