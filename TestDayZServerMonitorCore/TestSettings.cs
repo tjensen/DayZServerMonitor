@@ -1,6 +1,5 @@
 ﻿using DayZServerMonitorCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.Drawing;
 using System.IO;
 using System.Xml.Serialization;
