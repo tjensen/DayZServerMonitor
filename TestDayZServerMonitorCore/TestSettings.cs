@@ -29,6 +29,20 @@ namespace TestDayZServerMonitorCore
             Assert.IsFalse(settings.AlwaysOnTop);
             Assert.AreEqual(10, settings.PlayerCountThreshold);
             Assert.AreEqual(Settings.NotifyOnPlayerCountValues.NEVER, settings.NotifyOnPlayerCount);
+            for (int i = 0; i < Settings.NUM_STATUS_FILES; i++)
+            {
+                StatusFileSetting statusFile = settings.StatusFile[i];
+                Assert.IsFalse(statusFile.Enabled);
+                Assert.IsNull(statusFile.Pathname);
+                if (i == 0)
+                {
+                    Assert.AreEqual(StatusFileSetting.EXAMPLE_CONTENT, statusFile.Content);
+                }
+                else
+                {
+                    Assert.AreEqual("", statusFile.Content);
+                }
+            }
             Assert.AreEqual(Color.Black, settings.TrayIconBackground);
             Assert.AreEqual(Color.White, settings.TrayIconForeground);
             Assert.AreEqual(Color.DarkRed, settings.TrayIconAlertBackground);
@@ -46,6 +60,12 @@ namespace TestDayZServerMonitorCore
                 AlwaysOnTop = true,
                 PlayerCountThreshold = 37,
                 NotifyOnPlayerCount = Settings.NotifyOnPlayerCountValues.WHEN_ABOVE,
+                StatusFile = new StatusFileSetting[] {
+                    new StatusFileSetting{Pathname = $"new filename 0", Content = $"new content 0" },
+                    new StatusFileSetting{Pathname = $"new filename 1", Content = $"new content 1" },
+                    new StatusFileSetting{Pathname = $"new filename 2", Content = $"new content 2" },
+                    new StatusFileSetting{Pathname = $"new filename 3", Content = $"new content 3" }
+                },
                 TrayIconBackground = Color.Green,
                 TrayIconForeground = Color.Blue,
                 TrayIconAlertBackground = Color.Yellow,
@@ -60,6 +80,12 @@ namespace TestDayZServerMonitorCore
             Assert.IsTrue(settings.AlwaysOnTop);
             Assert.AreEqual(37, settings.PlayerCountThreshold);
             Assert.AreEqual(Settings.NotifyOnPlayerCountValues.WHEN_ABOVE, settings.NotifyOnPlayerCount);
+            for (int i = 0; i < Settings.NUM_STATUS_FILES; i++)
+            {
+                Assert.AreEqual(newSettings.StatusFile[i].Enabled, settings.StatusFile[i].Enabled);
+                Assert.AreEqual(newSettings.StatusFile[i].Pathname, settings.StatusFile[i].Pathname);
+                Assert.AreEqual(newSettings.StatusFile[i].Content, settings.StatusFile[i].Content);
+            }
             Assert.AreEqual(Color.Green, settings.TrayIconBackground);
             Assert.AreEqual(Color.Blue, settings.TrayIconForeground);
             Assert.AreEqual(Color.Yellow, settings.TrayIconAlertBackground);
@@ -77,6 +103,12 @@ namespace TestDayZServerMonitorCore
                 AlwaysOnTop = true,
                 PlayerCountThreshold = 55,
                 NotifyOnPlayerCount = Settings.NotifyOnPlayerCountValues.WHEN_BELOW,
+                StatusFile = new StatusFileSetting[] {
+                    new StatusFileSetting{Pathname = $"new filename 0", Content = $"new content 0" },
+                    new StatusFileSetting{Pathname = $"new filename 1", Content = $"new content 1" },
+                    new StatusFileSetting{Pathname = $"new filename 2", Content = $"new content 2" },
+                    new StatusFileSetting{Pathname = $"new filename 3", Content = $"new content 3" }
+                },
                 TrayIconBackground = Color.Green,
                 TrayIconForeground = Color.Blue,
                 TrayIconAlertBackground = Color.Yellow,
@@ -106,6 +138,18 @@ namespace TestDayZServerMonitorCore
             Assert.AreEqual(55, settingsToLoad.PlayerCountThreshold);
             Assert.AreEqual(Settings.NotifyOnPlayerCountValues.WHEN_BELOW,
                 settingsToLoad.NotifyOnPlayerCount);
+            for (int i = 0; i < Settings.NUM_STATUS_FILES; i++)
+            {
+                Assert.AreEqual(
+                    settingsToSave.StatusFile[i].Enabled,
+                    settingsToLoad.StatusFile[i].Enabled);
+                Assert.AreEqual(
+                    settingsToSave.StatusFile[i].Pathname,
+                    settingsToLoad.StatusFile[i].Pathname);
+                Assert.AreEqual(
+                    settingsToSave.StatusFile[i].Content,
+                    settingsToLoad.StatusFile[i].Content);
+            }
             Assert.AreEqual(settingsToSave.TrayIconBackground.ToArgb(),
                 settingsToLoad.TrayIconBackground.ToArgb());
             Assert.AreEqual(settingsToSave.TrayIconForeground.ToArgb(),
@@ -162,6 +206,19 @@ namespace TestDayZServerMonitorCore
             settings.NotifyOnPlayerCount = Settings.NotifyOnPlayerCountValues.WHEN_ABOVE;
 
             Assert.AreEqual("NotifyOnPlayerCount", settingThatChanged);
+        }
+
+        [TestMethod]
+        public void SettingsChangedIsInvokedWhenEnableStatusFileIsChanged()
+        {
+            settings.StatusFile = new StatusFileSetting[] {
+                new StatusFileSetting{Pathname = "filename",  Content = "content"},
+                new StatusFileSetting{Pathname = "filename",  Content = "content"},
+                new StatusFileSetting{Pathname = "filename",  Content = "content"},
+                new StatusFileSetting{Pathname = "filename",  Content = "content"}
+            };
+
+            Assert.AreEqual("StatusFile", settingThatChanged);
         }
 
         [TestMethod]

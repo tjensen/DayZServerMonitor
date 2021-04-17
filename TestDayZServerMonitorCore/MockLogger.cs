@@ -34,5 +34,13 @@ namespace TestDayZServerMonitorCore
         {
             DebugTexts.Add(text);
         }
+
+        public bool NothingLogged
+        {
+            get => StatusTexts.Count == 0
+                && ErrorTexts.Count == 0
+                && DebugTexts.Count == 0
+                && ErrorExceptions.Count == 0;
+        }
     }
 }
