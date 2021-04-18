@@ -1,0 +1,133 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Server Status Overlays in OBS</title>
+    <meta property="og:title" content="Server Status Overlays in OBS" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://i.imgur.com/TElIGDG.png" />
+    <meta
+      property="og:url"
+      content="https://tjensen.github.io/DayZServerMonitor/status-files.html" />
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta
+      property="og:description"
+      content="How to set up OBS to display DayZ server status in an overlay" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap"
+      rel="stylesheet">
+    <link href="index.css" rel="stylesheet">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-146795359-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-146795359-1');
+    </script>
+  </head>
+  <body>
+    <h1>Server Status Overlays in OBS</h1>
+    <section class="intro">
+      <div>
+        How to set up OBS to display DayZ server status in an overlay
+      </div>
+      <a target="_blank" href="https://i.imgur.com/dYjEMmj.png"><img src="https://i.imgur.com/TElIGDG.png"></a>
+    </section>
+
+    <section class="panel">
+      <h2>Basic</h2>
+      <p>
+      A basic overlay can be created by using a simple text file with a "Text (GDI+)" source in OBS.
+      </p>
+      <ol>
+        <li>Click the "&#8801;" button in DayZ Server Monitor and select "Settings..."</li>
+        <li>Scroll down in the Settings window to find the Status File settings</li>
+        <li>Check the "Enable Status File 0" checkbox</li>
+        <li>Choose the location and filename of the text file to generate</li>
+        <li>Copy the following text into the "Status File Content 0" text box:
+          <textarea rows="4" cols="40" readonly>Name: %N
+Address: %A
+Num Players: %P
+Max Players: %M</textarea>
+          The settings should look something like this:
+          <a target="_blank" href="https://i.imgur.com/jgsL6y1.png"><img src="https://i.imgur.com/jgsL6y1.png"></a>
+        </li>
+        <li>Click "OK" to save changes</li>
+        <li>Switch to OBS and create a new "Text (GDI+)" source in your desired scene</li>
+        <li>In the properties dialog, check the "Read from file" checkbox and
+          then click the "Browse" button to select the same file you chose, above
+          <a target="_blank" href="https://i.imgur.com/2EDY7n7.png"><img src="https://i.imgur.com/2EDY7n7.png"></a>
+        </li>
+        <li>Adjust the properties as desired and click "OK" to save changes</li>
+      </ol>
+    </section>
+
+    <section class="panel">
+      <h2>Advanced</h2>
+      <p>
+      A more advanced overlay can be created with custom styling by using an HTML-formatted text file with a "Browser" source in OBS.
+      </p>
+      <ol>
+        <li>Click the "&#8801;" button in DayZ Server Monitor and select "Settings..."</li>
+        <li>Scroll down in the Settings window to find the Status File settings</li>
+        <li>Check the "Enable Status File 0" checkbox</li>
+        <li>Choose the location and filename of the text file to generate</li>
+        <li>Copy the following text into the "Status File Content 0" text box:
+          <textarea rows="4" cols="40" readonly>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;body&gt;
+    &lt;div class="name"&gt;%N&lt;/div&gt;
+    &lt;div class="address"&gt;%A&lt;/div&gt;
+    &lt;div class="players"&gt;
+      &lt;span class="num-players"&gt;%P&lt;/span&gt;/&lt;span class="max-players"&gt;%M&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;script&gt;setTimeout(function(){window.location.reload();},1000);&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</textarea>
+          The settings should look something like this:
+          <a target="_blank" href="https://i.imgur.com/p8VSfpt.png"><img src="https://i.imgur.com/p8VSfpt.png"></a>
+        </li>
+        <li>Click "OK" to save changes</li>
+        <li>Switch to OBS and create a new "Browser" source in your desired scene</li>
+        <li>In the Properties dialog, check the "Local file" checkbox</li>
+        <li>Click the "Browse" button to select the file you chose above</li>A
+        <li>Copy the following text into the "Custom CSS" text box:
+          <textarea rows="8" cols="40" readonly>body {
+  color: white;
+  background-color: rgba(0, 0, 0, 50%);
+  margin: 0px auto;
+  font-family: sans-serif;
+  font-size: 36px;
+  text-align: center;
+  overflow: hidden;
+}
+
+.name {
+  color: white;
+}
+
+.address {
+  color: lightgreen;
+  font-family: monospace;
+}
+
+.players {
+  font-size: 200%;
+}
+
+.num-players {
+  color: yellow;
+}
+
+.max-players {
+  color: cyan;
+}</textarea>
+          The Properties should look something like this:
+          <a target="_blank" href="https://i.imgur.com/WHrftBL.png"><img src="https://i.imgur.com/WHrftBL.png"></a>
+        </li>
+        <li>Adjust the properties as desired and click "OK" to save changes</li>
+      </ol>
+    </section>
+  </body>
+</html>
