@@ -1,6 +1,8 @@
 body {
   font-family: 'Open Sans', sans-serif;
   background: #c0c0ff;
+  display: flex;
+  flex-direction: column;
 }
 
 @media (orientation: portrait) {
@@ -10,6 +12,11 @@ body {
   body {
     font-size: 24pt;
   }
+}
+
+h1, h2 {
+  margin: 0;
+  text-align: center;
 }
 
 a {
@@ -26,12 +33,12 @@ a > div {
   border: solid 1px black;
 }
 
-.title {
+.intro {
   width: 100%;
   text-align: center;
 }
 
-.title div {
+.intro div {
   margin: 1em;
 }
 
@@ -51,6 +58,19 @@ a > div {
 
 .label {
   margin: 6pt 0;
+}
+
+.features {
+  width: 100%;
+  max-width: 720px;
+  align-self: center;
+  background-color: #d0d0ff;
+  padding: 1em;
+}
+
+.features li::marker {
+  color: maroon;
+  content: "\25CE\00A0";
 }
 
 .github-ribbon {
