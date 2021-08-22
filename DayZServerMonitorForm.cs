@@ -65,7 +65,7 @@ namespace DayZServerMonitor
 
             SelectionCombo.DisplayMember = "DisplayName";
             SelectionCombo.ValueMember = "Value";
-            serverList = new ServerSelectionList(SelectionCombo, logger);
+            serverList = new ServerSelectionList(SelectionCombo);
             RestoreSavedServers();
             SelectionCombo.SelectedValueChanged += new EventHandler(ServerSelectionChanged);
 

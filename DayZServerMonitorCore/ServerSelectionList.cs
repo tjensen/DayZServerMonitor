@@ -15,12 +15,10 @@ namespace DayZServerMonitorCore
         private const int SAVED_SERVER_INDEX = 2;
 
         private readonly ComboBox comboBox;
-        private readonly ILogger logger;
 
-        public ServerSelectionList(ComboBox comboBox, ILogger logger)
+        public ServerSelectionList(ComboBox comboBox)
         {
             this.comboBox = comboBox;
-            this.logger = logger;
             Insert(0, new LatestServerSource("Stable", ProfileParser.GetDayZFolder(), ProfileParser.GetProfileFilename()));
             Insert(1, new LatestServerSource("Experimental", ProfileParser.GetExperimentalDayZFolder(), ProfileParser.GetProfileFilename()));
             comboBox.SelectedIndex = 0;

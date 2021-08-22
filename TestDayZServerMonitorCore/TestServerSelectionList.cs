@@ -9,7 +9,6 @@ namespace TestDayZServerMonitorCore
     [TestClass]
     public class TestServerSelectionList
     {
-        private readonly MockLogger logger = new MockLogger();
         private readonly ComboBox comboBox = new ComboBox();
         private ServerSelectionList list;
         private string filename;
@@ -17,7 +16,7 @@ namespace TestDayZServerMonitorCore
         [TestInitialize]
         public void Initialize()
         {
-            list = new ServerSelectionList(comboBox, logger);
+            list = new ServerSelectionList(comboBox);
             filename = Path.GetTempFileName();
         }
 
