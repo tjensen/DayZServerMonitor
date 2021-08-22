@@ -1,4 +1,5 @@
 ﻿using DayZServerMonitorCore;
+using Microsoft.Win32;
 using System;
 using System.Drawing;
 using System.IO;
@@ -13,6 +14,10 @@ namespace DayZServerMonitor
 {
     public partial class DayZServerMonitorForm : Form
     {
+        private static readonly string REGISTRY_KEY = @"HKEY_CURRENT_USER\SOFTWARE\DayZServerMonitor\window";
+        private static readonly string LOCATION_X = @"Location.X";
+        private static readonly string LOCATION_Y = @"Location.Y";
+
         private readonly Label miniLabel = new Label();
         private readonly ToolTip miniLabelToolTip = new ToolTip();
         private readonly Settings settings = new Settings();
@@ -81,6 +86,8 @@ namespace DayZServerMonitor
             this.miniLabel.MouseMove += MiniLabel_MouseMove;
             this.Controls.Add(this.miniLabel);
             this.ResumeLayout();
+            
+            this.Load += new System.EventHandler(DayZServerMonitorForm_Load);
         }
 
         private void StatusWriter(string text)
@@ -468,6 +475,35 @@ namespace DayZServerMonitor
             logViewer.WindowState = FormWindowState.Normal;
             logViewer.Activate();
             logViewer.Show();
+        }
+
+        private void DayZServerMonitorForm_Load(object sender, EventArgs e)
+        {
+            try
+            {
+                object xobj = Registry.GetValue(REGISTRY_KEY, LOCATION_X, null);
+                object yobj = Registry.GetValue(REGISTRY_KEY, LOCATION_Y, null);
+
+                if (xobj is int @x && yobj is int @y)
+                {
+                    this.Location = new Point(@x, @y);
+                }
+            }
+            catch (NullReferenceException error)
+            {
+                Console.WriteLine($"Error restoring window position {error}");
+            }
+
+            this.LocationChanged += new System.EventHandler(DayZServerMonitorForm_LocationChanged);
+        }
+
+        private void DayZServerMonitorForm_LocationChanged(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                Registry.SetValue(REGISTRY_KEY, LOCATION_X, this.Location.X);
+                Registry.SetValue(REGISTRY_KEY, LOCATION_Y, this.Location.Y);
+            }
         }
 
         private void DayZServerMonitorForm_Resize(object sender, EventArgs e)
