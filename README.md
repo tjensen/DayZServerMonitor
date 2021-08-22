@@ -1,6 +1,6 @@
 # DayZ Server Monitor
 
-[![Build status](https://ci.appveyor.com/api/projects/status/vdk94nh314qghaoe/branch/master?svg=true)](https://ci.appveyor.com/project/tjensen/dayzservermonitor/branch/master)
+[![Build status](https://github.com/tjensen/DayZServerMonitor/actions/workflows/test-and-build.yml/badge.svg)](https://github.com/tjensen/DayZServerMonitor/actions/workflows/test-and-build.yml)
 
 DayZ Server Monitor lets you view the current player count on the most recently
 played DayZ server.
