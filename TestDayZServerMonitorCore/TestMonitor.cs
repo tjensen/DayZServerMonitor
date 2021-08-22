@@ -145,44 +145,42 @@ namespace TestDayZServerMonitorCore
             _ = await monitor.Poll(server, source);
 
             clientFactory.Reset();
-            using (MockClient secondServerInfoClient = new MockClient(),
-                secondMasterServerClient = new MockClient())
-            {
-                secondMasterServerClient.ServerResponse = MasterServerResponse();
-                secondServerInfoClient.ServerResponse = ServerInfoResponse();
-                clientFactory.AddClient(secondMasterServerClient);
-                clientFactory.AddClient(secondServerInfoClient);
+            using MockClient secondServerInfoClient = new MockClient();
+            using MockClient secondMasterServerClient = new MockClient();
+            secondMasterServerClient.ServerResponse = MasterServerResponse();
+            secondServerInfoClient.ServerResponse = ServerInfoResponse();
+            clientFactory.AddClient(secondMasterServerClient);
+            clientFactory.AddClient(secondServerInfoClient);
 
-                ServerInfo info = await monitor.Poll(new Server("9.9.9.9", 8888), source);
+            ServerInfo info = await monitor.Poll(new Server("9.9.9.9", 8888), source);
 
-                Assert.AreEqual("4.3.2.1:4660", info.Address);
-                Assert.AreEqual("SERVER-NAME", info.Name);
-                Assert.AreEqual(23, info.NumPlayers);
-                Assert.AreEqual(42, info.MaxPlayers);
+            Assert.AreEqual("4.3.2.1:4660", info.Address);
+            Assert.AreEqual("SERVER-NAME", info.Name);
+            Assert.AreEqual(23, info.NumPlayers);
+            Assert.AreEqual(42, info.MaxPlayers);
 
-                Assert.AreEqual(2, clientFactory.MockCalls.Count);
-                Assert.AreEqual("hl2master.steampowered.com", clientFactory.MockCalls[0].Item1);
-                Assert.AreEqual(27011, clientFactory.MockCalls[0].Item2);
-                Assert.AreEqual("4.3.2.1", clientFactory.MockCalls[1].Item1);
-                Assert.AreEqual(4660, clientFactory.MockCalls[1].Item2);
+            Assert.AreEqual(2, clientFactory.MockCalls.Count);
+            Assert.AreEqual("hl2master.steampowered.com", clientFactory.MockCalls[0].Item1);
+            Assert.AreEqual(27011, clientFactory.MockCalls[0].Item2);
+            Assert.AreEqual("4.3.2.1", clientFactory.MockCalls[1].Item1);
+            Assert.AreEqual(4660, clientFactory.MockCalls[1].Item2);
 
-                CollectionAssert.AreEqual(
-                    new byte[]
-                    {
+            CollectionAssert.AreEqual(
+                new byte[]
+                {
                     0x31, 0xFF, 0x30, 0x2E, 0x30, 0x2E, 0x30, 0x2E, 0x30, 0x3A, 0x30, 0x00, 0x5C,
                     0x67, 0x61, 0x6D, 0x65, 0x5C, 0x44, 0x61, 0x79, 0x5A, 0x5C, 0x67, 0x61, 0x6D,
                     0x65, 0x61, 0x64, 0x64, 0x72, 0x5C, 0x39, 0x2E, 0x39, 0x2E, 0x39, 0x2E, 0x39,
                     0x3A, 0x38, 0x38, 0x38, 0x38, 0x00
-                    },
-                    secondMasterServerClient.ServerRequest);
+                },
+                secondMasterServerClient.ServerRequest);
 
-                CollectionAssert.AreEqual(
-                    new byte[] {
+            CollectionAssert.AreEqual(
+                new byte[] {
                     0xFF, 0xFF, 0xFF, 0xFF, 0x54, 0x53, 0x6F, 0x75, 0x72, 0x63, 0x65, 0x20, 0x45,
                     0x6E, 0x67, 0x69, 0x6E, 0x65, 0x20, 0x51, 0x75, 0x65, 0x72, 0x79, 0x00
-                    },
-                    secondServerInfoClient.ServerRequest);
-            }
+                },
+                secondServerInfoClient.ServerRequest);
         }
 
         [TestMethod]
@@ -192,30 +190,28 @@ namespace TestDayZServerMonitorCore
             serverInfoClient.ServerResponse = ServerInfoResponse();
             _ = await monitor.Poll(server, source);
             clientFactory.Reset();
-            using (MockClient secondServerInfoClient = new MockClient())
-            {
-                secondServerInfoClient.ServerResponse = ServerInfoResponse();
-                clientFactory.AddClient(secondServerInfoClient);
-                clock.CurrentTime += TimeSpan.FromSeconds(45);
+            using MockClient secondServerInfoClient = new MockClient();
+            secondServerInfoClient.ServerResponse = ServerInfoResponse();
+            clientFactory.AddClient(secondServerInfoClient);
+            clock.CurrentTime += TimeSpan.FromSeconds(45);
 
-                ServerInfo info = await monitor.Poll(server, source);
+            ServerInfo info = await monitor.Poll(server, source);
 
-                Assert.AreEqual("4.3.2.1:4660", info.Address);
-                Assert.AreEqual("SERVER-NAME", info.Name);
-                Assert.AreEqual(23, info.NumPlayers);
-                Assert.AreEqual(42, info.MaxPlayers);
+            Assert.AreEqual("4.3.2.1:4660", info.Address);
+            Assert.AreEqual("SERVER-NAME", info.Name);
+            Assert.AreEqual(23, info.NumPlayers);
+            Assert.AreEqual(42, info.MaxPlayers);
 
-                Assert.AreEqual(1, clientFactory.MockCalls.Count);
-                Assert.AreEqual("4.3.2.1", clientFactory.MockCalls[0].Item1);
-                Assert.AreEqual(4660, clientFactory.MockCalls[0].Item2);
+            Assert.AreEqual(1, clientFactory.MockCalls.Count);
+            Assert.AreEqual("4.3.2.1", clientFactory.MockCalls[0].Item1);
+            Assert.AreEqual(4660, clientFactory.MockCalls[0].Item2);
 
-                CollectionAssert.AreEqual(
-                    new byte[] {
+            CollectionAssert.AreEqual(
+                new byte[] {
                     0xFF, 0xFF, 0xFF, 0xFF, 0x54, 0x53, 0x6F, 0x75, 0x72, 0x63, 0x65, 0x20, 0x45,
                     0x6E, 0x67, 0x69, 0x6E, 0x65, 0x20, 0x51, 0x75, 0x65, 0x72, 0x79, 0x00
-                    },
-                    secondServerInfoClient.ServerRequest);
-            }
+                },
+                secondServerInfoClient.ServerRequest);
         }
 
         [TestMethod]
@@ -228,23 +224,21 @@ namespace TestDayZServerMonitorCore
             _ = await monitor.Poll(server, source);
             _ = await monitor.Poll(new Server("5.5.5.5", 5555), source);
             clientFactory.Reset();
-            using (MockClient thirdMasterServerClient = new MockClient(),
-                thirdServerInfoClient = new MockClient())
-            {
-                thirdMasterServerClient.ServerResponse = MasterServerResponse(
-                    new byte[] { 0x09, 0x08, 0x07, 0x06, 0x76, 0x54 });
-                clientFactory.AddClient(thirdMasterServerClient);
-                thirdServerInfoClient.ServerResponse = ServerInfoResponse();
-                clientFactory.AddClient(thirdServerInfoClient);
+            using MockClient thirdMasterServerClient = new MockClient();
+            using MockClient thirdServerInfoClient = new MockClient();
+            thirdMasterServerClient.ServerResponse = MasterServerResponse(
+                new byte[] { 0x09, 0x08, 0x07, 0x06, 0x76, 0x54 });
+            clientFactory.AddClient(thirdMasterServerClient);
+            thirdServerInfoClient.ServerResponse = ServerInfoResponse();
+            clientFactory.AddClient(thirdServerInfoClient);
 
-                ServerInfo info = await monitor.Poll(server, source);
+            ServerInfo info = await monitor.Poll(server, source);
 
-                Assert.AreEqual(2, clientFactory.MockCalls.Count);
-                Assert.AreEqual("hl2master.steampowered.com", clientFactory.MockCalls[0].Item1);
-                Assert.AreEqual(27011, clientFactory.MockCalls[0].Item2);
-                Assert.AreEqual("9.8.7.6", clientFactory.MockCalls[1].Item1);
-                Assert.AreEqual(30292, clientFactory.MockCalls[1].Item2);
-            }
+            Assert.AreEqual(2, clientFactory.MockCalls.Count);
+            Assert.AreEqual("hl2master.steampowered.com", clientFactory.MockCalls[0].Item1);
+            Assert.AreEqual(27011, clientFactory.MockCalls[0].Item2);
+            Assert.AreEqual("9.8.7.6", clientFactory.MockCalls[1].Item1);
+            Assert.AreEqual(30292, clientFactory.MockCalls[1].Item2);
         }
 
         [TestMethod]
@@ -259,26 +253,24 @@ namespace TestDayZServerMonitorCore
             _ = await monitor.Poll(server, source);
 
             clientFactory.Reset();
-            using (MockClient secondMasterServerClient = new MockClient(),
-                secondServerInfoClient = new MockClient())
-            {
-                secondMasterServerClient.ServerResponse = MasterServerResponse(
-                    new byte[] { 0x02, 0x03, 0x04, 0x05, 0x11, 0x22 });
-                clientFactory.AddClient(secondMasterServerClient);
-                secondServerInfoClient.ServerResponse = ServerInfoResponse();
-                clientFactory.AddClient(secondServerInfoClient);
-                clock.CurrentTime += TimeSpan.FromMinutes(10);
+            using MockClient secondMasterServerClient = new MockClient();
+            using MockClient secondServerInfoClient = new MockClient();
+            secondMasterServerClient.ServerResponse = MasterServerResponse(
+                new byte[] { 0x02, 0x03, 0x04, 0x05, 0x11, 0x22 });
+            clientFactory.AddClient(secondMasterServerClient);
+            secondServerInfoClient.ServerResponse = ServerInfoResponse();
+            clientFactory.AddClient(secondServerInfoClient);
+            clock.CurrentTime += TimeSpan.FromMinutes(10);
 
-                ServerInfo info = await monitor.Poll(server, source);
+            ServerInfo info = await monitor.Poll(server, source);
 
-                Assert.AreEqual(2, clientFactory.MockCalls.Count);
-                Assert.AreEqual("hl2master.steampowered.com", clientFactory.MockCalls[0].Item1);
-                Assert.AreEqual(27011, clientFactory.MockCalls[0].Item2);
-                Assert.AreEqual("2.3.4.5", clientFactory.MockCalls[1].Item1);
-                Assert.AreEqual(4386, clientFactory.MockCalls[1].Item2);
+            Assert.AreEqual(2, clientFactory.MockCalls.Count);
+            Assert.AreEqual("hl2master.steampowered.com", clientFactory.MockCalls[0].Item1);
+            Assert.AreEqual(27011, clientFactory.MockCalls[0].Item2);
+            Assert.AreEqual("2.3.4.5", clientFactory.MockCalls[1].Item1);
+            Assert.AreEqual(4386, clientFactory.MockCalls[1].Item2);
 
-                Assert.IsNotNull(info);
-            }
+            Assert.IsNotNull(info);
         }
 
         [TestMethod]
@@ -286,24 +278,22 @@ namespace TestDayZServerMonitorCore
         {
             masterServerClient.ServerResponse = MasterServerResponse();
             serverInfoClient.ServerResponse = ServerInfoResponse();
-            using (MockClient secondServerInfoClient = new MockClient())
+            using MockClient secondServerInfoClient = new MockClient();
+            secondServerInfoClient.ServerResponse = ServerInfoResponse();
+
+            serverInfoClient.RequestAction = () =>
             {
-                secondServerInfoClient.ServerResponse = ServerInfoResponse();
+                Assert.AreEqual(2, clientFactory.MockCalls.Count);
+                clientFactory.AddClient(secondServerInfoClient);
+                clock.CurrentTime += TimeSpan.FromSeconds(60);
+            };
 
-                serverInfoClient.RequestAction = () =>
-                {
-                    Assert.AreEqual(2, clientFactory.MockCalls.Count);
-                    clientFactory.AddClient(secondServerInfoClient);
-                    clock.CurrentTime += TimeSpan.FromSeconds(60);
-                };
+            Task<ServerInfo> firstPollTask = monitor.Poll(server, source);
+            Task<ServerInfo> secondPollTask = monitor.Poll(server, source);
 
-                Task<ServerInfo> firstPollTask = monitor.Poll(server, source);
-                Task<ServerInfo> secondPollTask = monitor.Poll(server, source);
-
-                _ = await firstPollTask;
-                _ = await secondPollTask;
-                Assert.AreEqual(3, clientFactory.MockCalls.Count);
-            }
+            _ = await firstPollTask;
+            _ = await secondPollTask;
+            Assert.AreEqual(3, clientFactory.MockCalls.Count);
         }
 
         [TestMethod]

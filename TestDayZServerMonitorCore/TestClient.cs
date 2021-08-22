@@ -66,10 +66,8 @@ namespace TestDayZServerMonitorCore
         {
             ClientFactory factory = new ClientFactory();
 
-            using (IClient client = factory.Create("127.0.0.1", 2112))
-            {
-                Assert.IsTrue(client is Client);
-            }
+            using IClient client = factory.Create("127.0.0.1", 2112);
+            Assert.IsTrue(client is Client);
         }
     }
 }

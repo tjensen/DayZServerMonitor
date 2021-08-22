@@ -115,35 +115,31 @@ namespace DayZServerMonitorCore
         public void SaveToFilename(string filename)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(SavedServers));
-            using (TextWriter writer = new StreamWriter(filename))
+            using TextWriter writer = new StreamWriter(filename);
+            SavedServers servers = new SavedServers();
+            for (int index = SAVED_SERVER_INDEX; index < Count; index++)
             {
-                SavedServers servers = new SavedServers();
-                for (int index = SAVED_SERVER_INDEX; index < Count; index++)
-                {
-                    IServerSource item = this[index].GetSource();
-                    servers.Servers.Add(item.Save());
-                }
-                serializer.Serialize(writer, servers);
+                IServerSource item = this[index].GetSource();
+                servers.Servers.Add(item.Save());
             }
+            serializer.Serialize(writer, servers);
         }
 
         public void LoadFromFilename(string filename)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(SavedServers));
-            using (FileStream fs = new FileStream(filename, FileMode.Open))
+            using FileStream fs = new FileStream(filename, FileMode.Open);
+            SavedServers servers = (SavedServers)serializer.Deserialize(fs);
+            Reset();
+            foreach (SavedSource source in servers.Servers)
             {
-                SavedServers servers = (SavedServers)serializer.Deserialize(fs);
-                Reset();
-                foreach (SavedSource source in servers.Servers)
+                if (source.Filename == null)
                 {
-                    if (source.Filename == null)
-                    {
-                        Insert(Count, new SavedServerSource(source));
-                    }
-                    else
-                    {
-                        Insert(Count, new LatestServerSource(source));
-                    }
+                    Insert(Count, new SavedServerSource(source));
+                }
+                else
+                {
+                    Insert(Count, new LatestServerSource(source));
                 }
             }
         }

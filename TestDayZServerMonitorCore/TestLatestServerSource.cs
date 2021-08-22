@@ -81,18 +81,14 @@ namespace TestDayZServerMonitorCore
         [TestMethod]
         public void CreateWatcherReturnsNewProfileWatcher()
         {
-            using (AutoResetEvent actionCalled = new AutoResetEvent(false))
-            {
-                Action action = new Action(() => { actionCalled.Set(); });
-                using (ProfileWatcher watcher = serverSource.CreateWatcher(action, null))
-                {
-                    Assert.IsFalse(actionCalled.WaitOne(50, false));
+            using AutoResetEvent actionCalled = new AutoResetEvent(false);
+            Action action = new Action(() => { actionCalled.Set(); });
+            using ProfileWatcher watcher = serverSource.CreateWatcher(action, null);
+            Assert.IsFalse(actionCalled.WaitOne(50, false));
 
-                    File.WriteAllText(filename, "new contents");
+            File.WriteAllText(filename, "new contents");
 
-                    Assert.IsTrue(actionCalled.WaitOne(50, false));
-                }
-            }
+            Assert.IsTrue(actionCalled.WaitOne(50, false));
         }
 
         [TestMethod]

@@ -43,22 +43,18 @@ namespace DayZServerMonitorCore
 
         private static async Task<Server> GetLastServerInternal(string path)
         {
-            using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+            using FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+            using StreamReader reader = new StreamReader(stream);
+            string line;
+            while ((line = await reader.ReadLineAsync()) != null)
             {
-                using (StreamReader reader = new StreamReader(stream))
+                Match results = LastMPServerRegex.Match(line);
+                if (results.Success)
                 {
-                    string line;
-                    while ((line = await reader.ReadLineAsync()) != null)
-                    {
-                        Match results = LastMPServerRegex.Match(line);
-                        if (results.Success)
-                        {
-                            return new Server(results.Groups["address"].Value);
-                        }
-                    }
-                    throw new MissingLastMPServer();
+                    return new Server(results.Groups["address"].Value);
                 }
             }
+            throw new MissingLastMPServer();
         }
     }
 }
