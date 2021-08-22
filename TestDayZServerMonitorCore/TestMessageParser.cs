@@ -79,6 +79,31 @@ namespace TestDayZServerMonitorCore
         }
 
         [TestMethod]
+        public void GetLongLongReturnsFirstEightBytesOfBufferAs64BitInteger()
+        {
+            parser = new MessageParser(
+                new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 });
+            Assert.AreEqual(0x0807060504030201, parser.GetLongLong());
+        }
+
+        [TestMethod]
+        public void GetLongLongRemovesBytesAsTheyAreReturned()
+        {
+            parser = new MessageParser(
+                new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 });
+            _ = parser.GetLongLong();
+            Assert.AreEqual(0x100f0e0d0c0b0a09, parser.GetLongLong());
+        }
+
+        [TestMethod]
+        public void GetLongLongThrowsExceptionWhenBufferHasLessThanEightBytes()
+        {
+            parser = new MessageParser(new byte[] { 1, 2, 3, 4, 5, 6, 7 });
+            ParseException e = Assert.ThrowsException<ParseException>(() => parser.GetLongLong());
+            Assert.AreEqual("Insufficient bytes remaining: 7 < 8", e.Message);
+        }
+
+        [TestMethod]
         public void GetPortThrowsExceptionWhenBufferHasLessThanTwoBytes()
         {
             parser = new MessageParser(new byte[] { 1 });

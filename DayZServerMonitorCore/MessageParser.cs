@@ -35,6 +35,11 @@ namespace DayZServerMonitorCore
             return BitConverter.ToInt16(GetBytes(2).ToArray(), 0);
         }
 
+        public long GetLongLong()
+        {
+            return BitConverter.ToInt64(GetBytes(8).ToArray(), 0);
+        }
+
         public ushort GetPort()
         {
             return (ushort)IPAddress.NetworkToHostOrder(GetShort());
