@@ -220,11 +220,16 @@ namespace DayZServerMonitor
             UpdateSystemTrayIcon(lastIconUpdatePlayers, lastIconUpdateMaxPlayers);
         }
 
-        internal void UpdateValues(string server, string name, string players, string maxPlayers, Color playersColor)
+        internal void UpdateValues(
+            string server, string name, string players, string maxPlayers, Color playersColor,
+            string time)
         {
             if (InvokeRequired)
             {
-                Invoke(new MethodInvoker(delegate { UpdateValues(server, name, players, maxPlayers, playersColor); }));
+                Invoke(new MethodInvoker(
+                    delegate {
+                        UpdateValues(server, name, players, maxPlayers, playersColor, time);
+                    }));
             }
             else
             {
@@ -234,6 +239,7 @@ namespace DayZServerMonitor
                 PlayersValue.ForeColor = playersColor;
                 PlayersValue.BackColor = SystemColors.Control; // Force readonly control to update foreground color
                 MaxPlayersValue.Text = maxPlayers;
+                ServerTime.Text = time;
 
                 this.miniLabelToolTip.SetToolTip(
                     this.miniLabel,
@@ -243,7 +249,8 @@ namespace DayZServerMonitor
             }
         }
 
-        internal void UpdateValues(string server, string name, int players, int maxPlayers)
+        internal void UpdateValues(
+            string server, string name, int players, int maxPlayers, string time)
         {
             Color playersColor;
             if (players == 0)
@@ -258,7 +265,7 @@ namespace DayZServerMonitor
             {
                 playersColor = Color.Red;
             }
-            UpdateValues(server, name, players.ToString(), maxPlayers.ToString(), playersColor);
+            UpdateValues(server, name, players.ToString(), maxPlayers.ToString(), playersColor, time);
             UpdateSystemTrayIcon(players, maxPlayers);
 
             StatusFileWriter writer = new StatusFileWriter(settings.StatusFile, logger);
@@ -267,7 +274,7 @@ namespace DayZServerMonitor
 
         internal void UpdateValues(string server)
         {
-            UpdateValues(server, "", "?", "?", Color.Gray);
+            UpdateValues(server, "", "?", "?", Color.Gray, "?");
             UpdateSystemTrayIcon(-1, -1);
         }
 
@@ -387,7 +394,7 @@ namespace DayZServerMonitor
             {
                 logger.Debug($"Received {info}");
                 SaveServer(new Server(info.Address), info.Name);
-                UpdateValues(info.Address, info.Name, info.NumPlayers, info.MaxPlayers);
+                UpdateValues(info.Address, info.Name, info.NumPlayers, info.MaxPlayers, info.Time);
             }
         }
 
