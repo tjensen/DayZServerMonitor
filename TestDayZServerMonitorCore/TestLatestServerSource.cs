@@ -105,9 +105,8 @@ namespace TestDayZServerMonitorCore
         [TestMethod]
         public void CanBeConstructedFromASavedSource()
         {
-            SavedSource savedSource = new SavedSource();
-            savedSource.Filename = @"X:\path\to\some.DayZProfile";
-            LatestServerSource source = new LatestServerSource(savedSource);
+            LatestServerSource source = new LatestServerSource(
+                new SavedSource { Filename = @"X:\path\to\some.DayZProfile" });
 
             Assert.AreEqual(@"X:\path\to", source.ProfileDirectory);
             Assert.AreEqual("some.DayZProfile", source.ProfileFilename);

@@ -68,9 +68,10 @@ namespace TestDayZServerMonitorCore
         [TestMethod]
         public void AddressCanBeModified()
         {
-            SavedServerSource serverSource = new SavedServerSource(new Server("1.2.3.4", 5678));
-
-            serverSource.Address = "8.7.6.5:4321";
+            SavedServerSource serverSource = new SavedServerSource(new Server("1.2.3.4", 5678))
+            {
+                Address = "8.7.6.5:4321"
+            };
 
             Assert.AreEqual("8.7.6.5:4321", serverSource.Address);
         }
@@ -86,9 +87,10 @@ namespace TestDayZServerMonitorCore
         [TestMethod]
         public void ServerNameCanBeModified()
         {
-            SavedServerSource serverSource = new SavedServerSource(new Server("1.2.3.4", 5678), "SERVER NAME");
-
-            serverSource.ServerName = "NEW NAME";
+            SavedServerSource serverSource = new SavedServerSource(new Server("1.2.3.4", 5678), "SERVER NAME")
+            {
+                ServerName = "NEW NAME"
+            };
 
             Assert.AreEqual("NEW NAME", serverSource.ServerName);
         }
@@ -106,10 +108,8 @@ namespace TestDayZServerMonitorCore
 
         public void CanBeConstructedFromASavedSource()
         {
-            SavedSource savedSource = new SavedSource();
-            savedSource.Address = "1.2.3.4:5678";
-            savedSource.Name = "SERVER NAME";
-            SavedServerSource source = new SavedServerSource(savedSource);
+            SavedServerSource source = new SavedServerSource(
+                new SavedSource { Address = "1.2.3.4:5678", Name = "SERVER NAME" });
 
             Assert.AreEqual("1.2.3.4:5678", source.Address);
             Assert.AreEqual("SERVER NAME", source.ServerName);

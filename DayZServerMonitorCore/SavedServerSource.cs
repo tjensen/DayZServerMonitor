@@ -56,10 +56,11 @@ namespace DayZServerMonitorCore
 
         public SavedSource Save()
         {
-            SavedSource result = new SavedSource();
-            result.Address = Address;
-            result.Name = ServerName;
-            return result;
+            return new SavedSource
+            {
+                Address = Address,
+                Name = ServerName
+            };
         }
     }
 }

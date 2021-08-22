@@ -52,9 +52,10 @@ namespace DayZServerMonitorCore
 
         public SavedSource Save()
         {
-            SavedSource source = new SavedSource();
-            source.Filename = Path.Combine(ProfileDirectory, ProfileFilename);
-            return source;
+            return new SavedSource
+            {
+                Filename = Path.Combine(ProfileDirectory, ProfileFilename)
+            };
         }
     }
 }
