@@ -7,7 +7,7 @@ namespace TestDayZServerMonitorCore
     [TestClass]
     public class TestStatusFileWriter
     {
-        private MockLogger logger = new MockLogger();
+        private readonly MockLogger logger = new MockLogger();
         private readonly string[] filenames = new string[4];
 
         [TestInitialize]

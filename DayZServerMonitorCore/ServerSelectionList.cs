@@ -14,8 +14,8 @@ namespace DayZServerMonitorCore
 
         private const int SAVED_SERVER_INDEX = 2;
 
-        private ComboBox comboBox;
-        private ILogger logger;
+        private readonly ComboBox comboBox;
+        private readonly ILogger logger;
 
         public ServerSelectionList(ComboBox comboBox, ILogger logger)
         {
