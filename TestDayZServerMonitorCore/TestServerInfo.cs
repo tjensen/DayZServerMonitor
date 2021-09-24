@@ -291,7 +291,7 @@ namespace TestDayZServerMonitorCore
                         0x00 // Extra Data Flag
                     });
             });
-            Assert.AreEqual("Invalid Info Header", error.Message);
+            Assert.AreEqual("Invalid Info Header (received 0x42; expected 0x49)", error.Message);
         }
 
         [TestMethod]

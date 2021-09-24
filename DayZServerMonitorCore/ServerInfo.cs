@@ -39,9 +39,11 @@ namespace DayZServerMonitorCore
                 throw new ParseException("Invalid Packet Header");
             }
 
-            if (parser.GetByte() != 0x49)
+            int info = parser.GetByte();
+            if (info != 0x49)
             {
-                throw new ParseException("Invalid Info Header");
+                throw new ParseException(
+                    $"Invalid Info Header (received 0x{info:x}; expected 0x49)");
             }
 
             _ = parser.GetByte(); // Ignore protocol version
