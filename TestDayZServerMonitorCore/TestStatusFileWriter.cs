@@ -40,7 +40,7 @@ namespace TestDayZServerMonitorCore
             };
 
             StatusFileWriter writer = new StatusFileWriter(statusFiles, logger);
-            writer.WriteStatus("SERVER-ADDRESS", "SERVER-NAME", 42, 69);
+            writer.WriteStatus("SERVER-ADDRESS", "SERVER-NAME", 42, 69, "TIME");
 
             Assert.AreEqual("CONTENT", File.ReadAllText(filenames[0]));
 
@@ -53,15 +53,15 @@ namespace TestDayZServerMonitorCore
             StatusFileSetting[] statusFiles = {
                 new StatusFileSetting {
                     Pathname = filenames[0],
-                    Content = "foo %N bar %A baz %P buz %M"
+                    Content = "foo %N bar %A baz %P buz %M qux %T"
                 }
             };
 
             StatusFileWriter writer = new StatusFileWriter(statusFiles, logger);
-            writer.WriteStatus("SERVER-ADDRESS", "SERVER-NAME", 42, 69);
+            writer.WriteStatus("SERVER-ADDRESS", "SERVER-NAME", 42, 69, "TIME");
 
             Assert.AreEqual(
-                "foo SERVER-NAME bar SERVER-ADDRESS baz 42 buz 69",
+                "foo SERVER-NAME bar SERVER-ADDRESS baz 42 buz 69 qux TIME",
                 File.ReadAllText(filenames[0]));
         }
 
@@ -76,7 +76,7 @@ namespace TestDayZServerMonitorCore
             };
 
             StatusFileWriter writer = new StatusFileWriter(statusFiles, logger);
-            writer.WriteStatus("SERVER-ADDRESS", "SERVER-NAME", 42, 69);
+            writer.WriteStatus("SERVER-ADDRESS", "SERVER-NAME", 42, 69, "TIME");
 
             Assert.AreEqual(
                 "SERVER-NAME %Z %Y %X %% SERVER-ADDRESS",
@@ -96,7 +96,7 @@ namespace TestDayZServerMonitorCore
             };
 
             StatusFileWriter writer = new StatusFileWriter(statusFiles, logger);
-            writer.WriteStatus("SERVER-ADDRESS", "SERVER-NAME", 42, 69);
+            writer.WriteStatus("SERVER-ADDRESS", "SERVER-NAME", 42, 69, "TIME");
 
             Assert.AreEqual("49%", File.ReadAllText(filenames[0]));
 
@@ -114,7 +114,7 @@ namespace TestDayZServerMonitorCore
             };
 
             StatusFileWriter writer = new StatusFileWriter(statusFiles, logger);
-            writer.WriteStatus("SERVER-ADDRESS", "SERVER-NAME", 42, 69);
+            writer.WriteStatus("SERVER-ADDRESS", "SERVER-NAME", 42, 69, "TIME");
 
             Assert.AreEqual("%n %a %p %m", File.ReadAllText(filenames[0]));
         }
@@ -142,7 +142,7 @@ namespace TestDayZServerMonitorCore
             };
 
             StatusFileWriter writer = new StatusFileWriter(statusFiles, logger);
-            writer.WriteStatus("ServerAddress", "ServerName", 12, 21);
+            writer.WriteStatus("ServerAddress", "ServerName", 12, 21, "TIME");
 
             Assert.AreEqual("ServerName", File.ReadAllText(filenames[0]));
             Assert.AreEqual("ServerAddress", File.ReadAllText(filenames[1]));
@@ -155,7 +155,7 @@ namespace TestDayZServerMonitorCore
         {
             StatusFileWriter writer = new StatusFileWriter(new StatusFileSetting[] {}, logger);
 
-            writer.WriteStatus("SERVER-ADDRESS", "SERVER-NAME", 42, 69);
+            writer.WriteStatus("SERVER-ADDRESS", "SERVER-NAME", 42, 69, "TIME");
 
             Assert.IsFalse(File.Exists(filenames[0]));
             Assert.IsFalse(File.Exists(filenames[1]));
@@ -175,7 +175,7 @@ namespace TestDayZServerMonitorCore
                 }
             }, logger);
 
-            writer.WriteStatus("SERVER-ADDRESS", "SERVER-NAME", 42, 69);
+            writer.WriteStatus("SERVER-ADDRESS", "SERVER-NAME", 42, 69, "TIME");
 
             Assert.IsFalse(File.Exists(filenames[0]));
             Assert.IsFalse(File.Exists(filenames[1]));
@@ -198,7 +198,7 @@ namespace TestDayZServerMonitorCore
 
             using (FileStream fs = File.OpenWrite(filenames[0]))
             {
-                writer.WriteStatus("SERVER-ADDRESS", "SERVER-NAME", 42, 69);
+                writer.WriteStatus("SERVER-ADDRESS", "SERVER-NAME", 42, 69, "TIME");
             }
 
             Assert.AreEqual(1, logger.ErrorTexts.Count);
@@ -228,7 +228,7 @@ namespace TestDayZServerMonitorCore
 
             using (FileStream fs = File.OpenWrite(filenames[1]))
             {
-                writer.WriteStatus("SERVER-ADDRESS", "SERVER-NAME", 42, 69);
+                writer.WriteStatus("SERVER-ADDRESS", "SERVER-NAME", 42, 69, "TIME");
             }
 
             Assert.AreEqual("SUCCESS 1", File.ReadAllText(filenames[0]));

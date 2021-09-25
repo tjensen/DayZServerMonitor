@@ -14,7 +14,8 @@ namespace DayZServerMonitorCore
             this.logger = logger;
         }
 
-        public void WriteStatus(string address, string name, int numPlayers, int maxPlayers)
+        public void WriteStatus(
+            string address, string name, int numPlayers, int maxPlayers, string time)
         {
             foreach (StatusFileSetting setting in statusFiles)
             {
@@ -28,7 +29,7 @@ namespace DayZServerMonitorCore
                     File.WriteAllText(
                         setting.Pathname,
                         InterpolateFormatString(
-                            setting.Content, address, name, numPlayers, maxPlayers));
+                            setting.Content, address, name, numPlayers, maxPlayers, time));
                 }
                 catch (Exception error)
                 {
@@ -37,7 +38,9 @@ namespace DayZServerMonitorCore
             }
         }
 
-        private string InterpolateFormatString(string format, string address, string name, int numPlayers, int maxPlayers)
+        private string InterpolateFormatString(
+            string format, string address, string name, int numPlayers, int maxPlayers,
+            string time)
         {
             string result = "";
             bool percent = false;
@@ -52,6 +55,7 @@ namespace DayZServerMonitorCore
                         'A' => address,
                         'P' => numPlayers.ToString(),
                         'M' => maxPlayers.ToString(),
+                        'T' => time,
                         _ => $"%{format[i]}",
                     };
                     percent = false;
