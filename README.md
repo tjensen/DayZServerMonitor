@@ -5,7 +5,7 @@
 DayZ Server Monitor lets you view the current player count on any running DayZ
 server. By default, your current/last played server is shown.
 
-![Example Screenshot](https://i.imgur.com/gS94jXv.png)
+![Example Screenshot](https://i.imgur.com/9LSPSvJ.png)
 
 The player information updates once per minute and whenever you change servers.
 DayZ Server Monitor determines your current/last played server by reading your
