@@ -39,6 +39,13 @@ a > div {
   border: solid 1px black;
 }
 
+code {
+  color: white;
+  background-color: black;
+  padding: 2pt 4pt;
+  font-weight: bold;
+}
+
 .intro {
   width: 100%;
   text-align: center;
