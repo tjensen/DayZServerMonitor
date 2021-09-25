@@ -8,6 +8,10 @@ namespace TestDayZServerMonitorCore
 {
     internal class MockClient : IClient
     {
+        internal List<byte[]> ServerResponses = new List<byte[]>();
+        internal List<byte[]> ServerRequests = new List<byte[]>();
+        internal List<int> ServerTimeouts = new List<int>();
+
         internal byte[] ServerResponse { get; set; }
         internal Exception ServerError { get; set; }
         internal byte[] ServerRequest { get; private set; }
@@ -19,11 +23,18 @@ namespace TestDayZServerMonitorCore
         {
             RequestAction?.Invoke();
             ServerRequest = request;
+            ServerRequests.Add(request);
             ServerTimeout = timeout;
+            ServerTimeouts.Add(timeout);
             Source = source;
             if (ServerError != null)
             {
                 throw ServerError;
+            }
+            if (ServerResponses.Count > 0)
+            {
+                ServerResponse = ServerResponses[0];
+                ServerResponses.RemoveAt(0);
             }
             return Task.FromResult(ServerResponse);
         }

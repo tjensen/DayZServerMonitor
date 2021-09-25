@@ -1,5 +1,6 @@
 ﻿using DayZServerMonitorCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 
 namespace TestDayZServerMonitorCore
 {
@@ -292,6 +293,47 @@ namespace TestDayZServerMonitorCore
                     });
             });
             Assert.AreEqual("Invalid Info Header (received 0x42; expected 0x49)", error.Message);
+        }
+
+        [TestMethod]
+        public void IsChallengeReturnsTrueWhenBufferContainsServerChallenge()
+        {
+            Assert.IsTrue(
+                ServerInfo.IsChallenge(
+                    new byte[] {
+                        0xFF, 0xFF, 0xFF, 0xFF,
+                        0x41,
+                        0x0A, 0xBC, 0x21, 0x12
+                    },
+                    out byte[] challenge));
+
+            CollectionAssert.AreEqual(new byte[] { 0x0A, 0xBC, 0x21, 0x12 }, challenge);
+        }
+
+        [TestMethod]
+        public void IsChallengeReturnsFalseWhenServerChallengeContainsInsufficientBytes()
+        {
+            Assert.IsFalse(
+                ServerInfo.IsChallenge(
+                    new byte[] { 0xFF },
+                    out byte[] challenge));
+
+            Assert.IsNull(challenge);
+        }
+
+        [TestMethod]
+        public void IsChallengeReturnsFalseWhenBufferDoesNotContainServerChallenge()
+        {
+            Assert.IsFalse(
+                ServerInfo.IsChallenge(
+                    new byte[] {
+                        0xFF, 0xFF, 0xFF, 0xFF,
+                        0x49,
+                        0x0A, 0xBC, 0x21, 0x12
+                    },
+                    out byte[] challenge));
+
+            Assert.IsNull(challenge);
         }
 
         [TestMethod]

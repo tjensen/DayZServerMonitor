@@ -98,5 +98,32 @@ namespace DayZServerMonitorCore
             return new ServerInfo(
                 string.Format("{0}:{1}", host, port), name, numPlayers, maxPlayers, time);
         }
+
+        public static bool IsChallenge(byte[] buffer, out byte[] challenge)
+        {
+            MessageParser parser = new MessageParser(buffer);
+
+            challenge = null;
+
+            try
+            {
+                if (!parser.GetBytes(4).TrueForAll((b) => b == 0xff))
+                {
+                    return false;
+                }
+
+                if (parser.GetByte() != 0x41)
+                {
+                    return false;
+                }
+
+                challenge = parser.GetBytes(4).ToArray();
+                return true;
+            }
+            catch (ParseException)
+            {
+                return false;
+            }
+        }
     }
 }
