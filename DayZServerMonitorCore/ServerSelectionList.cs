@@ -12,6 +12,9 @@ namespace DayZServerMonitorCore
             public List<SavedSource> Servers = new List<SavedSource>();
         }
 
+        public bool Saving { get; private set; }
+        public bool Promoting { get; private set; }
+
         private const int SAVED_SERVER_INDEX = 2;
 
         private readonly ComboBox comboBox;
@@ -52,20 +55,28 @@ namespace DayZServerMonitorCore
 
         public ServerSelectionItem SaveServer(Server server, string name)
         {
-            int savedIndex = comboBox.SelectedIndex;
-            object savedItem = comboBox.SelectedItem;
-            comboBox.SelectedIndex = -1;
-            int removedIndex = RemoveServer(server);
-            ServerSelectionItem item = Insert(SAVED_SERVER_INDEX, new SavedServerSource(server, name));
-            if (removedIndex == savedIndex)
+            try
             {
-                comboBox.SelectedIndex = SAVED_SERVER_INDEX;
+                Saving = true;
+                int savedIndex = comboBox.SelectedIndex;
+                object savedItem = comboBox.SelectedItem;
+                comboBox.SelectedIndex = -1;
+                int removedIndex = RemoveServer(server);
+                ServerSelectionItem item = Insert(SAVED_SERVER_INDEX, new SavedServerSource(server, name));
+                if (removedIndex == savedIndex)
+                {
+                    comboBox.SelectedIndex = SAVED_SERVER_INDEX;
+                }
+                else
+                {
+                    comboBox.SelectedItem = savedItem;
+                }
+                return item;
             }
-            else
+            finally
             {
-                comboBox.SelectedItem = savedItem;
+                Saving = false;
             }
-            return item;
         }
 
         public ServerSelectionItem SaveProfile(string filename)
@@ -88,26 +99,34 @@ namespace DayZServerMonitorCore
 
         public ServerSelectionItem Promote(int index)
         {
-            if (index <= SAVED_SERVER_INDEX)
+            try
             {
-                return null;
-            }
+                Promoting = true;
+                if (index <= SAVED_SERVER_INDEX)
+                {
+                    return null;
+                }
 
-            int savedIndex = comboBox.SelectedIndex;
-            object savedItem = comboBox.SelectedItem;
-            comboBox.SelectedIndex = -1;
-            ServerSelectionItem item = this[index];
-            comboBox.Items.RemoveAt(index);
-            comboBox.Items.Insert(SAVED_SERVER_INDEX, item);
-            if (savedIndex == index)
-            {
-                comboBox.SelectedIndex = SAVED_SERVER_INDEX;
+                int savedIndex = comboBox.SelectedIndex;
+                object savedItem = comboBox.SelectedItem;
+                comboBox.SelectedIndex = -1;
+                ServerSelectionItem item = this[index];
+                comboBox.Items.RemoveAt(index);
+                comboBox.Items.Insert(SAVED_SERVER_INDEX, item);
+                if (savedIndex == index)
+                {
+                    comboBox.SelectedIndex = SAVED_SERVER_INDEX;
+                }
+                else
+                {
+                    comboBox.SelectedItem = savedItem;
+                }
+                return item;
             }
-            else
+            finally
             {
-                comboBox.SelectedItem = savedItem;
+                Promoting = false;
             }
-            return item;
         }
 
         public void SaveToFilename(string filename)

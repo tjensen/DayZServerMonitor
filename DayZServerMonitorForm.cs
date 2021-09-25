@@ -101,7 +101,7 @@ namespace DayZServerMonitor
                 SelectionCombo.SelectedIndex);
 
             ServerSelectionItem item = serverList[SelectionCombo.SelectedIndex];
-            if (item != null)
+            if (item != null && !serverList.Saving && !serverList.Promoting)
             {
                 serverList.Promote(SelectionCombo.SelectedIndex);
                 UpdateServerSource(item.GetSource());
