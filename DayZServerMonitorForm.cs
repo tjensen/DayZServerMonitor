@@ -1,9 +1,12 @@
 ﻿using DayZServerMonitorCore;
 using Microsoft.Win32;
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Media;
+using System.Net.Http;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -31,6 +34,7 @@ namespace DayZServerMonitor
         private readonly DayZServerMonitorCore.Monitor monitor;
         private readonly ServerSelectionList serverList;
         private ProfileWatcher watcher = null;
+        private readonly VersionChecker versionChecker;
         private int lastIconUpdatePlayers = -1;
         private int lastIconUpdateMaxPlayers = -1;
         private Size normalMinimumSize;
@@ -54,12 +58,14 @@ namespace DayZServerMonitor
             contextMenu.MenuItems.Add("&Mini Window", MiniWindow_Click);
             contextMenu.MenuItems.Add("-");
             contextMenu.MenuItems.Add("S&ettings...", Settings_Click);
+            contextMenu.MenuItems.Add("&Check for Updates...", CheckForUpdates_Click);
 
             settings.SettingChanged += Settings_SettingChanged;
 
             logViewer = new LogViewer(settings);
             logger = new Logger(settings, clock, StatusWriter, logViewer.Add);
             monitor = new DayZServerMonitorCore.Monitor(clock, clientFactory, logger);
+            versionChecker = new VersionChecker(new HttpClient(), logger);
 
             LoadSettings();
 
@@ -556,6 +562,48 @@ namespace DayZServerMonitor
             };
             dialog.ShowDialog(settings);
             SaveSettings();
+        }
+
+        private void LaunchDownloadURL()
+        {
+            try
+            {
+                var proc = new Process();
+                proc.StartInfo.UseShellExecute = true;
+                proc.StartInfo.FileName = "https://tjensen.github.io/DayZServerMonitor/";
+                proc.Start();
+            }
+            catch (Exception error)
+            {
+                MessageBox.Show($"Failed to open URL: {error}", "Check for Updates");
+            }
+        }
+
+        private void CheckForUpdates_Click(object sender, EventArgs e)
+        {
+            _ = Task.Run(async delegate {
+                var latest = await versionChecker.Check();
+                var current = Assembly.GetExecutingAssembly().GetName().Version;
+
+                if (current.CompareTo(latest) < 0)
+                {
+                    var result = MessageBox.Show(
+                        $"Version {latest} is available for download and is newer than the" +
+                        $" current version ({current}).\n\nWould you like to download it?",
+                        "Check for Updates", MessageBoxButtons.YesNo);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        LaunchDownloadURL();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show(
+                        "You are already running the latest version!",
+                        "Check for Updates");
+                }
+            } );
         }
 
         private void MiniWindow_Click(object sender, EventArgs e)
