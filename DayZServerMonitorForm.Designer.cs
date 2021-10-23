@@ -23,10 +23,6 @@
                 {
                     watcher.Dispose();
                 }
-                if (monitor != null)
-                {
-                    monitor.Dispose();
-                }
                 if (dynamicIcons != null)
                 {
                     dynamicIcons.Dispose();

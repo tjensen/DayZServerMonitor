@@ -4,13 +4,12 @@ using System.Threading.Tasks;
 
 namespace DayZServerMonitorCore
 {
-    public class Monitor : IDisposable
+    public class Monitor
     {
         public const int POLLING_INTERVAL = 60000;
         private const int MINIMUM_POLLING_INTERVAL = 45000;
         private const int SERVER_TIMEOUT = 5000;
 
-        private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1);
         private readonly IClock clock;
         private readonly IClientFactory clientFactory;
         private readonly ILogger logger;
@@ -29,25 +28,17 @@ namespace DayZServerMonitorCore
 
         public async Task<ServerInfo> Poll(Server lastServer, CancellationTokenSource source)
         {
-            await semaphore.WaitAsync();
-            try
+            if (lastServer.Address == previousPolledServer &&
+                (clock.UtcNow() - lastPoll).TotalMilliseconds < MINIMUM_POLLING_INTERVAL)
             {
-                if (lastServer.Address == previousPolledServer &&
-                    (clock.UtcNow() - lastPoll).TotalMilliseconds < MINIMUM_POLLING_INTERVAL)
-                {
-                    logger.Debug("Not enough time has passed since last poll; skipping");
-                    return null;
-                }
-                lastPoll = clock.UtcNow();
-                previousPolledServer = lastServer.Address;
-                Server server = await GetGameServer(lastServer, source);
-                ServerInfoQuerier querier = new ServerInfoQuerier(clientFactory, logger);
-                return await querier.Query(server.Host, server.Port, SERVER_TIMEOUT, source);
+                logger.Debug("Not enough time has passed since last poll; skipping");
+                return null;
             }
-            finally
-            {
-                semaphore.Release();
-            }
+            lastPoll = clock.UtcNow();
+            previousPolledServer = lastServer.Address;
+            Server server = await GetGameServer(lastServer, source);
+            ServerInfoQuerier querier = new ServerInfoQuerier(clientFactory, logger);
+            return await querier.Query(server.Host, server.Port, SERVER_TIMEOUT, source);
         }
 
         private async Task<Server> GetGameServer(Server server, CancellationTokenSource source)
@@ -71,26 +62,5 @@ namespace DayZServerMonitorCore
             }
             return gameServerMapping.server;
         }
-
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    semaphore.Dispose();
-                }
-                disposedValue = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-        #endregion
     }
 }

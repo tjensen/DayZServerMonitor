@@ -39,7 +39,6 @@ namespace TestDayZServerMonitorCore
             clock.Dispose();
             masterServerClient.Dispose();
             serverInfoClient.Dispose();
-            monitor.Dispose();
             source.Dispose();
         }
 
