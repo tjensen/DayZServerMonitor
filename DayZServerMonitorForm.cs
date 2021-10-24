@@ -587,6 +587,7 @@ namespace DayZServerMonitor
         private bool ShowUpdateDownloadPrompt(
             Version current, Version latest, bool showCheckbox, out bool notAgain)
         {
+            var font = new Font(FontFamily.GenericSansSerif, 10);
             using var prompt = new Form()
             {
                 Text = "Update is Available",
@@ -595,7 +596,7 @@ namespace DayZServerMonitor
                 AutoSize = true,
                 StartPosition = FormStartPosition.CenterScreen,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
-                TopMost = this.TopMost,
+                TopMost = settings.AlwaysOnTop,
                 ShowInTaskbar = false,
                 MaximizeBox = false,
                 MinimizeBox = false
@@ -615,7 +616,7 @@ namespace DayZServerMonitor
             {
                 Text = $"DayZ Server Monitor version {latest} is available for download and is" +
                 $" newer than the current version ({current}).\n\nWould you like to download it?",
-                Font = new Font(FontFamily.GenericSansSerif, 10),
+                Font = font,
                 AutoSize = true,
                 TextAlign = ContentAlignment.MiddleLeft,
                 Dock = DockStyle.Fill
@@ -630,18 +631,25 @@ namespace DayZServerMonitor
             var yes = new Button()
             {
                 Text = "Yes",
+                Font = font,
+                AutoSize = true,
+                TextAlign = ContentAlignment.MiddleCenter,
                 DialogResult = DialogResult.Yes,
             };
             yes.Click += (sender, e) => { prompt.Close(); };
             var no = new Button()
             {
                 Text = "No",
+                Font = font,
+                AutoSize = true,
+                TextAlign = ContentAlignment.MiddleCenter,
                 DialogResult = DialogResult.No,
             };
             no.Click += (sender, e) => { prompt.Close(); };
             var dontAskAgain = new CheckBox()
             {
                 Text = "Don't ask me again",
+                Font = font,
                 AutoSize = true,
             };
             contentPanel.Controls.Add(text);
@@ -660,33 +668,47 @@ namespace DayZServerMonitor
             return result;
         }
 
+        private void OnUpdateChecked(bool automatic, Version latest)
+        {
+            var current = Assembly.GetExecutingAssembly().GetName().Version;
+
+            if (current.CompareTo(latest) < 0)
+            {
+                bool download = ShowUpdateDownloadPrompt(
+                    current, latest, automatic, out bool dontAskAgain);
+
+                if (automatic && dontAskAgain)
+                {
+                    settings.CheckForUpdates = false;
+                    SaveSettings();
+                }
+
+                if (download)
+                {
+                    LaunchDownloadURL();
+                }
+            }
+            else if (!automatic)
+            {
+                MessageBox.Show(
+                    "You are already running the latest version of DayZ Server Monitor!",
+                    "Check for Updates");
+            }
+        }
+
         private void CheckForUpdate(bool automatic)
         {
-            _ = Task.Run(async delegate {
+            _ = Task.Run(async () =>
+            {
                 var latest = await versionChecker.Check();
-                var current = Assembly.GetExecutingAssembly().GetName().Version;
 
-                if (current.CompareTo(latest) < 0)
+                if (InvokeRequired)
                 {
-                    bool download = ShowUpdateDownloadPrompt(
-                        current, latest, automatic, out bool dontAskAgain);
-
-                    if (automatic && dontAskAgain)
-                    {
-                        settings.CheckForUpdates = false;
-                        SaveSettings();
-                    }
-
-                    if (download)
-                    {
-                        LaunchDownloadURL();
-                    }
+                    Invoke(new MethodInvoker(delegate { OnUpdateChecked(automatic, latest); }));
                 }
-                else if (!automatic)
+                else
                 {
-                    MessageBox.Show(
-                        "You are already running the latest version!",
-                        "Check for Updates");
+                    OnUpdateChecked(automatic, latest);
                 }
             });
         }
