@@ -580,7 +580,9 @@ namespace DayZServerMonitor
             }
             catch (Exception error)
             {
-                MessageBox.Show($"Failed to open URL: {error}", "Check for Update");
+                MessageBox.Show(
+                    $"Failed to open URL: {error}", "Check for Update",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -674,7 +676,7 @@ namespace DayZServerMonitor
             {
                 MessageBox.Show(
                     "There was a problem checking for an update. Please try again later.",
-                    "Check for Update");
+                    "Check for Update", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -700,7 +702,7 @@ namespace DayZServerMonitor
             {
                 MessageBox.Show(
                     "You are already running the latest version of DayZ Server Monitor!",
-                    "Check for Update");
+                    "Check for Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
