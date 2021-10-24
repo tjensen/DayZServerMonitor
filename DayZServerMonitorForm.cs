@@ -580,7 +580,7 @@ namespace DayZServerMonitor
             }
             catch (Exception error)
             {
-                MessageBox.Show($"Failed to open URL: {error}", "Check for Updates");
+                MessageBox.Show($"Failed to open URL: {error}", "Check for Update");
             }
         }
 
@@ -670,6 +670,14 @@ namespace DayZServerMonitor
 
         private void OnUpdateChecked(bool automatic, Version latest)
         {
+            if (!automatic && latest is null)
+            {
+                MessageBox.Show(
+                    "There was a problem checking for an update. Please try again later.",
+                    "Check for Update");
+                return;
+            }
+
             var current = Assembly.GetExecutingAssembly().GetName().Version;
 
             if (current.CompareTo(latest) < 0)
@@ -692,7 +700,7 @@ namespace DayZServerMonitor
             {
                 MessageBox.Show(
                     "You are already running the latest version of DayZ Server Monitor!",
-                    "Check for Updates");
+                    "Check for Update");
             }
         }
 
