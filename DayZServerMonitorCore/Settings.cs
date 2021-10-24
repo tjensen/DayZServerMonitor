@@ -41,6 +41,7 @@ namespace DayZServerMonitorCore
         public enum NotifyOnPlayerCountValues { NEVER, WHEN_ABOVE, WHEN_BELOW };
         public const int NUM_STATUS_FILES = 4;
 
+        private bool checkForUpdates = true;
         private HideTaskBarIconValues hideTaskBarIcon = HideTaskBarIconValues.NEVER;
         private int maxLogViewerEntries = 100;
         private string logPathname = null;
@@ -58,10 +59,21 @@ namespace DayZServerMonitorCore
         private Color trayIconAlertBackground = Color.DarkRed;
         private Color trayIconAlertForeground = Color.Yellow;
 
+        public bool CheckForUpdates
+        {
+            get => checkForUpdates;
+            set
+            {
+                checkForUpdates = value;
+                OnSettingChanged();
+            }
+        }
+
         public HideTaskBarIconValues HideTaskBarIcon
         {
             get => hideTaskBarIcon;
-            set {
+            set
+            {
                 hideTaskBarIcon = value;
                 OnSettingChanged();
             }
@@ -203,6 +215,7 @@ namespace DayZServerMonitorCore
 
         public void Apply(Settings newSettings)
         {
+            CheckForUpdates = newSettings.CheckForUpdates;
             HideTaskBarIcon = newSettings.HideTaskBarIcon;
             MaxLogViewerEntries = newSettings.MaxLogViewerEntries;
             LogPathname = newSettings.LogPathname;

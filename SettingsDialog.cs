@@ -8,6 +8,7 @@ namespace DayZServerMonitor
     public class SettingsDialog : Form
     {
         private readonly TableLayoutPanel mainPanel = new TableLayoutPanel();
+        private readonly CheckBox checkForUpdates = new CheckBox();
         private readonly ComboBox hideTaskBarIcon = new ComboBox();
         private readonly CheckBox alwaysOnTop = new CheckBox();
         private readonly NumericUpDown maxLogViewerEntries = new NumericUpDown();
@@ -54,6 +55,7 @@ namespace DayZServerMonitor
 
         public void ShowDialog(Settings settings)
         {
+            checkForUpdates.Checked = settings.CheckForUpdates;
             hideTaskBarIcon.SelectedItem = settings.HideTaskBarIcon;
             alwaysOnTop.Checked = settings.AlwaysOnTop;
             maxLogViewerEntries.Value = settings.MaxLogViewerEntries;
@@ -90,6 +92,7 @@ namespace DayZServerMonitor
 
             if (ShowDialog() == DialogResult.OK)
             {
+                settings.CheckForUpdates = checkForUpdates.Checked;
                 settings.HideTaskBarIcon =
                     (Settings.HideTaskBarIconValues)hideTaskBarIcon.SelectedItem;
                 settings.AlwaysOnTop = alwaysOnTop.Checked;
@@ -194,6 +197,9 @@ namespace DayZServerMonitor
             settingsPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150));
             settingsPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
             mainPanel.Controls.Add(settingsPanel);
+
+            checkForUpdates.Dock = DockStyle.Left;
+            InitializeSetting(settingsPanel, checkForUpdates, "Check for updates on startup");
 
             hideTaskBarIcon.Dock = DockStyle.Fill;
             hideTaskBarIcon.DropDownStyle = ComboBoxStyle.DropDownList;

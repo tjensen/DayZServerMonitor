@@ -23,6 +23,7 @@ namespace TestDayZServerMonitorCore
         [TestMethod]
         public void IsConstructedWithDefaultSettings()
         {
+            Assert.IsTrue(settings.CheckForUpdates);
             Assert.AreEqual(Settings.HideTaskBarIconValues.NEVER, settings.HideTaskBarIcon);
             Assert.AreEqual(100, settings.MaxLogViewerEntries);
             Assert.IsNull(settings.LogPathname);
@@ -54,6 +55,7 @@ namespace TestDayZServerMonitorCore
         {
             Settings newSettings = new Settings()
             {
+                CheckForUpdates = false,
                 HideTaskBarIcon = Settings.HideTaskBarIconValues.ALWAYS,
                 MaxLogViewerEntries = 42,
                 LogPathname = "/path/to/log",
@@ -74,6 +76,7 @@ namespace TestDayZServerMonitorCore
 
             settings.Apply(newSettings);
 
+            Assert.IsFalse(settings.CheckForUpdates);
             Assert.AreEqual(Settings.HideTaskBarIconValues.ALWAYS, settings.HideTaskBarIcon);
             Assert.AreEqual(42, settings.MaxLogViewerEntries);
             Assert.AreEqual("/path/to/log", settings.LogPathname);
@@ -97,6 +100,7 @@ namespace TestDayZServerMonitorCore
         {
             Settings settingsToSave = new Settings()
             {
+                CheckForUpdates = false,
                 HideTaskBarIcon = Settings.HideTaskBarIconValues.ALWAYS,
                 MaxLogViewerEntries = 42,
                 LogPathname = "/path/to/log",
@@ -130,6 +134,7 @@ namespace TestDayZServerMonitorCore
                 settingsToLoad.Apply((Settings)serializer.Deserialize(reader));
             }
 
+            Assert.IsFalse(settingsToSave.CheckForUpdates);
             Assert.AreEqual(settingsToSave.HideTaskBarIcon, settingsToLoad.HideTaskBarIcon);
             Assert.AreEqual(settingsToSave.MaxLogViewerEntries,
                 settingsToLoad.MaxLogViewerEntries);
@@ -158,6 +163,14 @@ namespace TestDayZServerMonitorCore
                 settingsToLoad.TrayIconAlertBackground.ToArgb());
             Assert.AreEqual(settingsToSave.TrayIconAlertForeground.ToArgb(),
                 settingsToLoad.TrayIconAlertForeground.ToArgb());
+        }
+
+        [TestMethod]
+        public void SettingChangedIsInvokedWhenCheckForUpdatesChanges()
+        {
+            settings.CheckForUpdates = false;
+
+            Assert.AreEqual("CheckForUpdates", settingThatChanged);
         }
 
         [TestMethod]

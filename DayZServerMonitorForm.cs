@@ -58,7 +58,7 @@ namespace DayZServerMonitor
             contextMenu.MenuItems.Add("&Mini Window", MiniWindow_Click);
             contextMenu.MenuItems.Add("-");
             contextMenu.MenuItems.Add("S&ettings...", Settings_Click);
-            contextMenu.MenuItems.Add("&Check for Updates...", CheckForUpdates_Click);
+            contextMenu.MenuItems.Add("&Check for Update...", CheckForUpdate_Click);
 
             settings.SettingChanged += Settings_SettingChanged;
 
@@ -92,8 +92,13 @@ namespace DayZServerMonitor
             this.miniLabel.MouseMove += MiniLabel_MouseMove;
             this.Controls.Add(this.miniLabel);
             this.ResumeLayout();
-            
+
             this.Load += new System.EventHandler(DayZServerMonitorForm_Load);
+
+            if (settings.CheckForUpdates)
+            {
+                CheckForUpdate(true);
+            }
         }
 
         private void StatusWriter(string text)
@@ -579,7 +584,83 @@ namespace DayZServerMonitor
             }
         }
 
-        private void CheckForUpdates_Click(object sender, EventArgs e)
+        private bool ShowUpdateDownloadPrompt(
+            Version current, Version latest, bool showCheckbox, out bool notAgain)
+        {
+            using var prompt = new Form()
+            {
+                Text = "Update is Available",
+                Width = 450,
+                Height = 200,
+                AutoSize = true,
+                StartPosition = FormStartPosition.CenterScreen,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                TopMost = this.TopMost,
+                ShowInTaskbar = false,
+                MaximizeBox = false,
+                MinimizeBox = false
+            };
+            var mainPanel = new Panel()
+            {
+                Dock = DockStyle.Fill
+            };
+            var contentPanel = new FlowLayoutPanel()
+            {
+                FlowDirection = FlowDirection.LeftToRight,
+                AutoSize = true,
+                Padding = new Padding(4),
+                Dock = DockStyle.Top
+            };
+            var text = new Label()
+            {
+                Text = $"DayZ Server Monitor version {latest} is available for download and is" +
+                $" newer than the current version ({current}).\n\nWould you like to download it?",
+                Font = new Font(FontFamily.GenericSansSerif, 10),
+                AutoSize = true,
+                TextAlign = ContentAlignment.MiddleLeft,
+                Dock = DockStyle.Fill
+            };
+            var controlPanel = new FlowLayoutPanel()
+            {
+                FlowDirection = FlowDirection.RightToLeft,
+                AutoSize = true,
+                Padding = new Padding(4),
+                Dock = DockStyle.Bottom
+            };
+            var yes = new Button()
+            {
+                Text = "Yes",
+                DialogResult = DialogResult.Yes,
+            };
+            yes.Click += (sender, e) => { prompt.Close(); };
+            var no = new Button()
+            {
+                Text = "No",
+                DialogResult = DialogResult.No,
+            };
+            no.Click += (sender, e) => { prompt.Close(); };
+            var dontAskAgain = new CheckBox()
+            {
+                Text = "Don't ask me again",
+                AutoSize = true,
+            };
+            contentPanel.Controls.Add(text);
+            controlPanel.Controls.Add(yes);
+            controlPanel.Controls.Add(no);
+            if (showCheckbox)
+            {
+                controlPanel.Controls.Add(dontAskAgain);
+            }
+            mainPanel.Controls.Add(contentPanel);
+            mainPanel.Controls.Add(controlPanel);
+            prompt.Controls.Add(mainPanel);
+
+            bool result = prompt.ShowDialog() == DialogResult.Yes;
+            notAgain = dontAskAgain.Checked;
+            return result;
+        }
+
+        private void CheckForUpdate(bool automatic)
         {
             _ = Task.Run(async delegate {
                 var latest = await versionChecker.Check();
@@ -587,23 +668,32 @@ namespace DayZServerMonitor
 
                 if (current.CompareTo(latest) < 0)
                 {
-                    var result = MessageBox.Show(
-                        $"Version {latest} is available for download and is newer than the" +
-                        $" current version ({current}).\n\nWould you like to download it?",
-                        "Check for Updates", MessageBoxButtons.YesNo);
+                    bool download = ShowUpdateDownloadPrompt(
+                        current, latest, automatic, out bool dontAskAgain);
 
-                    if (result == DialogResult.Yes)
+                    if (automatic && dontAskAgain)
+                    {
+                        settings.CheckForUpdates = false;
+                        SaveSettings();
+                    }
+
+                    if (download)
                     {
                         LaunchDownloadURL();
                     }
                 }
-                else
+                else if (!automatic)
                 {
                     MessageBox.Show(
                         "You are already running the latest version!",
                         "Check for Updates");
                 }
-            } );
+            });
+        }
+
+        private void CheckForUpdate_Click(object sender, EventArgs e)
+        {
+            CheckForUpdate(false);
         }
 
         private void MiniWindow_Click(object sender, EventArgs e)
