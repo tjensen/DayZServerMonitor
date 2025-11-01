@@ -8,7 +8,7 @@ namespace DayZServerMonitorCore
     {
         public const int POLLING_INTERVAL = 60000;
         private const int MINIMUM_POLLING_INTERVAL = 45000;
-        private const int SERVER_TIMEOUT = 5000;
+        private const int SERVER_TIMEOUT = 10000;
 
         private readonly IClock clock;
         private readonly IClientFactory clientFactory;
@@ -48,9 +48,7 @@ namespace DayZServerMonitorCore
                 MasterServerQuerier masterQuerier = new MasterServerQuerier(clientFactory, logger);
                 gameServerMapping = (
                     address: server.Address,
-                    server: await masterQuerier.FindDayZServerInRegion(
-                        server.Host, server.Port,
-                        MasterServerQuerier.REGION_REST, SERVER_TIMEOUT, source),
+                    server: await masterQuerier.FindDayZServer(server.Host, server.Port, source),
                     dateTime: clock.UtcNow());
             }
             if (gameServerMapping.server == null)
