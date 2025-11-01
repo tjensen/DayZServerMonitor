@@ -74,7 +74,7 @@ jobs:
 
     - name: Create "portable build" zip archive
       run: |
-        Compress-Archive -Path ".\bin\Release\DayZServerMonitor.exe", ".\bin\Release\DayZServerMonitorCore.dll" -DestinationPath "dayz-server-monitor-portable.zip"
+        Compress-Archive -Path ".\bin\Release\DayZServerMonitor.exe", ".\bin\Release\DayZServerMonitorCore.dll", ".\bin\Release\Newtonsoft.Json.dll" -DestinationPath "dayz-server-monitor-portable.zip"
 
     - name: Create installer zip archive
       run: |
