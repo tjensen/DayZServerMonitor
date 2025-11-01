@@ -36,13 +36,18 @@ namespace DayZServerMonitorCore
         private const string API_ENDPOINT = "https://api.steampowered.com/ISteamApps/GetServersAtAddress/v1/";
         private const int DAYZ_APPID = 221100;
 
-        private readonly HttpClient httpClient;
+        private static readonly HttpClient httpClient;
+
         private readonly IClientFactory factory;
         private readonly ILogger logger;
 
+        static MasterServerQuerier()
+        {
+            httpClient = new HttpClient();
+        }
+
         public MasterServerQuerier(IClientFactory factory, ILogger logger)
         {
-            this.httpClient = new HttpClient();
             this.factory = factory;
             this.logger = logger;
         }
