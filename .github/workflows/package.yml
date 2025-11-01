@@ -82,13 +82,13 @@ jobs:
         Compress-Archive -Path ".\bin\Release\app.publish\*" -DestinationPath "dayz-server-monitor-installer.zip"
 
     - name: Upload portable build
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: Portable Build
         path: dayz-server-monitor-portable.zip
 
     - name: Upload installer
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: Installer
         path: dayz-server-monitor-installer.zip
