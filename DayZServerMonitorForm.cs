@@ -398,6 +398,7 @@ namespace DayZServerMonitor
             Server server = await GetSelectedServer(source);
             if (server == null)
             {
+                logger.Debug("No server selected");
                 UpdateValues("?");
                 return;
             }
