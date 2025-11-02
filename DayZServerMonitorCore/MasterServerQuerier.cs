@@ -35,6 +35,7 @@ namespace DayZServerMonitorCore
         private const int MASTER_SERVER_PORT = 27011;
         private const string API_ENDPOINT = "https://api.steampowered.com/ISteamApps/GetServersAtAddress/v1/";
         private const int DAYZ_APPID = 221100;
+        private const int DAYZEXP_APPID = 1024020;
 
         private static readonly HttpClient httpClient;
 
@@ -102,7 +103,7 @@ namespace DayZServerMonitorCore
                     logger.Debug("Searching for matching server in response");
                     foreach (var server in answer.response.servers)
                     {
-                        if (server.appid == DAYZ_APPID && server.gameport == port)
+                        if ((server.appid == DAYZ_APPID || server.appid == DAYZEXP_APPID) && server.gameport == port)
                         {
                             logger.Debug("Matching server found!");
                             var parts = server.addr.Split(':');
